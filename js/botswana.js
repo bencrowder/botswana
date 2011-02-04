@@ -1,9 +1,6 @@
 /* Botswana */
 /* by Ben Crowder and Chad Hansen */
 
-
-// Globals (probably ought to move these into a world object)
-
 var NUM_PLAYERS = 2;
 var WORLD_WIDTH = 1000;
 var WORLD_HEIGHT = 600;
@@ -17,6 +14,9 @@ var BULLET_COLOR = "#d2f783";
 var bots = [];
 var context;
 var paused = false;
+
+var tournamentIntervalId = 0;
+
 
 function registerBot(bot) {
 	// add bot to main array
@@ -59,8 +59,13 @@ function startTournament() {
 		bots[i].state.bots = bots_state;
 	}
 
+	// if we've got a pre-existing tournament, clear the interval
+	if (tournamentIntervalId) {
+		clearInterval(tournamentIntervalId);
+	}
+	
 	// start the game
-	setInterval(runGame, 50);
+	tournamentIntervalId = setInterval(runGame, 25);
 }
 
 function runGame() {
