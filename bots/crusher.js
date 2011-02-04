@@ -9,16 +9,21 @@ function CrusherBot(botname) {
 	this.state = { world: {}, bots: {}, bullets: {} };
 
 	this.setup = function() {
-		// if we wanted to do any setup, we'd do it here
+		this.timer = 0;			// keep track of how many clicks
+		this.cmd = 0;			// which command to use
+		this.commands = ["forward", "right", "forward", "left"];
 	}
 
 	this.run = function() {
 		// check state
+		if (this.timer % 20 == 0) {
+			this.cmd += 1;
+			if (this.cmd > 3) { this.cmd = 0; }
+		}
 
-		// return a command
-		command = "forward";
+		this.timer++;
 
-		return command;
+		return this.commands[this.cmd];
 	}
 }
 
