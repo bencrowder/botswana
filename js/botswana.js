@@ -12,6 +12,7 @@ var bot_colors = ["#e95050", "#589ebc"]; // red, blue
 var BULLET_COLOR = "#d2f783";
 
 var bots = [];
+var fxparticles = [];
 var context;
 var paused = false;
 
@@ -39,8 +40,9 @@ function startTournament() {
 	for (i in bots) {
 		var bot = bots[i];
 
-		bot.x = (Math.random() * (WORLD_WIDTH - 200)) + 100;		// 100px padding
-		bot.y = (Math.random() * (WORLD_HEIGHT - 200)) + 100;		// 100px padding
+		botpos = getRandomPoint();
+		bot.x = botpos.x;
+		bot.y = botpos.y;
 		bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
 		bot.health = 100;
 
@@ -153,5 +155,17 @@ $(document).keydown(function(e) {
 			drawPaused(context);
 		}
 		return false;
+	} else if (e.keyCode == "80") { // "p", temp for testing particles
+		var p = getRandomPoint();
+		var angle = 0;
+		var num_points = 16;
+		var step = (2 * Math.PI) / num_points;
+
+		// create shower of particles around the point
+		for (i=0; i<num_points; i++) {
+			var pos = calcVector(p.x, p.y, angle, 30);
+			fxparticles.push({ "x": pos.x, "y": pos.y, "angle": angle, "speed": 5, "life": 20, "color": "#ff0" });
+			angle += step;
+		}
 	}
 });

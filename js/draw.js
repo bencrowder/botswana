@@ -12,7 +12,7 @@
  * function drawBullet(x, y, angle, context);
  * function drawGrid(context);
  * function drawBuildings(context);
- * function calcVector(x, y, angle, magnitude);
+ * function drawParticles(context);
  * function drawHealth();
  * function drawPaused();
  *
@@ -40,6 +40,8 @@ function drawWorld(context) {
 	}
 
 	// draw bullets
+
+	drawParticles(context);
 }
 
 function drawBot(x, y, angle, color, context) {
@@ -114,12 +116,37 @@ function drawBuildings(context) {
 	context.strokeRect(860, 140, 120, 60);
 }
 
-function calcVector(x, y, angle, magnitude) {
-	var pos = {};
-	pos.x = x + magnitude * Math.cos(angle);
-	pos.y = y + magnitude * Math.sin(angle);
+function drawParticles(context) {
+	particles_to_remove = [];
 
-	return pos;
+	context.save();
+	context.lineWidth = 2;
+
+	for (i in fxparticles) {
+		var particle = fxparticles[i];
+		// x, y, angle, speed, life, color
+
+		particle.life--;
+		if (particle.life == 0) {
+			// delete from array
+			particles_to_remove.push(particle);
+		} else {
+			// draw
+			pos = calcVector(particle.x, particle.y, particle.angle, particle.speed);
+
+			context.beginPath();
+			context.strokeStyle = particle.color;
+			context.moveTo(particle.x, particle.y);
+			context.lineTo(pos.x, pos.y);
+			context.stroke();
+			context.closePath();
+
+			particle.x = pos.x;
+			particle.y = pos.y;
+		}
+	}
+
+	context.restore();
 }
 
 function drawHealth() {
