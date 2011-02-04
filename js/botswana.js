@@ -7,6 +7,7 @@ var WORLD_HEIGHT = 600;
 var ANGLE_STEP = 0.1;
 var SPEED = 2;
 var K_SPACE = "32";
+var RADIUS = 15;
 
 var bot_colors = ["#e95050", "#589ebc"]; // red, blue
 var BULLET_COLOR = "#d2f783";
@@ -70,6 +71,24 @@ function startTournament() {
 	tournamentIntervalId = setInterval(runGame, 25);
 }
 
+function collisionBoundary(point) {
+	var rtnBool = false;
+
+	if (point.radius != undefined) {
+		newX = point.x + point.radius;
+		newY = point.y + point.radius;
+	} else {
+		newX = point.x;
+		newY = point.y;
+	}
+
+	if (point.x <= 0 || point.y <= 0 || point.x >= WORLD_WIDTH || point.y >= WORLD_HEIGHT) {
+		rtnBool = true;
+	}	
+
+	return rtnBool;
+}
+
 function runGame() {
 	if (!paused) {
 		bots_state = [];
@@ -90,13 +109,19 @@ function runGame() {
 			switch (command) {
 				case "forward":
 					var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
-					bot.x = pos.x;
-					bot.y = pos.y;
+					pos.radius = RADIUS;
+					if (!collisionBoundary(pos)) {
+						bot.x = pos.x;
+						bot.y = pos.y;
+					}
 					break;
 				case "backward":
 					var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
-					bot.x = pos.x;
-					bot.y = pos.y;
+					pos.radius = RADIUS;
+					if (!collisionBoundary(pos)) {
+						bot.x = pos.x;
+						bot.y = pos.y;
+					}
 					break;
 				case "left":
 					bot.angle += ANGLE_STEP;
