@@ -18,6 +18,10 @@ var bots = [];
 
 var context;
 
+function normalizeAngle(theta) {
+	return theta % (2 * Math.PI);
+}
+
 function registerBot(bot) {
 	// add bot to main array
 	bots.push(bot);
@@ -90,12 +94,14 @@ function runGame() {
 				bot.y = pos.y;
 				break;
 			case "left":
-				bot.angle -= ANGLE_STEP;
-				break;
-			case "right":
 				bot.angle += ANGLE_STEP;
 				break;
+			case "right":
+				bot.angle -= ANGLE_STEP;
+				break;
 		}
+
+		bot.angle = normalizeAngle(bot.angle);
 	}
 
 	// do rule checking, collisions, update bullets, etc.

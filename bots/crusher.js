@@ -10,20 +10,57 @@ function CrusherBot(botname) {
 
 	this.setup = function() {
 		this.timer = 0;			// keep track of how many clicks
-		this.cmd = 0;			// which command to use
-		this.commands = ["forward", "right", "forward", "left"];
 	}
 
 	this.run = function() {
-		// check state
-		if (this.timer % 20 == 0) {
-			this.cmd += 1;
-			if (this.cmd > 3) { this.cmd = 0; }
+		// get the opponent's information
+		for (i in bots) {
+			var bot = bots[i];
+			if (bot.name != this.name) {
+				ox = bot.x;
+				oy = bot.y;
+				opponent_angle = bot.angle;
+			}
 		}
 
 		this.timer++;
 
-		return this.commands[this.cmd];
+//		if (this.timer % 5 == 0) {
+		var dx = ox - this.x;
+		var dy = oy - this.y;
+		target_angle = 1 / Math.tan(dx / dy);
+	
+		var x = this.x;
+		var y = this.y;
+
+		if (ox > x && oy < y) {
+			target_angle = target_angle;
+		} else if (ox < x && oy < y) {
+			target_angle = target_angle + (Math.PI / 2);
+		} else if (ox > x && oy > y) {
+			target_angle = target_angle + Math.PI;
+		} else if (ox > x && oy > y) {
+			target_angle = target_angle + (3*Math.PI / 2);
+		} else if (ox == x && oy > y) {
+			target_angle = 3 * Math.PI / 2;
+		} else if (ox == x && oy < y) {
+			target_angle = Math.PI / 2;
+		} else if (oy == y && ox < x) {
+			target_angle = Math.PI;
+		} else if (oy == y && ox > x) {
+			target_angle = 0;
+		}
+		
+		if (this.angle > target_angle) {
+			return "right";
+		} else {
+			return "left";
+		}
+			/*
+		} else {
+			return "forward";
+		}
+		*/
 	}
 }
 
