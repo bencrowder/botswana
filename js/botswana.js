@@ -158,6 +158,6 @@ $(document).keydown(function(e) {
 	} else if (e.keyCode == "80") { // "p", temp for testing particles
 		var p = getRandomPoint();
 
-		createParticleExplosion(p.x, p.y, 16, 20, 5, 20, "#fc6");
+		createParticleExplosion(p.x, p.y, 16, 20, 5, 20, "#96e0ff");
 	}
 });
