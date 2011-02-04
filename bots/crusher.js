@@ -25,7 +25,7 @@ function CrusherBot(botname) {
 
 		this.timer++;
 
-		if (this.timer % 2 == 0) {
+		if (this.timer % 10 == 0) {
 			target_angle = normalizeAngle(angleToPoint(this.x, this.y, ox, oy));
 		
 			if (this.angle > target_angle) {
