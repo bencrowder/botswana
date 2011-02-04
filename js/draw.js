@@ -32,8 +32,8 @@ function drawWorld(context) {
 	// drawBuildings(context);
 
 	// draw bots
-	for (bot_index in bots) {
-		var bot = bots[bot_index];
+	for (i in bots) {
+		var bot = bots[i];
 
 		drawBot(bot.x, bot.y, bot.angle, bot.color, context);
 	}
@@ -124,7 +124,8 @@ function calcVector(x, y, angle, magnitude) {
 function drawHealth() {
 	for (i in bots) {
 		var bot = bots[i];
+		var botnum = parseInt(i) + 1;
 
-		$("#bot" + i + " .health").css("width", bot.health * 2);
+		$("#status #bot" + botnum + "status .health").css("width", bot.health * 2);
 	}
 }

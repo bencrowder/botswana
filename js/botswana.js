@@ -27,8 +27,9 @@ function registerBot(bot) {
 	bot.color = bot_colors[bots.length - 1];
 
 	// update the status bar
-	$("#bot" + botnum + " .name").html(bot.name);
-	$("#bot" + botnum + " .health").css("background-color", bot.color);
+	$("#status #bot" + botnum + "status .name").html(bot.name);
+	$("#status #bot" + botnum + "status .health").css("background-color", bot.color);
+	$("#status #bot" + botnum + "status .width").css("width", bot.health * 2);
 
 	console.log("registered: " + bot.name);
 }
