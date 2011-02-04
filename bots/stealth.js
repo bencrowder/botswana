@@ -1,31 +1,24 @@
-function StealthBot(botname) {
-	this.name = botname;
+var StealthBot = function() {};
 
-	this.x;
-	this.y;
-	this.angle;
-	this.health;
+StealthBot.prototype = new Bot("Stealth");
 
-	this.state = { world: {}, bots: {}, bullets: {} };
+StealthBot.prototype.setup = function() {
+	this.timer = 0;
+	this.cmd = 0;			// which command to use
+	this.commands = ["forward", "right", "forward", "left"];
+};
 
-	this.setup = function() {
-		this.timer = 0;
-		this.cmd = 0;			// which command to use
-		this.commands = ["forward", "right", "forward", "left"];
+StealthBot.prototype.run = function() {
+	if (this.timer % 20 == 0) {
+		this.cmd += 1;
+		if (this.cmd > 3) { this.cmd = 0; }
 	}
 
-	this.run = function() {
-		if (this.timer % 20 == 0) {
-			this.cmd += 1;
-			if (this.cmd > 3) { this.cmd = 0; }
-		}
+	this.timer++;
 
-		this.timer++;
+	return this.commands[this.cmd];
+};
 
-		return this.commands[this.cmd];
-	}
-}
-
-var stealthbot = new StealthBot("Stealth");
+var stealthbot = new StealthBot();
 
 registerBot(stealthbot);
