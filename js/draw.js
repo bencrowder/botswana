@@ -124,12 +124,11 @@ function drawParticles(context) {
 
 	for (i in fxparticles) {
 		var particle = fxparticles[i];
-		// x, y, angle, speed, life, color
 
 		particle.life--;
 		if (particle.life == 0) {
 			// delete from array
-			particles_to_remove.push(particle);
+			delete fxparticles[i];
 		} else {
 			// draw
 			pos = calcVector(particle.x, particle.y, particle.angle, particle.speed);
@@ -138,6 +137,7 @@ function drawParticles(context) {
 			context.strokeStyle = particle.color;
 			context.moveTo(particle.x, particle.y);
 			context.lineTo(pos.x, pos.y);
+			context.globalAlpha = particle.life / 20;
 			context.stroke();
 			context.closePath();
 

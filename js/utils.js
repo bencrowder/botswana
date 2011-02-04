@@ -34,3 +34,18 @@ function calcVector(x, y, angle, magnitude) {
 
 	return pos;
 }
+
+// creates a circular particle explosion at the specified point
+function createParticleExplosion(x, y, num_points, distance, speed, life, color) {
+	var angle = 0;
+	var step = (2 * Math.PI) / num_points;
+
+	for (i=0; i<num_points; i++) {
+		var pos = calcVector(x, y, angle, distance);
+
+		// add particle to global fxparticles array
+		fxparticles.push({ "x": pos.x, "y": pos.y, "angle": angle, "speed": speed, "life": life, "color": color });
+
+		angle += step;
+	}
+}

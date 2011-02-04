@@ -157,15 +157,7 @@ $(document).keydown(function(e) {
 		return false;
 	} else if (e.keyCode == "80") { // "p", temp for testing particles
 		var p = getRandomPoint();
-		var angle = 0;
-		var num_points = 16;
-		var step = (2 * Math.PI) / num_points;
 
-		// create shower of particles around the point
-		for (i=0; i<num_points; i++) {
-			var pos = calcVector(p.x, p.y, angle, 30);
-			fxparticles.push({ "x": pos.x, "y": pos.y, "angle": angle, "speed": 5, "life": 20, "color": "#ff0" });
-			angle += step;
-		}
+		createParticleExplosion(p.x, p.y, 16, 20, 5, 20, "#fc6");
 	}
 });
