@@ -8,8 +8,8 @@ CrusherBot.prototype.setup = function() {
 
 CrusherBot.prototype.run = function() {
 	// get the opponent's information
-	for (i in this.state.bots) {
-		var bot = this.state.bots[i];
+	for (i in bots) {
+		var bot = bots[i];
 		if (bot.name != this.name) {
 			ox = bot.x;
 			oy = bot.y;
