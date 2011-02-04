@@ -30,13 +30,9 @@ function registerBot(bot) {
 	$("#status #bot" + botnum + "status .name").html(bot.name);
 	$("#status #bot" + botnum + "status .health").css("background-color", bot.color);
 	$("#status #bot" + botnum + "status .width").css("width", bot.health * 2);
-
-	console.log("registered: " + bot.name);
 }
 
 function startTournament() {
-	console.log("start tournament");
-
 	bots_state = []
 
 	// initial placement on map
@@ -52,14 +48,11 @@ function startTournament() {
 		bot.state.world.width = WORLD_WIDTH;
 		bot.state.world.height = WORLD_HEIGHT;
 
-		console.log("placed " + bot.name + ": (" + bot.x + ", " + bot.y + ") -> " + bot.angle);
-
 		// keep track of initial state
 		bots_state.push({ "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
 
 		bot.setup();
 	}
-	console.log(bots_state);
 
 	// update state for each bot
 	for (i in bots) {
@@ -132,10 +125,8 @@ $(document).ready(function() {
 			// add to the array
 			botUrls.push(url);
 
-			console.log("loading " + url);
 			// get the file and execute it
 			$.getScript(url, function() {
-				console.log("loaded.");
 				botsUnloaded = botsUnloaded - 1;
 
 				// start the tournament once all these are loaded
@@ -150,7 +141,6 @@ $(document).ready(function() {
 // keyboard handling
 $(document).keydown(function(e) {
 	if (e.keyCode == K_SPACE) {
-		console.log("space");
 		if (paused) { 
 			paused = false;
 		} else {
