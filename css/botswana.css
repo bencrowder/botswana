@@ -1,17 +1,17 @@
-body						{ font-family: "Lucida Grande", Helvetica, Arial, sans-serif; margin: 0; padding: 20px; font-size: .8em; }
+body						{ font-family: "Lucida Grande", Helvetica, Arial, sans-serif; margin: 0; padding: 10px; font-size: .8em; border-top: solid 5px #000; }
 
 header						{ width: 1000px; margin: 0px auto; }
 header h1					{ font-size: 14px; }
 header input[type="text"]	{ width: 350px; margin-right: 15px; font-size: 1em; font-weight: bold; }
 
-section#status				{ width: 1000px; margin: 0px auto; margin-top: 20px; background: #222; clear: both; overflow: hidden; color: #fff; font-weight: bold; border-bottom: solid 2px #333; }
+section#status				{ width: 1000px; margin: 0px auto; margin-top: 20px; background: #222; clear: both; overflow: hidden; color: #fff; font-weight: bold; border-bottom: solid 2px #333; -moz-border-radius: 0 0 5px 5px; border-radius: 5px 5px 0 0; }
 section#container			{ width: 1000px; margin: 0px auto 20px; }
 
 .name						{ position: relative; top: -2; margin-right: 5px; display: inline-block;  text-align: right; }
 .left						{ float: left; padding: 4px 8px; }
 .right						{ float: right; padding: 4px 8px; }
 
-.healthbar					{ background: #333; width: 200px; height: 16px; display: inline-block; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; position: relative; top: 2px; }
+.healthbar					{ background: #444; width: 200px; height: 16px; display: inline-block; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; position: relative; top: 2px; }
 .health						{ width: 0px; height: 16px; display: inline-block; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; -webkit-transition: all .5s ease-in-out; -moz-transition: all .5s ease-in-out; -o-transition: all .5s ease-in-out; -webkit-transition: all .5s ease-in-out; transition: all .5s ease-in-out; }
 
-canvas						{ background: #000; }
+canvas						{ background: #000; -moz-border-radius: 0 0 5px 5px; border-radius: 0 0 5px 5px; }
