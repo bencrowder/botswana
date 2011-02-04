@@ -22,7 +22,13 @@ function registerBot(bot) {
 	// add bot to main array
 	bots.push(bot);
 
+	var botnum = bots.length;
+
 	bot.color = bot_colors[bots.length - 1];
+
+	// update the status bar
+	$("#bot" + botnum + " .name").html(bot.name);
+	$("#bot" + botnum + " .health").css("background-color", bot.color);
 
 	console.log("registered: " + bot.name);
 }

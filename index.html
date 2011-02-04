@@ -2,7 +2,7 @@
 <head>
 	<title>Botswana</title>
 
-	<link rel="stylesheet" href="botswana.css" type="text/css" media="screen" charset="utf-8" />	
+	<link rel="stylesheet" href="css/botswana.css" type="text/css" media="screen" charset="utf-8" />	
 
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script> 
 	<script type="text/javascript" src="js/utils.js"></script> 
@@ -19,6 +19,18 @@
 
 		<input type="button" id="go_button" name="go_button" value="Go" />
 	</header>
+
+	<section id="status">
+		<div class="left" id="bot1">
+			<span class="name">Crusher</span>
+			<span class="healthbar"><span class="health player1"></span></span>
+		</div>
+
+		<div class="right" id="bot2">
+			<span class="name">Stealth</span>
+			<span class="healthbar"><span class="health player2"></span></span>
+		</div>
+	</section>
 
 	<section id="container">
 		<canvas width="1000" height="600" id="canvas" />

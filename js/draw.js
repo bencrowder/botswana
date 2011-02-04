@@ -13,6 +13,7 @@
  * function drawGrid(context);
  * function drawBuildings(context);
  * function calcVector(x, y, angle, magnitude);
+ * function drawHealth();
  *
  ***/
 
@@ -27,6 +28,7 @@ function drawWorld(context) {
 	// background stuff
 	clearCanvas(context);
 	drawGrid(context);
+	drawHealth();
 	// drawBuildings(context);
 
 	// draw bots
@@ -119,3 +121,10 @@ function calcVector(x, y, angle, magnitude) {
 	return pos;
 }
 
+function drawHealth() {
+	for (i in bots) {
+		var bot = bots[i];
+
+		$("#bot" + i + " .health").css("width", bot.health * 2);
+	}
+}

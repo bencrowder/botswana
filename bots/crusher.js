@@ -10,6 +10,7 @@ function CrusherBot(botname) {
 
 	this.setup = function() {
 		this.timer = 0;			// keep track of how many clicks
+		this.health = 23;
 	}
 
 	this.run = function() {
