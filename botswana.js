@@ -8,6 +8,7 @@ var NUM_PLAYERS = 2;
 var WORLD_WIDTH = 1000;
 var WORLD_HEIGHT = 600;
 var ANGLE_STEP = 0.1;
+var SPEED = 2;
 
 var bot_colors = ["#e95050", "#589ebc"]; // red, blue
 
@@ -78,10 +79,22 @@ function runGame() {
 
 		// parse command here
 		switch (command) {
-			case "forward": break;
-			case "backward": break;
-			case "left": bot.angle -= ANGLE_STEP; break;
-			case "right": bot.angle += ANGLE_STEP; break;
+			case "forward":
+				var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
+				bot.x = pos.x;
+				bot.y = pos.y;
+				break;
+			case "backward":
+				var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
+				bot.x = pos.x;
+				bot.y = pos.y;
+				break;
+			case "left":
+				bot.angle -= ANGLE_STEP;
+				break;
+			case "right":
+				bot.angle += ANGLE_STEP;
+				break;
 		}
 	}
 
