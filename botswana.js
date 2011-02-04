@@ -18,10 +18,6 @@ var bots = [];
 
 var context;
 
-function normalizeAngle(theta) {
-	return theta % (2 * Math.PI);
-}
-
 function registerBot(bot) {
 	// add bot to main array
 	bots.push(bot);

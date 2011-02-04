@@ -25,42 +25,17 @@ function CrusherBot(botname) {
 
 		this.timer++;
 
-//		if (this.timer % 5 == 0) {
-		var dx = ox - this.x;
-		var dy = oy - this.y;
-		target_angle = 1 / Math.tan(dx / dy);
-	
-		var x = this.x;
-		var y = this.y;
-
-		if (ox > x && oy < y) {
-			target_angle = target_angle;
-		} else if (ox < x && oy < y) {
-			target_angle = target_angle + (Math.PI / 2);
-		} else if (ox > x && oy > y) {
-			target_angle = target_angle + Math.PI;
-		} else if (ox > x && oy > y) {
-			target_angle = target_angle + (3*Math.PI / 2);
-		} else if (ox == x && oy > y) {
-			target_angle = 3 * Math.PI / 2;
-		} else if (ox == x && oy < y) {
-			target_angle = Math.PI / 2;
-		} else if (oy == y && ox < x) {
-			target_angle = Math.PI;
-		} else if (oy == y && ox > x) {
-			target_angle = 0;
-		}
+		if (this.timer % 2 == 0) {
+			target_angle = normalizeAngle(angleToPoint(this.x, this.y, ox, oy));
 		
-		if (this.angle > target_angle) {
-			return "right";
-		} else {
-			return "left";
-		}
-			/*
+			if (this.angle > target_angle) {
+				return "right";
+			} else {
+				return "left";
+			}
 		} else {
 			return "forward";
 		}
-		*/
 	}
 }
 
