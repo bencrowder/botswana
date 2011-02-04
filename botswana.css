@@ -1,0 +1,9 @@
+body						{ font-family: "Lucida Grande", Helvetica, Arial, sans-serif; margin: 0; padding: 20px; font-size: .8em; }
+
+header						{ width: 1000px; margin: 0px auto; }
+header h1					{ font-size: 14px; }
+header input[type="text"]	{ width: 350px; margin-right: 15px; font-size: 1em; font-weight: bold; }
+
+section#container			{ width: 1000px; margin: 20px auto; }
+
+canvas						{ background: #000; }
