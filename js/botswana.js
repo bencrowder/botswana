@@ -9,14 +9,14 @@ var WORLD_WIDTH = 1000;
 var WORLD_HEIGHT = 600;
 var ANGLE_STEP = 0.1;
 var SPEED = 2;
+var K_SPACE = "32";
 
 var bot_colors = ["#e95050", "#589ebc"]; // red, blue
-
 var BULLET_COLOR = "#d2f783";
 
 var bots = [];
-
 var context;
+var paused = false;
 
 function registerBot(bot) {
 	// add bot to main array
@@ -70,47 +70,49 @@ function startTournament() {
 }
 
 function runGame() {
-	// run the bot
-	for (i in bots) {
-		var bot = bots[i];
+	if (!paused) {
+		// run the bot
+		for (i in bots) {
+			var bot = bots[i];
 
-		// update the bot's state (bots, bullets)
-		bots_state = [];
-		for (j in bots) {
-			bots_state.push({ "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
+			// update the bot's state (bots, bullets)
+			bots_state = [];
+			for (j in bots) {
+				bots_state.push({ "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
+			}
+			bot.state.bots = bots_state;
+
+			// now run the bot
+			command = bot.run();
+
+			// parse command here
+			switch (command) {
+				case "forward":
+					var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
+					bot.x = pos.x;
+					bot.y = pos.y;
+					break;
+				case "backward":
+					var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
+					bot.x = pos.x;
+					bot.y = pos.y;
+					break;
+				case "left":
+					bot.angle += ANGLE_STEP;
+					break;
+				case "right":
+					bot.angle -= ANGLE_STEP;
+					break;
+			}
+
+			bot.angle = normalizeAngle(bot.angle);
 		}
-		bot.state.bots = bots_state;
 
-		// now run the bot
-		command = bot.run();
+		// do rule checking, collisions, update bullets, etc.
 
-		// parse command here
-		switch (command) {
-			case "forward":
-				var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
-				bot.x = pos.x;
-				bot.y = pos.y;
-				break;
-			case "backward":
-				var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
-				bot.x = pos.x;
-				bot.y = pos.y;
-				break;
-			case "left":
-				bot.angle += ANGLE_STEP;
-				break;
-			case "right":
-				bot.angle -= ANGLE_STEP;
-				break;
-		}
-
-		bot.angle = normalizeAngle(bot.angle);
+		// draw the arena
+		drawWorld(context);
 	}
-
-	// do rule checking, collisions, update bullets, etc.
-
-	// draw the arena
-	drawWorld(context);
 }
 
 $(document).ready(function() {
@@ -142,4 +144,18 @@ $(document).ready(function() {
 			});
 		}
 	});
+});
+
+// keyboard handling
+$(document).keydown(function(e) {
+	if (e.keyCode == K_SPACE) {
+		console.log("space");
+		if (paused) { 
+			paused = false;
+		} else {
+			paused = true;
+			drawPaused(context);
+		}
+		return false;
+	}
 });

@@ -14,6 +14,7 @@
  * function drawBuildings(context);
  * function calcVector(x, y, angle, magnitude);
  * function drawHealth();
+ * function drawPaused();
  *
  ***/
 
@@ -128,4 +129,24 @@ function drawHealth() {
 
 		$("#status #bot" + botnum + "status .health").css("width", bot.health * 2);
 	}
+}
+
+function drawPaused(context) {
+	context.beginPath();
+	context.fillStyle = "rgba(0, 0, 0, 0.3)";
+	context.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+	context.fill();
+	context.closePath();
+
+	context.save();
+	context.strokeStyle = "#fff";
+	context.lineWidth = 15;
+	context.beginPath();
+	context.moveTo(482, 250);
+	context.lineTo(482, 300);
+	context.moveTo(508, 250);
+	context.lineTo(508, 300);
+	context.stroke();
+	context.closePath();
+	context.restore();
 }
