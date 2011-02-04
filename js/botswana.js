@@ -49,8 +49,8 @@ function startTournament() {
 		bot.health = 100;
 
 		// init the world state
-		bot.state.world.x = WORLD_WIDTH;
-		bot.state.world.y = WORLD_HEIGHT;
+		bot.state.world.width = WORLD_WIDTH;
+		bot.state.world.height = WORLD_HEIGHT;
 
 		console.log("placed " + bot.name + ": (" + bot.x + ", " + bot.y + ") -> " + bot.angle);
 
@@ -59,6 +59,7 @@ function startTournament() {
 
 		bot.setup();
 	}
+	console.log(bots_state);
 
 	// update state for each bot
 	for (i in bots) {
@@ -71,15 +72,15 @@ function startTournament() {
 
 function runGame() {
 	if (!paused) {
+		bots_state = [];
+		for (j in bots) {
+			bots_state.push({ "name": bots[j].name, "x": bots[j].x, "y": bots[j].y, "angle": bots[j].angle, "health": bots[j].health });
+		}
 		// run the bot
 		for (i in bots) {
 			var bot = bots[i];
 
 			// update the bot's state (bots, bullets)
-			bots_state = [];
-			for (j in bots) {
-				bots_state.push({ "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
-			}
 			bot.state.bots = bots_state;
 
 			// now run the bot
