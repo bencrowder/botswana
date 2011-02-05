@@ -21,9 +21,5 @@ $(document).keydown(function(e) {
 	if (e.keyCode == K_SPACE) {
 		server.togglePause();
 		return false;
-	} else if (e.keyCode == "80") { // "p", temp for testing particles
-		var p = getRandomPoint();
-
-		server.createParticleExplosion(p.x, p.y, 16, 20, 5, 20, "#96e0ff");
 	}
 });

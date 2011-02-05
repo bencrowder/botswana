@@ -188,6 +188,7 @@ var Server = function() {
 				bullet.x = pos.x;
 				bullet.y = pos.y;
 			} else {
+				server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
 				bot = server.getBotByName(bullet.owner);
 				bot.bullets += 1;
 				bot.canShoot = true;
