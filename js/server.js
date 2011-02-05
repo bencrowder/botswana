@@ -7,6 +7,9 @@ var Server = function() {
 	var WORLD_HEIGHT = 600;
 	var ANGLE_STEP = 0.1;
 	var SPEED = 2;
+	var BULLET_SPEED = 5;
+	var RADIUS = 15;
+	var NUM_ALLOWED_BULLETS = 5;
 
 	var bot_colors = ["#e95050", "#589ebc"]; // red, blue
 	var BULLET_COLOR = "#d2f783";
@@ -75,6 +78,8 @@ var Server = function() {
 			bot.y = botpos.y;
 			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
 			bot.health = 100;
+			bot.canShoot = true;
+			bot.bullets = NUM_ALLOWED_BULLETS;
 
 			// init the world state
 			bot.state.world.width = WORLD_WIDTH;
@@ -126,19 +131,40 @@ var Server = function() {
 				switch (command) {
 					case "forward":
 						var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
-						bot.x = pos.x;
-						bot.y = pos.y;
+						pos.radius = RADIUS;
+
+						if (!collisionBoundary(pos) && !collisionObjects(pos)) {
+							bot.x = pos.x;
+							bot.y = pos.y;
+						}
 						break;
+
 					case "backward":
 						var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
-						bot.x = pos.x;
-						bot.y = pos.y;
+						pos.radius = RADIUS;
+
+						if (!collisionBoundary(pos) && !collisionObjects(pos)) {
+							bot.x = pos.x;
+							bot.y = pos.y;
+						}
 						break;
+
 					case "left":
 						bot.angle += ANGLE_STEP;
 						break;
+
 					case "right":
 						bot.angle -= ANGLE_STEP;
+						break;
+
+					case "fire":
+						if (bot.bullets > 0 && bot.canShoot) {
+							bot.bullets -= 1;
+							bullets.push({ "x": bot.x, "y": bot.y, "angle": bot.angle, "owner": bot.name});
+							if (bot.bullets == 0) {
+								bot.canShoot = false;
+							}
+						}
 						break;
 				}
 
@@ -146,9 +172,27 @@ var Server = function() {
 			}
 
 			// do rule checking, collisions, update bullets, etc.
+			updateBullets();
 
 			// draw the arena
 			this.drawWorld(this.context);
+		}
+	}
+
+	function updateBullets() {
+		for (i in bullets) {
+			var bullet = bullets[i];
+			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);
+
+			if (!this.collisionBoundary(pos)) {
+				bullet.x = pos.x;
+				bullet.y = pos.y;
+			} else {
+				bot = getBotByName(bullet.owner);
+				bot.bullets += 1;
+				bot.canShoot = true;
+				bullets.splice(i, 1);
+			}
 		}
 	}
 
@@ -342,5 +386,47 @@ var Server = function() {
 
 		return pos;
 	}
-}
 
+	this.collisionBoundary = function(point) {
+		var rtnBool = false;
+
+		if (point.radius != undefined) {
+			right = point.x + point.radius;
+			left = point.x - point.radius;
+			bottom = point.y + point.radius;
+			topp = point.y - point.radius;
+
+			if (left <= 0 || topp <= 0 || right >= WORLD_WIDTH || bottom >= WORLD_HEIGHT) {
+				rtnBool = true;
+			}
+		} else {
+			newX = point.x;
+			newY = point.y;
+
+			if (newX <= 0 || newY <= 0 || newX >= WORLD_WIDTH || newY >= WORLD_HEIGHT) {
+				rtnBool = true;
+			}	
+		}
+
+		return rtnBool;
+	}
+
+	this.collisionObjects = function(point) {
+		var rtnBool = false;
+
+		if (point.radius != undefined) {
+		} else {
+		}
+
+		return rtnBool;
+	}
+
+	this.getBotByName = function(name) {
+		for (i in bots) {
+			if (bots[i].name == name) {
+				return bots[i];
+			}
+		}
+		return undefined;
+	}
+}

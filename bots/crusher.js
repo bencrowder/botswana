@@ -18,8 +18,11 @@ CrusherBot.prototype.run = function() {
 	}
 
 	this.timer++;
+	if (this.timer % 20 == 0) {
+	return "fire";
+	}
 
-	if (this.timer % 10 == 0) {
+	if (this.timer % 5 == 0) {
 		target_angle = normalizeAngle(angleToPoint(this.x, this.y, ox, oy));
 
 		if (this.angle > target_angle) {
