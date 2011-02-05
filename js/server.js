@@ -162,7 +162,7 @@ var Server = function() {
 							bot.collision = false;
 						} else {
 							bot.collision = true;
-							//playSound("collision");
+							playSound("collision");
 						}
 						break;
 
@@ -176,7 +176,7 @@ var Server = function() {
 							bot.collision = false;
 						} else {
 							bot.collision = true;
-							//playSound("collision");
+							playSound("collision");
 						}
 						break;
 
