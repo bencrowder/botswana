@@ -34,4 +34,4 @@ CrusherBot.prototype.run = function() {
 
 var crusherbot = new CrusherBot();
 
-registerBot(crusherbot);
+server.registerBot(crusherbot);

@@ -14,24 +14,11 @@ var BULLET_COLOR = "#d2f783";
 var bots = [];
 var fxparticles = [];
 var context;
+var server;
 var paused = false;
 
 var tournamentIntervalId = 0;
 
-
-function registerBot(bot) {
-	// add bot to main array
-	bots.push(bot);
-
-	var botnum = bots.length;
-
-	bot.color = bot_colors[bots.length - 1];
-
-	// update the status bar
-	$("#status #bot" + botnum + "status .name").html(bot.name);
-	$("#status #bot" + botnum + "status .health").css("background-color", bot.color);
-	$("#status #bot" + botnum + "status .width").css("width", bot.health * 2);
-}
 
 function startTournament() {
 	bots_state = []
@@ -120,6 +107,8 @@ $(document).ready(function() {
 	var canvas = document.getElementById("canvas");
 	context = canvas.getContext("2d");
 
+	server = new Server();
+
 	$("#go_button").click(function() {
 		// load the scripts
 		bots = [];
@@ -138,6 +127,7 @@ $(document).ready(function() {
 
 				// start the tournament once all these are loaded
 				if (botsUnloaded == 0) {
+					server.startTournament();
 					startTournament(context);
 				}
 			});

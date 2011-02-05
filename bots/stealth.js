@@ -21,4 +21,4 @@ StealthBot.prototype.run = function() {
 
 var stealthbot = new StealthBot();
 
-registerBot(stealthbot);
+server.registerBot(stealthbot);
