@@ -19,6 +19,7 @@ var Server = function() {
 	var bots = [];
 	var fxparticles = [];
 	var bullets = [];
+	var obstacles = [];
 
 	var paused = false;
 
@@ -27,8 +28,13 @@ var Server = function() {
 	}
 
 	this.loadScripts = function() {
-		// load the scripts
+		// clear things out
 		bots = [];
+		bullets = [];
+		obstacles = [];
+		fxparticles = [];
+
+		// load the scripts
 		var botUrls = [];
 		var botsUnloaded = 2;	// counter to keep track of how many are left to load
 
@@ -68,6 +74,8 @@ var Server = function() {
 	// public
 	this.startTournament = function() {
 		bots_state = []
+
+		generateObstacles();
 
 		// initial placement on map
 		for (i in bots) {
@@ -179,6 +187,28 @@ var Server = function() {
 		}
 	}
 
+	function generateObstacles() {
+		var num_obstacles = (Math.random() * 3) + 2;
+
+		for (i=0; i<num_obstacles; i++) {
+			var p = server.getRandomPoint();
+			var width = (Math.random() * 80) + 25;
+			var height = (Math.random() * 80) + 25;
+
+			// check boundaries
+			if (p.x + width > (WORLD_WIDTH - 50)) {
+				width = WORLD_WIDTH - 50 - p.x;
+			}
+			if (p.y + height > (WORLD_HEIGHT - 50)) {
+				console.log("height! p.y=" + p.y + ", height=" + height);
+				height = WORLD_HEIGHT - 50 - p.y;
+				console.log("newheight = " + height);
+			}
+
+			obstacles.push({ "x": p.x, "y": p.y, "width": width, "height": height });
+		}
+	}
+
 	function updateBullets() {
 		for (i in bullets) {
 			var bullet = bullets[i];
@@ -204,7 +234,7 @@ var Server = function() {
 		clearCanvas(context);
 		drawGrid(context);
 		drawHealth();
-		// drawBuildings();
+		drawObstacles(context);
 
 		// draw bots
 		for (i in bots) {
@@ -244,15 +274,20 @@ var Server = function() {
 		context.stroke();
 	}
 
-	function drawBuildings(context) {
-		context.beginPath();
+	function drawObstacles(context) {
+		context.save();
 		context.strokeStyle = "#666";
 		context.lineWidth = 3;
 		context.fillStyle = "rgba(80, 200, 255, 0.2)";
-		context.fillRect(240, 380, 40, 120);
-		context.strokeRect(240, 380, 40, 120);
-		context.fillRect(860, 140, 120, 60);
-		context.strokeRect(860, 140, 120, 60);
+
+		for (i in obstacles) {
+			var obst = obstacles[i];
+			context.beginPath();
+			context.fillRect(obst.x, obst.y, obst.width, obst.height);
+			context.strokeRect(obst.x, obst.y, obst.width, obst.height);
+		}
+
+		context.restore();
 	}
 
 	function drawBot(x, y, angle, color, context) {
