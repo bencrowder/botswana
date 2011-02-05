@@ -1,3 +1,6 @@
+/* Botswana */
+/* by Ben Crowder and Chad Hansen */
+
 function Bot(botname) {
 	this.name = botname;
 

@@ -1,3 +1,6 @@
+/* Botswana */
+/* by Ben Crowder and Chad Hansen */
+
 var Server = function() {
 	var NUM_PLAYERS = 2;
 	var WORLD_WIDTH = 1000;

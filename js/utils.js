@@ -1,8 +1,6 @@
 /* Botswana */
 /* by Ben Crowder and Chad Hansen */
 
-/* utils.js */
-
 function normalizeAngle(theta) {
 	return theta % (2 * Math.PI);
 }
