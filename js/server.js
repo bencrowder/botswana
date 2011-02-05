@@ -33,6 +33,7 @@ var Server = function() {
 		bullets = [];
 		obstacles = [];
 		fxparticles = [];
+		paused = false;
 
 		// load the scripts
 		var botUrls = [];
@@ -191,18 +192,45 @@ var Server = function() {
 		var num_obstacles = (Math.random() * 3) + 2;
 
 		for (i=0; i<num_obstacles; i++) {
-			var p = server.getRandomPoint();
-			var width = (Math.random() * 80) + 25;
-			var height = (Math.random() * 80) + 25;
+			clear = false;
+			while (!clear) {
+				var p = server.getRandomPoint();
+				var width = (Math.random() * 80) + 25;
+				var height = (Math.random() * 80) + 25;
 
-			// check boundaries
-			if (p.x + width > (WORLD_WIDTH - 50)) {
-				width = WORLD_WIDTH - 50 - p.x;
-			}
-			if (p.y + height > (WORLD_HEIGHT - 50)) {
-				console.log("height! p.y=" + p.y + ", height=" + height);
-				height = WORLD_HEIGHT - 50 - p.y;
-				console.log("newheight = " + height);
+				// check boundaries and adjust if necessary
+				if (p.x + width > (WORLD_WIDTH - 50)) {
+					width = WORLD_WIDTH - 50 - p.x;
+				}
+				if (p.y + height > (WORLD_HEIGHT - 50)) {
+					height = WORLD_HEIGHT - 50 - p.y;
+				}
+
+				// make sure we're not overlapping existing obstacles
+				if (obstacles.length > 0) {
+					var pos = { "x1": p.x, "y1": p.y, "x2": p.x + width, "y2": p.y + height };
+					var overlaps = false;
+
+					for (j in obstacles) {
+						var o = obstacles[j];
+						var o_pos = { "x1": o.x, "y1": o.y, "x2": o.x + o.width, "y2": o.y + o.height };
+					
+						if (pos.x1 <= o_pos.x2 && pos.x2 >= o_pos.x1 &&
+							pos.y1 <= o_pos.y2 && pos.y2 >= o_pos.y1) {
+							overlaps = true;
+							break;
+						}
+					}
+
+					if (overlaps) {
+						clear = false;
+					} else {
+						clear = true;
+					}
+				} else {
+					// there aren't any other obstacles yet
+					clear = true;
+				}
 			}
 
 			obstacles.push({ "x": p.x, "y": p.y, "width": width, "height": height });
