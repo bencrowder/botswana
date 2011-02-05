@@ -147,6 +147,9 @@ var Server = function() {
 						if (!this.collisionBoundary(pos) && !this.collisionBotObjects(pos)) {
 							bot.x = pos.x;
 							bot.y = pos.y;
+							bot.collision = false;
+						} else {
+							bot.collision = true;
 						}
 						break;
 
@@ -157,6 +160,9 @@ var Server = function() {
 						if (!this.collisionBoundary(pos) && !this.collisionBotObjects(pos)) {
 							bot.x = pos.x;
 							bot.y = pos.y;
+							bot.collision = false;
+						} else {
+							bot.collision = true;
 						}
 						break;
 
@@ -261,6 +267,7 @@ var Server = function() {
 						// decrease the health of the hit bot
 						bot = bots[collision_state.the_object];
 						bot.health -= BULLET_STRENGTH;
+						bot.hitByBullet = true;	// bot is responsible to unset this
 
 						// create a red explosion
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#db4e22");

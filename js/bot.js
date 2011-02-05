@@ -6,10 +6,12 @@ function Bot(botname) {
 
 	this.x;
 	this.y;
-	this.angle;
-	this.health;
-	this.bullets;
-	this.canShoot;
+	this.angle;				// in radians
+	this.health;			// 0-100
+	this.bullets;			// number of available bullets
+	this.canShoot;			// boolean
+	this.collided;			// boolean
+	this.hitByBullet;		// boolean
 
 	this.state = { world: {}, bots: {}, bullets: {} };
 };
