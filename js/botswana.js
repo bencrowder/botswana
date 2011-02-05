@@ -16,7 +16,10 @@ $(document).ready(function() {
 		context.drawImage(openingScreen, 0, 0);
 	}
 
+	$("#go_button").focus();
+
 	$("#go_button").click(function() {
+		$("#go_button").blur();
 		server.loadScripts();
 	});
 });
