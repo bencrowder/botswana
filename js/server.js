@@ -142,7 +142,7 @@ var Server = function() {
 						var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
 						pos.radius = RADIUS;
 
-						if (!this.collisionBoundary(pos) && !this.collisionObjects(pos)) {
+						if (!this.collisionBoundary(pos) && !this.collisionBotObjects(pos)) {
 							bot.x = pos.x;
 							bot.y = pos.y;
 						}
@@ -152,7 +152,7 @@ var Server = function() {
 						var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
 						pos.radius = RADIUS;
 
-						if (!this.collisionBoundary(pos) && !this.collisionObjects(pos)) {
+						if (!this.collisionBoundary(pos) && !this.collisionBotObjects(pos)) {
 							bot.x = pos.x;
 							bot.y = pos.y;
 						}
@@ -169,7 +169,8 @@ var Server = function() {
 					case "fire":
 						if (bot.bullets > 0 && bot.canShoot) {
 							bot.bullets -= 1;
-							bullets.push({ "x": bot.x, "y": bot.y, "angle": bot.angle, "owner": bot.name});
+							var pos = calcVector(bot.x, bot.y, bot.angle, RADIUS);
+							bullets.push({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.name});
 							if (bot.bullets == 0) {
 								bot.canShoot = false;
 							}
@@ -242,7 +243,7 @@ var Server = function() {
 			var bullet = bullets[i];
 			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);
 
-			if (!server.collisionBoundary(pos)) {
+			if (!server.collisionBoundary(pos) && !server.collisionBulletObjects(pos)) {
 				bullet.x = pos.x;
 				bullet.y = pos.y;
 			} else {
@@ -319,7 +320,7 @@ var Server = function() {
 	}
 
 	function drawBot(x, y, angle, color, context) {
-		var radius = 15;
+		var radius = RADIUS;
 
 		context.save();
 		context.translate(x, y);
@@ -480,11 +481,90 @@ var Server = function() {
 		return rtnBool;
 	}
 
-	this.collisionObjects = function(point) {
+	this.collisionBots = function(botA, botB) {
+		var rtnBool = false;
+		dx = botB.x - botA.x;
+		dy = botB.y - botA.y;
+		dist = Math.sqrt(dx * dx + dy * dy);
+		if (2 * RADIUS > dist) {
+			rtnBool = true;
+		}
+		return rtnBool;
+	}
+
+	this.collisionObstacle = function(point, obs) {
+		var rtnBool = false;
+		if (point.radius != undefined) { // we have a bot
+			rightX = Math.pow(obs.x + obs.width - point.x, 2);
+			leftX = Math.pow(obs.x - point.x, 2);
+			bottomY = Math.pow(obs.y + obs.height - point.y, 2);
+			topY = Math.pow(obs.y - point.y, 2);
+
+			if (Math.sqrt(rightX + bottomY) < point.radius) {
+				rtnBool = true;
+			} else if (Math.sqrt(rightX + topY) < point.radius) {
+				rtnBool = true;
+			} else if (Math.sqrt(leftX + topY) < point.radius) {
+				rtnBool = true;
+			} else if (Math.sqrt(leftX + bottomY) < point.radius) {
+				rtnBool = true;
+			} else { }
+		} else {
+			if (point.x >= obs.x && point.x <= obs.x + obs.width && point.y >= obs.y && point.y <= obs.y + obs.height) {
+				rtnBool = true;
+			}
+		}
+		return rtnBool;
+	}
+
+	this.collisionBot = function(bot, point) {
+		var rtnBool = false;
+		dx = bot.x - point.x;
+		dy = bot.y - point.y;
+		dist = Math.sqrt(dx * dx + dy * dy);
+		if (RADIUS > dist) { 
+			rtnBool = true;
+		}
+		return rtnBool;
+	}
+
+	this.collisionBulletObjects = function(bullet) {
 		var rtnBool = false;
 
-		if (point.radius != undefined) {
-		} else {
+		for (i in bots) {
+			if (this.collisionBot(bots[i], bullet)) {
+				rtnBool = true;
+			}
+		}
+
+		if (!rtnBool) {
+			for (i in obstacles) {
+				if (this.collisionObstacle(bullet, obstacles[i])) {
+					rtnBool = true;
+				}
+			}
+		}
+
+		return rtnBool;
+	}
+
+	this.collisionBotObjects = function(bot) {
+		var rtnBool = false;
+
+		for (i in bots) {
+			if (bots[i].name != bot.name) {
+				if (this.collisionBots(bot, bots[i])) {
+					/*rtnBool = true;*/
+				}
+			}
+		}
+
+		if (!rtnBool) {
+			for (i in obstacles) {
+				if (this.collisionObstacle(bot, obstacles[i])) {
+					rtnBool = true;
+				}
+			}
 		}
 
 		return rtnBool;

@@ -19,7 +19,7 @@ CrusherBot.prototype.run = function() {
 
 	this.timer++;
 	if (this.timer % 20 == 0) {
-	return "fire";
+		return "fire";
 	}
 
 	if (this.timer % 5 == 0) {
