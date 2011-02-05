@@ -6,13 +6,16 @@ var WORLD_WIDTH = 1000;
 var WORLD_HEIGHT = 600;
 var ANGLE_STEP = 0.1;
 var SPEED = 2;
+var BULLET_SPEED = 5;
 var K_SPACE = "32";
 var RADIUS = 15;
+var NUM_ALLOWED_BULLETS = 5;
 
 var bot_colors = ["#e95050", "#589ebc"]; // red, blue
 var BULLET_COLOR = "#d2f783";
 
 var bots = [];
+var bullets = [];
 var fxparticles = [];
 var context;
 var paused = false;
@@ -46,6 +49,8 @@ function startTournament() {
 		bot.y = botpos.y;
 		bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
 		bot.health = 100;
+		bot.canShoot = true;
+		bot.bullets = NUM_ALLOWED_BULLETS;
 
 		// init the world state
 		bot.state.world.width = WORLD_WIDTH;
@@ -75,22 +80,61 @@ function collisionBoundary(point) {
 	var rtnBool = false;
 
 	if (point.radius != undefined) {
-		newX = point.x + point.radius;
-		newY = point.y + point.radius;
+		right = point.x + point.radius;
+		left = point.x - point.radius;
+		bottom = point.y + point.radius;
+		topp = point.y - point.radius;
+		if (left <= 0 || topp <= 0 || right >= WORLD_WIDTH || bottom >= WORLD_HEIGHT) {
+			rtnBool = true;
+		}
 	} else {
 		newX = point.x;
 		newY = point.y;
+		if (newX <= 0 || newY <= 0 || newX >= WORLD_WIDTH || newY >= WORLD_HEIGHT) {
+			rtnBool = true;
+		}	
 	}
-
-	if (point.x <= 0 || point.y <= 0 || point.x >= WORLD_WIDTH || point.y >= WORLD_HEIGHT) {
-		rtnBool = true;
-	}	
 
 	return rtnBool;
 }
 
+function collisionObjects(point) {
+	var rtnBool = false;
+	if (point.radius != undefined) {
+	} else {
+	}
+	return rtnBool;
+}
+
+function getBotByName(name) {
+	for (i in bots) {
+		if (bots[i].name == name) {
+			return bots[i];
+		}
+	}
+	return undefined;
+}
+
+function updateBullets() {
+	for (i in bullets) {
+		var bullet = bullets[i];
+		var pos = calcVector(bullet.x, bullet.y, bullet.dir, BULLET_SPEED);
+		if (!collisionBoundary(pos)) {
+			bullet.x = pos.x;
+			bullet.y = pos.y;
+			drawBullet(bullet.x, bullet.y, bullet.angle, context);
+		} else {
+			bot = getBotByName(bullet.owner);
+			bot.bullets += 1;
+			bot.canShoot = true;
+			bullets.splice(i, 1);
+		}
+	}
+}
+
 function runGame() {
 	if (!paused) {
+		updateBullets();
 		bots_state = [];
 		for (j in bots) {
 			bots_state.push({ "name": bots[j].name, "x": bots[j].x, "y": bots[j].y, "angle": bots[j].angle, "health": bots[j].health });
@@ -110,7 +154,7 @@ function runGame() {
 				case "forward":
 					var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
 					pos.radius = RADIUS;
-					if (!collisionBoundary(pos)) {
+					if (!collisionBoundary(pos) && !collisionObjects(pos)) {
 						bot.x = pos.x;
 						bot.y = pos.y;
 					}
@@ -118,7 +162,7 @@ function runGame() {
 				case "backward":
 					var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
 					pos.radius = RADIUS;
-					if (!collisionBoundary(pos)) {
+					if (!collisionBoundary(pos) && !collisionObjects(pos)) {
 						bot.x = pos.x;
 						bot.y = pos.y;
 					}
@@ -128,6 +172,15 @@ function runGame() {
 					break;
 				case "right":
 					bot.angle -= ANGLE_STEP;
+					break;
+				case "fire":
+					if (bot.bullets > 0 && bot.canShoot) {
+						bot.bullets -= 1;
+						bullets.push({ "x": bot.x, "y": bot.y, "dir": bot.angle, "owner": bot.name});
+						if (bot.bullets == 0) {
+							bot.canShoot = false;
+						}
+					}
 					break;
 			}
 
