@@ -27,6 +27,10 @@ var Server = function() {
 	var gamestarted = false;
 	var gameover = false;
 
+	// load sound effects
+	var sounds = [];
+	sounds["collision"] = new Audio("audio/collision.mp3");
+
 	this.setContext = function(context) {
 		this.context = context;
 	}
@@ -269,6 +273,8 @@ var Server = function() {
 				bullet.y = pos.y;
 			} else {
 				// collision!
+				playSound("collision");
+
 				switch (collision_state.type) {
 					case "bot":
 						// decrease the health of the hit bot
@@ -670,5 +676,9 @@ var Server = function() {
 			}
 		}
 		return undefined;
+	}
+
+	function playSound(type) {
+		sounds[type].play();
 	}
 }
