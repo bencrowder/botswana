@@ -284,6 +284,7 @@ var Server = function() {
 								winner = 0;
 							}
 
+							drawHealth();
 							drawEndgame(winner, context);
 							break;
 						}
