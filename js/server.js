@@ -7,12 +7,14 @@ var Server = function() {
 	var WORLD_HEIGHT = 600;
 	var ANGLE_STEP = 0.1;
 	var SPEED = 2;
-	var BULLET_SPEED = 5;
 	var RADIUS = 15;
-	var NUM_ALLOWED_BULLETS = 5;
 
 	var bot_colors = ["#e95050", "#589ebc"]; // red, blue
+
 	var BULLET_COLOR = "#d2f783";
+	var BULLET_SPEED = 5;
+	var BULLET_STRENGTH = 2;
+	var NUM_ALLOWED_BULLETS = 5;
 
 	var tournamentIntervalId = 0;			 // private
 
@@ -246,11 +248,29 @@ var Server = function() {
 			var bullet = bullets[i];
 			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);
 
-			if (!server.collisionBoundary(pos) && !server.collisionBulletObjects(pos)) {
+			var collision_state = server.collisionBulletObjects(pos);
+
+			if (!server.collisionBoundary(pos) && !collision_state.collision) {
+				// no collisions, move bullet forward
 				bullet.x = pos.x;
 				bullet.y = pos.y;
 			} else {
-				server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
+				// collision!
+				switch (collision_state.type) {
+					case "bot":
+						// decrease the health of the hit bot
+						bot = bots[collision_state.the_object];
+						bot.health -= BULLET_STRENGTH;
+
+						// create a red explosion
+						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#db4e22");
+						break;
+					case "obstacle":
+						// create a blue explosion
+						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
+						break;
+				}
+
 				bot = server.getBotByName(bullet.owner);
 				bot.bullets += 1;
 				bot.canShoot = true;
@@ -532,23 +552,27 @@ var Server = function() {
 	}
 
 	this.collisionBulletObjects = function(bullet) {
-		var rtnBool = false;
+		var state = { "collision": false };
 
 		for (i in bots) {
 			if (this.collisionBot(bots[i], bullet)) {
-				rtnBool = true;
+				state.collision = true;
+				state.type = "bot";
+				state.the_object = i;
 			}
 		}
 
-		if (!rtnBool) {
+		if (!state.collision) {
 			for (i in obstacles) {
 				if (this.collisionObstacle(bullet, obstacles[i])) {
-					rtnBool = true;
+					state.collision = true;
+					state.type = "obstacle";
+					state.the_object = i;
 				}
 			}
 		}
 
-		return rtnBool;
+		return state;
 	}
 
 	this.collisionBotObjects = function(bot) {
