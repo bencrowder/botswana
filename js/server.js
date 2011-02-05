@@ -13,7 +13,7 @@ var Server = function() {
 
 	var BULLET_COLOR = "#d2f783";
 	var BULLET_SPEED = 5;
-	var BULLET_STRENGTH = 2;
+	var BULLET_STRENGTH = 5;
 	var NUM_ALLOWED_BULLETS = 5;
 
 	var tournamentIntervalId = 0;			 // private
@@ -24,6 +24,7 @@ var Server = function() {
 	var obstacles = [];
 
 	var paused = false;
+	var gameover = false;
 
 	this.setContext = function(context) {
 		this.context = context;
@@ -36,6 +37,7 @@ var Server = function() {
 		obstacles = [];
 		fxparticles = [];
 		paused = false;
+		gameover = false;
 
 		// load the scripts
 		var botUrls = [];
@@ -113,8 +115,7 @@ var Server = function() {
 		}
 		
 		// start the game
-		// note: we have to pass in the server because this function gets called 
-		// outside of the context of the Server class
+		// we use the t variable because otherwise we lose scope
 		var t = this;
 		tournamentIntervalId = setInterval(function() {
 				t.runGame();
@@ -193,10 +194,12 @@ var Server = function() {
 			}
 
 			// do rule checking, collisions, update bullets, etc.
-			updateBullets();
+			updateBullets(this.context);
 
 			// draw the arena
-			this.drawWorld(this.context);
+			if (!gameover) {
+				this.drawWorld(this.context);
+			}
 		}
 	}
 
@@ -249,7 +252,7 @@ var Server = function() {
 		}
 	}
 
-	function updateBullets() {
+	function updateBullets(context) {
 		for (i in bullets) {
 			var bullet = bullets[i];
 			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);
@@ -268,6 +271,22 @@ var Server = function() {
 						bot = bots[collision_state.the_object];
 						bot.health -= BULLET_STRENGTH;
 						bot.hitByBullet = true;	// bot is responsible to unset this
+
+						// check to see if the bot has died
+						if (bot.health <= 0) {
+							paused = true;
+							gameover = true;
+
+							// figure out a more elegant way to do this
+							if (collision_state.the_object == 0) {
+								winner = 1;
+							} else {
+								winner = 0;
+							}
+
+							drawEndgame(winner, context);
+							break;
+						}
 
 						// create a red explosion
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#db4e22");
@@ -450,6 +469,38 @@ var Server = function() {
 		context.moveTo(508, 250);
 		context.lineTo(508, 300);
 		context.stroke();
+		context.closePath();
+		context.restore();
+	}
+
+	function drawEndgame(winner, context) {
+		// transparent black
+		context.save();
+		context.beginPath();
+		context.fillStyle = "rgba(0, 0, 0, 0.3)";
+		context.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+		context.closePath();
+
+		// now do the champion banner
+		context.beginPath();
+		context.fillStyle = "rgba(0, 0, 0, 0.9)";
+		context.fillRect(0, 220, WORLD_WIDTH, 100);
+		context.moveTo(0, 220);
+		context.lineTo(WORLD_WIDTH, 220);
+		context.moveTo(0, 320);
+		context.lineTo(WORLD_WIDTH, 320);
+		context.strokeStyle = bots[winner].color;
+		context.lineWidth = 5;
+		context.stroke();
+		context.closePath();
+		context.restore();
+
+		// text and bot
+		context.save();
+		context.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
+		context.fillStyle = "#fff";
+		context.fillText("Champion: " + bots[winner].name, 400, 277);
+		drawBot(360, 268, 3 * Math.PI / 2, bots[winner].color, context);
 		context.closePath();
 		context.restore();
 	}
