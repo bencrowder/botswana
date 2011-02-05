@@ -133,7 +133,7 @@ var Server = function() {
 						var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
 						pos.radius = RADIUS;
 
-						if (!collisionBoundary(pos) && !collisionObjects(pos)) {
+						if (!this.collisionBoundary(pos) && !this.collisionObjects(pos)) {
 							bot.x = pos.x;
 							bot.y = pos.y;
 						}
@@ -143,7 +143,7 @@ var Server = function() {
 						var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
 						pos.radius = RADIUS;
 
-						if (!collisionBoundary(pos) && !collisionObjects(pos)) {
+						if (!this.collisionBoundary(pos) && !this.collisionObjects(pos)) {
 							bot.x = pos.x;
 							bot.y = pos.y;
 						}
@@ -184,11 +184,11 @@ var Server = function() {
 			var bullet = bullets[i];
 			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);
 
-			if (!this.collisionBoundary(pos)) {
+			if (!server.collisionBoundary(pos)) {
 				bullet.x = pos.x;
 				bullet.y = pos.y;
 			} else {
-				bot = getBotByName(bullet.owner);
+				bot = server.getBotByName(bullet.owner);
 				bot.bullets += 1;
 				bot.canShoot = true;
 				bullets.splice(i, 1);
@@ -213,6 +213,11 @@ var Server = function() {
 		}
 
 		// draw bullets
+		for (i in bullets) {
+			var bullet = bullets[i];
+
+			drawBullet(bullet.x, bullet.y, bullet.angle, context);
+		}
 
 		drawParticles(context);
 	}
