@@ -176,6 +176,9 @@ var Server = function() {
 							}
 						}
 						break;
+
+					case "wait":
+						break;
 				}
 
 				bot.angle = normalizeAngle(bot.angle);
