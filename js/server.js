@@ -23,7 +23,8 @@ var Server = function() {
 	var bullets = [];
 	var obstacles = [];
 
-	var paused = false;
+	var paused = true;
+	var gamestarted = false;
 	var gameover = false;
 
 	this.setContext = function(context) {
@@ -37,6 +38,7 @@ var Server = function() {
 		obstacles = [];
 		fxparticles = [];
 		paused = false;
+		gamestarted = false;
 		gameover = false;
 
 		// load the scripts
@@ -115,6 +117,8 @@ var Server = function() {
 		}
 		
 		// start the game
+		gamestarted = true;
+
 		// we use the t variable because otherwise we lose scope
 		var t = this;
 		tournamentIntervalId = setInterval(function() {
@@ -522,6 +526,9 @@ var Server = function() {
 	}
 
 	this.togglePause = function() {
+		if (gameover) return;
+		if (!gamestarted) return;
+
 		if (paused) { 
 			paused = false;
 		} else {
