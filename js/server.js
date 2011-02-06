@@ -162,7 +162,7 @@ var Server = function() {
 							bot.collision = false;
 						} else {
 							bot.collision = true;
-							playSound("collision");
+							//playSound("collision");
 						}
 						break;
 
@@ -545,9 +545,11 @@ var Server = function() {
 
 		if (paused) { 
 			paused = false;
+			$("audio#mainsong")[0].play();
 		} else {
 			paused = true;
 			drawPaused(this.context);
+			$("audio#mainsong")[0].pause();
 		}
 	}
 
