@@ -100,6 +100,11 @@ var Server = function() {
 			botpos = this.getRandomPoint();
 			bot.x = botpos.x;
 			bot.y = botpos.y;
+			while (server.collisionBotObjects(bot)) {
+				botpos = this.getRandomPoint();
+				bot.x = botpos.x;
+				bot.y = botpos.y;
+			}
 			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
 			bot.health = 100;
 			bot.canShoot = true;
@@ -314,6 +319,10 @@ var Server = function() {
 						//playSound("hitobstacle");
 
 						// create a blue explosion
+						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
+						break;
+						
+					default:	
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
 						break;
 				}
@@ -701,11 +710,11 @@ var Server = function() {
 		return fxparticles.slice(0);
 	}
 
-	this.bullets = function() {
+	this.getBullets = function() {
 		return bullets.slice(0);
 	}
 
-	this.obstacles = function() {
+	this.getObstacles = function() {
 		return obstacles.slice(0);
 	}
 
