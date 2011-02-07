@@ -27,12 +27,14 @@ var Server = function() {
 	var gamestarted = false;
 	var gameover = false;
 
+	/*
 	// load sound effects
 	var sounds = [];
 	sounds["collision"] = new Audio("audio/collision.wav");
 	sounds["hitbot"] = new Audio("audio/hitbot.wav");
 	sounds["hitobstacle"] = new Audio("audio/hitobstacle.wav");
 	sounds["laser"] = new Audio("audio/laser.wav");
+	*/
 
 	this.setContext = function(context) {
 		this.context = context;
@@ -176,7 +178,7 @@ var Server = function() {
 							bot.collision = false;
 						} else {
 							bot.collision = true;
-							playSound("collision");
+							//playSound("collision");
 						}
 						break;
 
@@ -190,7 +192,7 @@ var Server = function() {
 
 					case "fire":
 						if (bot.bullets > 0 && bot.canShoot) {
-							playSound("laser");
+							//playSound("laser");
 							bot.bullets -= 1;
 							var pos = calcVector(bot.x, bot.y, bot.angle, RADIUS);
 							bullets.push({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.name});
@@ -281,7 +283,7 @@ var Server = function() {
 				// hit!
 				switch (collision_state.type) {
 					case "bot":
-						playSound("hitbot");
+						//playSound("hitbot");
 
 						// decrease the health of the hit bot
 						bot = bots[collision_state.the_object];
@@ -309,7 +311,7 @@ var Server = function() {
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#db4e22");
 						break;
 					case "obstacle":
-						playSound("hitobstacle");
+						//playSound("hitobstacle");
 
 						// create a blue explosion
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
@@ -688,7 +690,9 @@ var Server = function() {
 		return undefined;
 	}
 
+	/*
 	function playSound(type) {
 		sounds[type].play();
 	}
+	*/
 }
