@@ -547,11 +547,11 @@ var Server = function() {
 
 		if (paused) { 
 			paused = false;
-			$("audio#mainsong")[0].play();
+		//	$("audio#mainsong")[0].play();
 		} else {
 			paused = true;
 			drawPaused(this.context);
-			$("audio#mainsong")[0].pause();
+		//	$("audio#mainsong")[0].pause();
 		}
 	}
 
@@ -688,6 +688,25 @@ var Server = function() {
 			}
 		}
 		return undefined;
+	}
+
+	// these functions need to be modified to return copies of the arrays
+	// instead of the actual objects (which can then be modified)
+
+	this.getBots = function() {
+		return bots.slice(0);
+	}
+
+	this.getParticles = function() {
+		return fxparticles.slice(0);
+	}
+
+	this.bullets = function() {
+		return bullets.slice(0);
+	}
+
+	this.obstacles = function() {
+		return obstacles.slice(0);
 	}
 
 	/*
