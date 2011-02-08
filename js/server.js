@@ -102,6 +102,7 @@ var Server = function() {
 			bot.canShoot = true;
 			bot.bullets = NUM_ALLOWED_BULLETS;
 			bot.radius = RADIUS;
+			bot.hitByBullet = false;
 
 			botpos = this.getRandomPoint();
 			bot.x = botpos.x;
@@ -145,6 +146,9 @@ var Server = function() {
 	// public
 	this.runGame = function() {
 		if (!paused) {
+			// do rule checking, collisions, update bullets, etc.
+			updateBullets(this.context);
+
 			bots_state = [];
 			for (j in bots) {
 				bots_state.push({ "name": bots[j].name, "x": bots[j].x, "y": bots[j].y, "angle": bots[j].angle, "health": bots[j].health });
@@ -220,8 +224,6 @@ var Server = function() {
 				bot.angle = normalizeAngle(bot.angle);
 			}
 
-			// do rule checking, collisions, update bullets, etc.
-			updateBullets(this.context);
 
 			// draw the arena
 			if (!gameover) {
@@ -280,6 +282,9 @@ var Server = function() {
 	}
 
 	function updateBullets(context) {
+		for (i in bots) {
+			bots[i].hitByBullet = false;
+		}
 		for (i in bullets) {
 			var bullet = bullets[i];
 			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);

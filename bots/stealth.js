@@ -1,24 +1,27 @@
 var StealthBot = function() {};
-
 StealthBot.prototype = new Bot("Stealth");
-
 StealthBot.prototype.setup = function() {
 	this.timer = 0;
-	this.cmd = 0;			// which command to use
-	this.commands = ["forward", "right", "forward", "left"];
+	this.hit = 0;
 };
 
 StealthBot.prototype.run = function() {
-	if (this.timer % 20 == 0) {
-		this.cmd += 1;
-		if (this.cmd > 3) { this.cmd = 0; }
-	}
-
 	this.timer++;
-
-	return this.commands[this.cmd];
+	console.log(this.hitByBullet);
+	if (this.hitByBullet) {
+		this.hit = 20;
+	}
+	if (this.hit > 0) {
+		if (this.timer % 7 == 0) {
+			return "left";
+		} else {
+			return "forward";
+		}
+		this.hit--;
+	} else {
+		return "forward";
+	}
 };
 
 var stealthbot = new StealthBot();
-
 server.registerBot(stealthbot);
