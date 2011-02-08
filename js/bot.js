@@ -12,6 +12,7 @@ function Bot(botname) {
 	this.canShoot;			// boolean
 	this.collided;			// boolean
 	this.hitByBullet;		// boolean
+	this.radius;			// size of bot
 
 	this.state = { world: {}, bots: {}, bullets: {} };
 };

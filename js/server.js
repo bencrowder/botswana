@@ -97,6 +97,12 @@ var Server = function() {
 		for (i in bots) {
 			var bot = bots[i];
 
+			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
+			bot.health = 100;
+			bot.canShoot = true;
+			bot.bullets = NUM_ALLOWED_BULLETS;
+			bot.radius = RADIUS;
+
 			botpos = this.getRandomPoint();
 			bot.x = botpos.x;
 			bot.y = botpos.y;
@@ -105,10 +111,6 @@ var Server = function() {
 				bot.x = botpos.x;
 				bot.y = botpos.y;
 			}
-			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
-			bot.health = 100;
-			bot.canShoot = true;
-			bot.bullets = NUM_ALLOWED_BULLETS;
 
 			// init the world state
 			bot.state.world.width = WORLD_WIDTH;
@@ -161,13 +163,15 @@ var Server = function() {
 				switch (command) {
 					case "forward":
 						var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
-						pos.radius = RADIUS;
-
-						if (!this.collisionBoundary(pos) && !this.collisionBotObjects(pos)) {
-							bot.x = pos.x;
-							bot.y = pos.y;
+						oldX = bot.x;
+						oldY = bot.y;
+						bot.x = pos.x;
+						bot.y = pos.y;
+						if (!this.collisionBoundary(bot) && !this.collisionBotObjects(bot)) {
 							bot.collision = false;
 						} else {
+							bot.x = oldX;
+							bot.y = oldY;
 							bot.collision = true;
 							//playSound("collision");
 						}
@@ -175,13 +179,15 @@ var Server = function() {
 
 					case "backward":
 						var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
-						pos.radius = RADIUS;
-
-						if (!this.collisionBoundary(pos) && !this.collisionBotObjects(pos)) {
-							bot.x = pos.x;
-							bot.y = pos.y;
+						oldX = bot.x;
+						oldY = bot.y;
+						bot.x = pos.x;
+						bot.y = pos.y;
+						if (!this.collisionBoundary(bot) && !this.collisionBotObjects(bot)) {
 							bot.collision = false;
 						} else {
+							bot.x = oldX;
+							bot.y = oldY;
 							bot.collision = true;
 							//playSound("collision");
 						}
@@ -611,21 +617,10 @@ var Server = function() {
 	this.collisionObstacle = function(point, obs) {
 		var rtnBool = false;
 		if (point.radius != undefined) { // we have a bot
-			rightX = Math.pow(obs.x + obs.width - point.x, 2);
-			leftX = Math.pow(obs.x - point.x, 2);
-			bottomY = Math.pow(obs.y + obs.height - point.y, 2);
-			topY = Math.pow(obs.y - point.y, 2);
-
-			if (Math.sqrt(rightX + bottomY) < point.radius) {
+			if (point.x >= obs.x - point.radius && point.x <= obs.x + point.radius + obs.width && point.y >= obs.y - point.radius && point.y <= obs.y + point.radius + obs.height) {
 				rtnBool = true;
-			} else if (Math.sqrt(rightX + topY) < point.radius) {
-				rtnBool = true;
-			} else if (Math.sqrt(leftX + topY) < point.radius) {
-				rtnBool = true;
-			} else if (Math.sqrt(leftX + bottomY) < point.radius) {
-				rtnBool = true;
-			} else { }
-		} else {
+			}
+		} else { // single point - bullet
 			if (point.x >= obs.x && point.x <= obs.x + obs.width && point.y >= obs.y && point.y <= obs.y + obs.height) {
 				rtnBool = true;
 			}
@@ -674,7 +669,7 @@ var Server = function() {
 		for (i in bots) {
 			if (bots[i].name != bot.name) {
 				if (this.collisionBots(bot, bots[i])) {
-					/*rtnBool = true;*/
+					rtnBool = true;
 				}
 			}
 		}
