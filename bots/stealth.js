@@ -7,7 +7,6 @@ StealthBot.prototype.setup = function() {
 
 StealthBot.prototype.run = function() {
 	this.timer++;
-	console.log(this.hitByBullet);
 	if (this.hitByBullet) {
 		this.hit = 20;
 	}
