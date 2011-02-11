@@ -293,10 +293,12 @@ var Server = function() {
 
 			if (!server.collisionBoundary(pos) && !collision_state.collision) {
 				// no collisions, move bullet forward
+				bullet.collision = false;
 				bullet.x = pos.x;
 				bullet.y = pos.y;
 			} else {
 				// hit!
+				bullet.collision = true;
 				switch (collision_state.type) {
 					case "bot":
 						//playSound("hitbot");
@@ -333,17 +335,27 @@ var Server = function() {
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
 						break;
 						
-					default:	
+					default: // collision with world boundary
 						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
 						break;
 				}
 
 				bot = server.getBotByName(bullet.owner);
-				bot.bullets += 1;
+				if (bot.bullets < NUM_ALLOWED_BULLETS) {
+					bot.bullets += 1;
+				}
 				bot.canShoot = true;
-				bullets.splice(i, 1);
 			}
 		}
+		// removed bullets that have collided with something.
+		newBullets = [];
+		for (i in bullets) {
+			if (!bullets[i].collision) {
+				newBullets.push(bullets[i]);
+			}
+		}
+		bullets = [];
+		bullets = newBullets;
 	}
 
 	this.drawWorld = function(context) {
