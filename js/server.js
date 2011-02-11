@@ -108,6 +108,7 @@ var Server = function() {
 		for (i in bots) {
 			var bot = bots[i];
 
+			bot.id = i;
 			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
 			bot.health = 100;
 			bot.canShoot = true;
@@ -129,7 +130,7 @@ var Server = function() {
 			bot.state.world.height = WORLD_HEIGHT;
 
 			// keep track of initial state
-			bots_state.push({ "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
+			bots_state.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
 
 			bot.setup();
 		}
@@ -162,7 +163,7 @@ var Server = function() {
 
 			bots_state = [];
 			for (j in bots) {
-				bots_state.push({ "name": bots[j].name, "x": bots[j].x, "y": bots[j].y, "angle": bots[j].angle, "health": bots[j].health });
+				bots_state.push({ "id": j, "name": bots[j].name, "x": bots[j].x, "y": bots[j].y, "angle": bots[j].angle, "health": bots[j].health });
 			}
 			// run the bot
 			for (i in bots) {
@@ -221,7 +222,7 @@ var Server = function() {
 							//playSound("laser");
 							bot.bullets -= 1;
 							var pos = calcVector(bot.x, bot.y, bot.angle, RADIUS);
-							bullets.push({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.name});
+							bullets.push({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id});
 							if (bot.bullets == 0) {
 								bot.canShoot = false;
 							}
@@ -351,7 +352,7 @@ var Server = function() {
 						break;
 				}
 
-				bot = server.getBotByName(bullet.owner);
+				bot = server.getBotByID(bullet.owner);
 				if (bot.bullets < NUM_ALLOWED_BULLETS) {
 					bot.bullets += 1;
 				}
@@ -695,7 +696,7 @@ var Server = function() {
 		var rtnBool = false;
 
 		for (i in bots) {
-			if (bots[i].name != bot.name) {
+			if (bots[i].id != bot.id) {
 				if (this.collisionBots(bot, bots[i])) {
 					rtnBool = true;
 				}
@@ -720,6 +721,10 @@ var Server = function() {
 			}
 		}
 		return undefined;
+	}
+
+	this.getBotByID = function(id) {
+		return bots[id];
 	}
 
 	// these functions need to be modified to return copies of the arrays

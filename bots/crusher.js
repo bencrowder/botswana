@@ -9,7 +9,7 @@ CrusherBot.prototype.run = function() {
 	// get the opponent's information
 	for (i in this.state.bots) {
 		var bot = this.state.bots[i];
-		if (bot.name != this.name) {
+		if (bot.id != this.id) {
 			target = bot;
 		}
 	}
