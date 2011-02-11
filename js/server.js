@@ -20,6 +20,7 @@ var Server = function() {
 	var tournamentIntervalId = 0;			 // private
 
 	var bots = [];
+	var server_bots = [];
 	var fxparticles = [];
 	var bullets = [];
 	var obstacles = [];
@@ -45,6 +46,7 @@ var Server = function() {
 	this.loadScripts = function() {
 		// clear things out
 		bots = [];
+		server_bots = [];
 		bullets = [];
 		obstacles = [];
 		fxparticles = [];
@@ -103,7 +105,8 @@ var Server = function() {
 		// remove invalid URL flags (if any)
 		$("header input").removeClass("invalid_url");
 
-		bots_state = []
+		bots_state = [];
+		server_bots = [];
 
 		generateObstacles();
 
@@ -142,7 +145,11 @@ var Server = function() {
 		// update state for each bot
 		for (i in bots) {
 			bots[i].state.bots = bots_state;
+			tempBot = new Bot(bots[i].name);
+			tempBot.copy(bots[i]);
+			server_bots.push(tempBot);
 		}
+		
 
 		// if we've got a pre-existing tournament, clear the interval
 		if (tournamentIntervalId) {
@@ -167,12 +174,12 @@ var Server = function() {
 			updateBullets(this.context);
 
 			bots_state = [];
-			for (j in bots) {
-				bots_state.push({ "id": j, "name": bots[j].name, "x": bots[j].x, "y": bots[j].y, "angle": bots[j].angle, "health": bots[j].health });
+			for (j in server_bots) {
+				bots_state.push({ "id": j, "name": server_bots[j].name, "x": server_bots[j].x, "y": server_bots[j].y, "angle": server_bots[j].angle, "health": server_bots[j].health });
 			}
 			// run the bot
-			for (i in bots) {
-				var bot = bots[i];
+			for (b in server_bots) {
+				var bot = server_bots[b];
 				bot.waitFire--;
 				if (bot.waitFire <= 0) {
 					bot.waitFire = 0;
@@ -180,10 +187,10 @@ var Server = function() {
 				}
 
 				// update the bot's state (bots, bullets)
-				bot.state.bots = bots_state;
+				bots[b].state.bots = bots_state;
 
 				// now run the bot
-				command = bot.run();
+				command = bots[b].run();
 
 				// parse command here
 				switch (command) {
@@ -228,7 +235,6 @@ var Server = function() {
 						break;
 
 					case "fire":
-						console.log(bot.bullets + ' - ' + bot.canShoot + ' - ' + bot.waitFire);
 						if (bot.bullets > 0 && bot.canShoot && bot.waitFire <= 0) {
 							//playSound("laser");
 							bot.bullets -= 1;
@@ -244,6 +250,8 @@ var Server = function() {
 				}
 
 				bot.angle = normalizeAngle(bot.angle);
+				// copy the server bot data to the bots
+				bots[b].copy(bot);
 			}
 
 
@@ -304,8 +312,8 @@ var Server = function() {
 	}
 
 	function updateBullets(context) {
-		for (i in bots) {
-			bots[i].hitByBullet = false;
+		for (i in server_bots) {
+			server_bots[i].hitByBullet = false;
 		}
 		for (i in bullets) {
 			var bullet = bullets[i];
@@ -326,7 +334,7 @@ var Server = function() {
 						//playSound("hitbot");
 
 						// decrease the health of the hit bot
-						bot = bots[collision_state.the_object];
+						bot = server_bots[collision_state.the_object];
 						bot.health -= BULLET_STRENGTH;
 						bot.hitByBullet = true;	// bot is responsible to unset this
 
@@ -390,8 +398,8 @@ var Server = function() {
 		drawObstacles(context);
 
 		// draw bots
-		for (i in bots) {
-			var bot = bots[i];
+		for (i in server_bots) {
+			var bot = server_bots[i];
 
 			drawBot(bot.x, bot.y, bot.angle, bot.color, context);
 		}
@@ -520,8 +528,8 @@ var Server = function() {
 	}
 
 	function drawHealth() {
-		for (i in bots) {
-			var bot = bots[i];
+		for (i in server_bots) {
+			var bot = server_bots[i];
 			var botnum = parseInt(i) + 1;
 
 			$("#status #bot" + botnum + "status .health").css("width", bot.health * 2);
@@ -681,8 +689,8 @@ var Server = function() {
 	this.collisionBulletObjects = function(bullet) {
 		var state = { "collision": false };
 
-		for (i in bots) {
-			if (this.collisionBot(bots[i], bullet)) {
+		for (i in server_bots) {
+			if (this.collisionBot(server_bots[i], bullet)) {
 				state.collision = true;
 				state.type = "bot";
 				state.the_object = i;
@@ -705,9 +713,9 @@ var Server = function() {
 	this.collisionBotObjects = function(bot) {
 		var rtnBool = false;
 
-		for (i in bots) {
-			if (bots[i].id != bot.id) {
-				if (this.collisionBots(bot, bots[i])) {
+		for (i in server_bots) {
+			if (server_bots[i].id != bot.id) {
+				if (this.collisionBots(bot, server_bots[i])) {
 					rtnBool = true;
 				}
 			}
@@ -734,14 +742,14 @@ var Server = function() {
 	}
 
 	this.getBotByID = function(id) {
-		return bots[id];
+		return server_bots[id];
 	}
 
 	// these functions need to be modified to return copies of the arrays
 	// instead of the actual objects (which can then be modified)
 
 	this.getBots = function() {
-		return bots.slice(0);
+		return server_bots.slice(0);
 	}
 
 	this.getParticles = function() {
