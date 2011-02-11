@@ -486,8 +486,8 @@ var Server = function() {
 		context.lineWidth = 2;
 
 		context.beginPath();
-		context.moveTo(0, 0);
-		context.lineTo(10, 0);
+		context.moveTo(1, 0);
+		context.lineTo(-9, 0);
 		context.closePath();
 		context.stroke();
 
