@@ -51,22 +51,30 @@ var Server = function() {
 		gameover = false;
 
 		// load the scripts
-		var botUrls = [];
 		var botsUnloaded = 2;	// counter to keep track of how many are left to load
 
 		for (var i=1; i<=NUM_PLAYERS; i++) {
 			var url = $("#bot" + i + "url").val();
 
-			// add to the array
-			botUrls.push(url);
-
 			// get the file and execute it
-			$.getScript(url, function() {
-				botsUnloaded = botsUnloaded - 1;
+			$.ajax({
+				url: url,
+				dataType: 'script',
+				error: function() {
+					// find the bot with the bad URL and flag it
+					for (var i=1; i<=NUM_PLAYERS; i++) {
+						if ($("#bot" + i + "url").val() == url) {
+							$("#bot" + i + "url").addClass("invalid_url");
+						}
+					}
+				},
+				success: function() {
+					botsUnloaded = botsUnloaded - 1;
 
-				// start the tournament once all these are loaded
-				if (botsUnloaded == 0) {
-					server.startTournament();
+					// start the tournament once all these are loaded
+					if (botsUnloaded == 0) {
+						server.startTournament();
+					}
 				}
 			});
 		}
@@ -89,6 +97,9 @@ var Server = function() {
 
 	// public
 	this.startTournament = function() {
+		// remove invalid URL flags (if any)
+		$("header input").removeClass("invalid_url");
+
 		bots_state = []
 
 		generateObstacles();
@@ -145,7 +156,7 @@ var Server = function() {
 
 	// public
 	this.runGame = function() {
-		if (!paused) {
+		if (gamestarted && !paused) {
 			// do rule checking, collisions, update bullets, etc.
 			updateBullets(this.context);
 
