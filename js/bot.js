@@ -10,6 +10,7 @@ function Bot(botname) {
 	this.health;			// 0-100
 	this.bullets;			// number of available bullets
 	this.canShoot;			// boolean
+	this.waitFire;			// clicks to wait before firing
 	this.collided;			// boolean
 	this.hitByBullet;		// boolean
 	this.radius;			// size of bot

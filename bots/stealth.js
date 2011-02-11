@@ -8,17 +8,17 @@ StealthBot.prototype.setup = function() {
 StealthBot.prototype.run = function() {
 	this.timer++;
 	if (this.hitByBullet) {
-		this.hit = 20;
+		this.hit = 10;
 	}
 	if (this.hit > 0) {
-		if (this.timer % 7 == 0) {
+		if (this.timer % 5 == 0) {
 			return "left";
 		} else {
 			return "forward";
 		}
 		this.hit--;
 	} else {
-		return "forward";
+		return "fire";
 	}
 };
 

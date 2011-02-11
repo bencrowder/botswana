@@ -14,6 +14,7 @@ var Server = function() {
 	var BULLET_COLOR = "#d2f783";
 	var BULLET_SPEED = 5;
 	var BULLET_STRENGTH = 5;
+	var BULLET_WAIT = 15;
 	var NUM_ALLOWED_BULLETS = 5;
 
 	var tournamentIntervalId = 0;			 // private
@@ -26,6 +27,7 @@ var Server = function() {
 	var paused = true;
 	var gamestarted = false;
 	var gameover = false;
+	var clicks = 0;
 
 	/*
 	// load sound effects
@@ -49,9 +51,10 @@ var Server = function() {
 		paused = false;
 		gamestarted = false;
 		gameover = false;
+		clicks = 0;
 
 		// load the scripts
-		var botsUnloaded = 2;	// counter to keep track of how many are left to load
+		var botsUnloaded = NUM_PLAYERS;	// counter to keep track of how many are left to load
 
 		for (var i=1; i<=NUM_PLAYERS; i++) {
 			var url = $("#bot" + i + "url").val();
@@ -112,6 +115,7 @@ var Server = function() {
 			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
 			bot.health = 100;
 			bot.canShoot = true;
+			bot.waitFire = 0;
 			bot.bullets = NUM_ALLOWED_BULLETS;
 			bot.radius = RADIUS;
 			bot.hitByBullet = false;
@@ -152,11 +156,12 @@ var Server = function() {
 		var t = this;
 		tournamentIntervalId = setInterval(function() {
 				t.runGame();
-			}, 25);
+		}, 25);
 	}
 
 	// public
 	this.runGame = function() {
+		this.clicks++;
 		if (gamestarted && !paused) {
 			// do rule checking, collisions, update bullets, etc.
 			updateBullets(this.context);
@@ -168,6 +173,11 @@ var Server = function() {
 			// run the bot
 			for (i in bots) {
 				var bot = bots[i];
+				bot.waitFire--;
+				if (bot.waitFire <= 0) {
+					bot.waitFire = 0;
+					bot.canShoot = true;
+				}
 
 				// update the bot's state (bots, bullets)
 				bot.state.bots = bots_state;
@@ -218,14 +228,14 @@ var Server = function() {
 						break;
 
 					case "fire":
-						if (bot.bullets > 0 && bot.canShoot) {
+						console.log(bot.bullets + ' - ' + bot.canShoot + ' - ' + bot.waitFire);
+						if (bot.bullets > 0 && bot.canShoot && bot.waitFire <= 0) {
 							//playSound("laser");
 							bot.bullets -= 1;
 							var pos = calcVector(bot.x, bot.y, bot.angle, RADIUS);
 							bullets.push({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id});
-							if (bot.bullets == 0) {
-								bot.canShoot = false;
-							}
+							bot.canShoot = false;
+							bot.waitFire = BULLET_WAIT;
 						}
 						break;
 
