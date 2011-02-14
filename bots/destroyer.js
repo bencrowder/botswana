@@ -1,5 +1,7 @@
 var Destroyer = function() {};
+
 Destroyer.prototype = new Bot("Destroyer");
+
 Destroyer.prototype.setup = function() {
 	this.clicks = 0;			// keep track of how many clicks
 	this.opponent = -1;

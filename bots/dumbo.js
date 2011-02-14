@@ -1,11 +1,13 @@
-var StealthBot = function() {};
-StealthBot.prototype = new Bot("Stealth");
-StealthBot.prototype.setup = function() {
+var DumboBot = function() {};
+
+DumboBot.prototype = new Bot("Dumbo");
+
+DumboBot.prototype.setup = function() {
 	this.timer = 0;
 	this.hit = 0;
 };
 
-StealthBot.prototype.run = function() {
+DumboBot.prototype.run = function() {
 	this.timer++;
 	if (this.hitByBullet) {
 		this.hit = 10;
@@ -22,5 +24,6 @@ StealthBot.prototype.run = function() {
 	}
 };
 
-var stealthbot = new StealthBot();
-server.registerBot(stealthbot);
+var dumbobot = new DumboBot();
+
+server.registerBot(dumbobot);

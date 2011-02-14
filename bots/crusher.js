@@ -1,11 +1,15 @@
 var CrusherBot = function() {};
+
 CrusherBot.prototype = new Bot("Crusher");
+
 CrusherBot.prototype.setup = function() {
 	this.timer = 0;			// keep track of how many clicks
 };
+
 CrusherBot.prototype.run = function() {
 	this.timer++;
 	target = undefined;
+
 	// get the opponent's information
 	for (i in this.state.bots) {
 		var bot = this.state.bots[i];
@@ -13,6 +17,7 @@ CrusherBot.prototype.run = function() {
 			target = bot;
 		}
 	}
+
 	if (this.hitByBullet) {
 		if (this.timer % 5 == 0) {
 			return "left";
@@ -47,4 +52,5 @@ CrusherBot.prototype.run = function() {
 };
 
 var crusherbot = new CrusherBot();
+
 server.registerBot(crusherbot);

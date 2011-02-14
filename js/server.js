@@ -145,11 +145,18 @@ var Server = function() {
 		// update state for each bot
 		for (i in bots) {
 			bots[i].state.bots = bots_state;
+
+			// add obstacles to state
+			bots[i].state.obstacles = [];
+			for (j in obstacles) {
+				var o = obstacles[j];
+				bots[i].state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
+			}
+
 			tempBot = new Bot(bots[i].name);
 			tempBot.copy(bots[i]);
 			server_bots.push(tempBot);
 		}
-		
 
 		// if we've got a pre-existing tournament, clear the interval
 		if (tournamentIntervalId) {
@@ -173,10 +180,28 @@ var Server = function() {
 			// do rule checking, collisions, update bullets, etc.
 			updateBullets(this.context);
 
+			// get current state of bots
 			bots_state = [];
 			for (j in server_bots) {
 				bots_state.push({ "id": j, "name": server_bots[j].name, "x": server_bots[j].x, "y": server_bots[j].y, "angle": server_bots[j].angle, "health": server_bots[j].health });
 			}
+
+			// get current state of obstacles
+			obstacles_state = [];
+			for (i in obstacles) {
+				var o = obstacles[i];
+
+				obstacles_state.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
+			}
+
+			// get current state of bullets
+			bullets_state = [];
+			for (i in bullets) {
+				var b = bullets[i];
+
+				bullets_state.push({ "x": b.x, "y": b.y, "angle": b.angle, "owner": b.owner });
+			}
+
 			// run the bot
 			for (b in server_bots) {
 				var bot = server_bots[b];
@@ -186,8 +211,10 @@ var Server = function() {
 					bot.canShoot = true;
 				}
 
-				// update the bot's state (bots, bullets)
+				// update the bot's state (TODO: make copies instead of passing reference to the arrays)
 				bots[b].state.bots = bots_state;
+				bots[b].state.obstacles = obstacles_state;
+				bots[b].state.bullets = bullets_state;
 
 				// now run the bot
 				command = bots[b].run();
