@@ -262,7 +262,7 @@ var Server = function() {
 						break;
 
 					case "strafe-left":
-						var pos = calcVector(bot.x, bot.y, bot.angle + (Math.PI / 2), SPEED);
+						var pos = calcVector(bot.x, bot.y, bot.angle - (Math.PI / 2), SPEED);
 						oldX = bot.x;
 						oldY = bot.y;
 						bot.x = pos.x;
@@ -277,7 +277,7 @@ var Server = function() {
 						break;
 
 					case "strafe-right":
-						var pos = calcVector(bot.x, bot.y, bot.angle - (Math.PI / 2), SPEED);
+						var pos = calcVector(bot.x, bot.y, bot.angle + (Math.PI / 2), SPEED);
 						oldX = bot.x;
 						oldY = bot.y;
 						bot.x = pos.x;
