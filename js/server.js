@@ -2,20 +2,29 @@
 /* by Ben Crowder and Chad Hansen */
 
 var Server = function() {
-	var NUM_PLAYERS = 2;
-	var WORLD_WIDTH = 1000;
-	var WORLD_HEIGHT = 600;
-	var ANGLE_STEP = 0.1;
-	var SPEED = 2;
-	var RADIUS = 15;
+	var ruleset = new Ruleset(
+		{'numPlayers':2
+		,'numBots':2
+		,'world': {'width':1000, 'height':600}
+		,'bots': {'angleStep':0.1, 'speed':2, 'radius':15}
+		,'bullets': {'speed':5, 'strength':5, 'waitTime':15,'numAllowed':5}
+		,'mines': {'strength':10, 'waitTime':25,'numAllowed':3}
+		});
+
+	var NUM_PLAYERS = ruleset.get('NUM_PLAYERS');
+	var WORLD_WIDTH = ruleset.get('WORLD_WIDTH');
+	var WORLD_HEIGHT = ruleset.get('WORLD_HEIGHT');
+	var ANGLE_STEP = ruleset.get('BOT_ANGLE_STEP');
+	var SPEED = ruleset.get('BOT_SPEED');
+	var RADIUS = ruleset.get('BOT_RADIUS');
 
 	var bot_colors = ["#e95050", "#589ebc"]; // red, blue
 
 	var BULLET_COLOR = "#d2f783";
-	var BULLET_SPEED = 5;
-	var BULLET_STRENGTH = 5;
-	var BULLET_WAIT = 15;
-	var NUM_ALLOWED_BULLETS = 5;
+	var BULLET_SPEED = ruleset.get('BULLET_SPEED');
+	var BULLET_STRENGTH = ruleset.get('BULLET_STRENGTH');
+	var BULLET_WAIT = ruleset.get('BULLET_WAIT');
+	var NUM_ALLOWED_BULLETS = ruleset.get('BULLET_NUM_ALLOWED');
 
 	var tournamentIntervalId = 0;			 // private
 
