@@ -10,14 +10,14 @@ function Bot(botname) {
 	this.color;
 	this.angle;				// in radians
 	this.health;			// 0-100
-	this.bullets;			// number of available bullets
+	this.weapons = {};		// object with number of available ammo
 	this.canShoot;			// boolean
 	this.waitFire;			// clicks to wait before firing
 	this.collided;			// boolean
 	this.hitByBullet;		// boolean
 	this.radius;			// size of bot
 
-	this.state = { world: {}, bots: {}, bullets: {} };
+	this.state = { world: {}, bots: [], weapons: [], items: [], obstacles: [] };
 
 	this.copy = function(aBot) {
 		this.id = aBot.id;
@@ -26,7 +26,7 @@ function Bot(botname) {
 		this.color = aBot.color;
 		this.angle = aBot.angle;	
 		this.health = aBot.health;
-		this.bullets = aBot.bullets;
+		this.weapons = aBot.weapons;
 		this.canShoot = aBot.canShoot;
 		this.waitFire = aBot.waitFire;
 		this.collided = aBot.collided;

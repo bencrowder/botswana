@@ -22,21 +22,82 @@ function Ruleset(server) {
 			'speed': 2,
 			'radius': 15,
 			'colors': [ "#e95050", "#589ebc" ]
+		}
+	};
+
+
+	/* Dictionary of weapons */ 
+	/* -------------------------------------------------- */
+
+	this.properties.weapons = {
+		'bullet': {
+			'speed': 5,
+			'strength': 5,
+			'waitTime': 5,
+			'numAllowed': 5,
+			'color': "#2fe783",
+			'movementCallback': function(server, properties) {
+				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
+			},
+			'collisionCallback': function(server, collision, properties) {
+				this.remove = true;
+
+				switch (collision.type) {
+					case "bot":
+						// Decrease the health of the bot that was hit
+						bot = collision.object;
+						bot.health -= properties.strength;
+						bot.hitByBullet = true;	// bot is responsible to unset this
+
+						// TODO: make sure we check for endgame conditions
+
+						// Create a red explosion
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 20, 5, 20, "#db4e22");
+						break;
+						
+					default:
+						// Collision with obstacle, item, or world boundary
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 20, 5, 20, "#96e0ff");
+						break;
+				}
+
+				owner = server.getBotByID(this.owner);
+				if (owner.weapons[this.type] < properties.numAllowed) {
+					owner.weapons[this.type]++;
+				}
+				owner.canShoot = true;
+			}
 		},
-		'ammo': {
-			'bullets': {
-				'speed': 5,
-				'strength': 5,
-				'waitTime': 15,
-				'numAllowed': 5,
-				'color': "#d2f783"
+		'mine': {
+			'speed': 0,
+			'strength': 10,
+			'waitTime': 25,
+			'numAllowed': 5,
+			'movementCallback': function(server, properties) {
+				// Don't move mines
+				return { 'x': this.x, 'y': this.y };
 			},
-			'mines': {
-				'speed': 0,
-				'strength': 10,
-				'waitTime': 25,
-				'numAllowed': 5
+			'collisionCallback': function(server, collision, properties) {
+				this.remove = true;
+			}
+		},
+	};
+	
+
+	/* Dictionary of items */ 
+	/* -------------------------------------------------- */
+
+	this.properties.items = {
+		'health': {
+			'strength': 25,
+			'movementCallback': function(server, weapon) {
+				return false;
 			},
+			'collisionCallback': function(server, weapon, collisionState) {
+				// do something
+				// if collision was a bullet, destroy the item
+				// if collision was a bot, add health to the bot
+			}
 		}
 	};
 
@@ -54,11 +115,11 @@ function Ruleset(server) {
 			bot.y = pos.y;
 
 			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collision = false;
+				bot.collided = false;
 			} else {
 				bot.x = oldX;
 				bot.y = oldY;
-				bot.collision = true;
+				bot.collided = true;
 			}
 		},
 
@@ -70,11 +131,11 @@ function Ruleset(server) {
 			bot.y = pos.y;
 
 			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collision = false;
+				bot.collided = false;
 			} else {
 				bot.x = oldX;
 				bot.y = oldY;
-				bot.collision = true;
+				bot.collided = true;
 			}
 		},
 
@@ -95,11 +156,11 @@ function Ruleset(server) {
 			bot.y = pos.y;
 
 			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collision = false;
+				bot.collided = false;
 			} else {
 				bot.x = oldX;
 				bot.y = oldY;
-				bot.collision = true;
+				bot.collided = true;
 			}
 		},
 
@@ -112,23 +173,24 @@ function Ruleset(server) {
 			bot.y = pos.y;
 
 			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collision = false;
+				bot.collided = false;
 			} else {
 				bot.x = oldX;
 				bot.y = oldY;
-				bot.collision = true;
+				bot.collided = true;
 			}
 		},
 
 		"fire": function(bot) {
-			if (bot.bullets > 0 && bot.canShoot && bot.waitFire <= 0) {
-				bot.bullets -= 1;
+			// TODO: modify to allow for other weapon types
+			if (bot.weapons.bullet > 0 && bot.canShoot && bot.waitFire <= 0) {
+				bot.weapons.bullet -= 1;
 				bot.canShoot = false;
-				bot.waitFire = this.properties.ammo.bullets.waitTime;
+				bot.waitFire = this.properties.weapons.bullet.waitTime;
 
 				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, this.properties.bots.radius);
 
-				this.server.addBullet({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id });
+				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "bullet", "remove": false });
 			}
 		},
 
@@ -160,7 +222,7 @@ function Ruleset(server) {
 			var bot = new fn[botScript.className](botScript.name);
 
 			// Assign the team color
-			bot.color = this.properties.bots.colors[teamNum];
+			bot.color = this.properties.bots.colors[teamNum - 1];
 
 			botList.push(bot);
 		}
@@ -237,7 +299,11 @@ function Ruleset(server) {
 		bot.hitByBullet = false;
 		bot.waitFire = 0;
 
-		bot.bullets = this.properties.ammo.bullets.numAllowed;
+		// Assign the weapon type's number of ammo
+		for (var key in this.properties.weapons) {
+			bot.weapons[key] = this.properties.weapons[key].numAllowed;
+		}
+
 		bot.radius = this.properties.bots.radius;
 	};
 
@@ -267,5 +333,32 @@ function Ruleset(server) {
 	this.parseCommand = function(command, bot) {
 		var callback = this.commands[command];
 		callback.call(this, bot);
+	};
+
+
+	/* Game over condition */
+	/* -------------------------------------------------- */
+
+	this.gameOver = function() {
+		// Test to see if the game is over
+		return this.server.gameOver;
+	};
+
+
+	/* Reset collision flags */
+	/* -------------------------------------------------- */
+
+	this.resetCollisionFlag = function(bot) {
+		bot.hitByBullet = false;
+	};	
+
+
+	/* Get winner */
+	/* -------------------------------------------------- */
+
+	this.getWinner = function() {
+		// Check which team has health == 0
+		// Return team ID
+		return 1;
 	};
 };

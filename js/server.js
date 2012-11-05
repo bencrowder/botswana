@@ -9,11 +9,13 @@ var Server = function() {
 
 	/* Object lists */
 
-	var bots = [];
-	var serverBots = [];
-	var fxParticles = [];
-	var bullets = [];
-	var obstacles = [];
+	var teams = [];							// teams
+	var bots = [];							// bots
+	var serverBots = [];					// server copy of bot info
+	var weapons = [];						// damage-causing objects (bullets, mines, etc.)
+	var items = [];							// non-damage-causing objects (powerups, etc.)
+	var obstacles = [];						// obstacles (land)
+	var fxParticles = [];					// effects
 
 	/* Game engine properties */
 
@@ -41,9 +43,11 @@ var Server = function() {
 		gameOver = false;
 		clicks = 0;
 
+		teams = [];
 		bots = [];
 		serverBots = [];
-		bullets = [];
+		weapons = [];
+		items = [];
 		obstacles = [];
 		fxParticles = [];
 
@@ -89,7 +93,10 @@ var Server = function() {
 
 	this.registerBotScript = function(team) {
 		// Team #
-		var teamNum = bots.length + 1;
+		var teamNum = teams.length + 1;
+
+		// Add this script
+		teams.push(team);
 
 		// Call the ruleset register function
 		var botList = ruleset.registerBotScript(teamNum, team);
@@ -115,7 +122,13 @@ var Server = function() {
 		$("header input").removeClass("invalid_url");
 
 		// Reset state
-		tempBotsState = [];
+		state = {};
+		state.world = props.world;
+		state.bots = [];
+		state.obstacles = [];
+		state.weapons = [];
+		state.items = [];
+
 		serverBots = [];
 
 		// Generate obstacles
@@ -131,27 +144,22 @@ var Server = function() {
 			// Set initial placement on map
 			ruleset.setInitialPlacement(bot);
 
-			// Init the world state for the bot
-			bot.state.world.width = props.world.width;
-			bot.state.world.height = props.world.height;
-
 			// Push the bot's state to the server list
-			tempBotsState.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
+			state.bots.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
 
 			// Call the bot's setup function
 			bot.setup();
 		}
 
+		// Add obstacles to state
+		for (i in obstacles) {
+			var o = obstacles[i];
+			state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
+		}
+
 		// Loop through each bot again to give state to all bots
 		for (var i=0; i<bots.length; i++) {
-			bots[i].state.bots = tempBotsState;
-
-			// Add obstacles to state
-			bots[i].state.obstacles = [];
-			for (j in obstacles) {
-				var o = obstacles[j];
-				bots[i].state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
-			}
+			bots[i].state = state;
 
 			// Make a copy of the bot for server usage
 			tempBot = new Bot(bots[i].name);
@@ -183,33 +191,111 @@ var Server = function() {
 		this.clicks++;
 
 		if (gameStarted && !paused) {
-			// Do rule checking, collisions, update bullets, etc.
-			updateBullets(this.context);
-
-			// get current state of bots
-			botsState = [];
-			for (j in serverBots) {
-				botsState.push({ "id": j, "name": serverBots[j].name, "x": serverBots[j].x, "y": serverBots[j].y, "angle": serverBots[j].angle, "health": serverBots[j].health });
+			// Reset collision flags for all bots
+			for (i=0; i<serverBots; i++) {
+				ruleset.resetCollisionFlags(serverBots[i]);
 			}
 
-			// get current state of obstacles
-			obstacles_state = [];
-			for (i in obstacles) {
+			// Move and check collisions for items
+			for (i=0; i<items.length; i++) {
+				var item = items[i];
+				var itemProps = props.items[item.type];
+
+				// Call the item's movement callback
+				var movementFunction = props.items[item.type].movementCallback;
+				position = movementFunction.call(item, this, itemProps);
+
+				// Check for collisions
+				var collisionState = server.collisionWeaponObjects(position);
+
+				// We collided with something
+				if (server.collisionBoundary(position) || collisionState.collision) {
+					// Call the item's collision callback
+					var collisionFunction = props.items[item.type].collisionCallback;
+					collisionFunction.call(item, this, collisionState, itemProps);
+				} else {
+					// We didn't collide with anything, so just update the coordinates
+					// TODO: callback for this?
+					item.collision = false;
+					item.x = position.x;
+					item.y = position.y;
+				}
+			}
+
+			// Move and check collisions for weapons
+			for (i=0; i<weapons.length; i++) {
+				var weapon = weapons[i];
+				var weaponProps = props.weapons[weapon.type];
+
+				// Call the weapon's movement callback
+				var movementFunction = weaponProps.movementCallback;
+				position = movementFunction.call(weapon, this, weaponProps);
+
+				// Check for collisions
+				var collisionState = server.collisionWeaponObjects(position);
+
+				// We collided with something
+				if (server.collisionBoundary(position) || collisionState.collision) {
+					// Call the weapon's collision callback
+					var collisionFunction = weaponProps.collisionCallback;
+					collisionFunction.call(weapon, this, collisionState, weaponProps);
+				} else {
+					// We didn't collide with anything, so just update the coordinates
+					// TODO: callback for this?
+					weapon.remove = false;
+					weapon.x = position.x;
+					weapon.y = position.y;
+				}
+			}
+
+			// Remove items and weapons that asked to be removed
+			newItems = [];
+			newWeapons = [];
+			for (i=0; i<weapons.length; i++) {
+				if (!weapons[i].remove) {
+					newWeapons.push(weapons[i]);
+				}
+			}
+			for (i=0; i<items.length; i++) {
+				if (!items[i].remove) {
+					newItems.push(items[i]);
+				}
+			}
+
+			// Clear the original arrays and assign them
+			weapons = [];
+			weapons = newWeapons;
+			items = [];
+			items = newItems;
+
+			// Clear state
+			state = {};
+			state.bots = [];
+			state.obstacles = [];
+			state.weapons = [];
+			state.items = [];
+
+			// Get current state of bots
+			for (i=0; i<serverBots.length; i++) {
+				state.bots.push({ "id": i, "name": serverBots[i].name, "x": serverBots[i].x, "y": serverBots[i].y, "angle": serverBots[i].angle, "health": serverBots[i].health });
+			}
+
+			// Get current state of obstacles
+			for (i=0; i<obstacles.length; i++) {
 				var o = obstacles[i];
 
-				obstacles_state.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
+				state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
 			}
 
-			// get current state of bullets
-			bullets_state = [];
-			for (i in bullets) {
-				var b = bullets[i];
+			// Get current state of weapons
+			for (i=0; i<weapons.length; i++) {
+				var w = weapons[i];
 
-				bullets_state.push({ "x": b.x, "y": b.y, "angle": b.angle, "owner": b.owner });
+				state.weapons.push({ "x": w.x, "y": w.y, "angle": w.angle, "owner": w.owner, "type": w.type });
 			}
 
-			// run the bot
-			for (b in serverBots) {
+			// Go through each bot
+			for (b=0; b<serverBots.length; b++) {
 				var bot = serverBots[b];
 				bot.waitFire--;
 				if (bot.waitFire <= 0) {
@@ -217,108 +303,37 @@ var Server = function() {
 					bot.canShoot = true;
 				}
 
-				// update the bot's state (TODO: make copies instead of passing reference to the arrays)
-				bots[b].state.bots = botsState;
-				bots[b].state.obstacles = obstacles_state;
-				bots[b].state.bullets = bullets_state;
+				// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
+				bots[b].state = state;
 
-				// now run the bot
+				// Now run the bot
 				command = bots[b].run();
 
 				// Parse the command
 				ruleset.parseCommand(command, bot);
 
-				bot.angle = normalizeAngle(bot.angle);
-				// copy the server bot data to the bots
+				// Normalize the returned angle
+				bot.angle = this.helpers.normalizeAngle(bot.angle);
+
+				// Copy the server bot data to the bots
 				bots[b].copy(bot);
 			}
 
-
-			// draw the arena
-			if (!gameOver) {
+			// TODO: change to ruleset.gameOver()
+			if (!ruleset.gameOver()) {
+				// Draw everything
 				this.drawWorld(this.context);
-			}
-		}
-	}
-
-	function updateBullets(context) {
-		// Go through all the bots and reset their hitByBullet flag
-		for (i in serverBots) {
-			serverBots[i].hitByBullet = false;
-		}
-
-		// Go through each bullet to see if it hit anything
-		for (i in bullets) {
-			var bullet = bullets[i];
-			var pos = calcVector(bullet.x, bullet.y, bullet.angle, props.ammo.bullets.speed);
-
-			var collision_state = server.collisionBulletObjects(pos);
-
-			if (!server.collisionBoundary(pos) && !collision_state.collision) {
-				// no collisions, move bullet forward
-				bullet.collision = false;
-				bullet.x = pos.x;
-				bullet.y = pos.y;
 			} else {
-				// hit!
-				bullet.collision = true;
-				switch (collision_state.type) {
-					case "bot":
-						//playSound("hitbot");
+				// Get the winner
+				winner = ruleset.getWinner();
+				console.log("Game over: ", winner);
 
-						// decrease the health of the hit bot
-						bot = serverBots[collision_state.the_object];
-						bot.health -= props.ammo.bullets.strength;
-						bot.hitByBullet = true;	// bot is responsible to unset this
-
-						// check to see if the bot has died
-						if (bot.health <= 0) {
-							paused = true;
-							gameOver = true;
-
-							// figure out a more elegant way to do this
-							if (collision_state.the_object == 0) {
-								winner = 1;
-							} else {
-								winner = 0;
-							}
-
-							drawHealth();
-							drawEndgame(winner, context);
-							break;
-						}
-
-						// create a red explosion
-						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#db4e22");
-						break;
-					case "obstacle":
-						//playSound("hitobstacle");
-
-						// create a blue explosion
-						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
-						break;
-						
-					default: // collision with world boundary
-						server.createParticleExplosion(pos.x, pos.y, 16, 20, 5, 20, "#96e0ff");
-						break;
-				}
-
-				bot = server.getBotByID(bullet.owner);
-				if (bot.bullets < props.ammo.bullets.numAllowed) {
-					bot.bullets += 1;
-				}
-				bot.canShoot = true;
+				// Endgame
+				drawHealth();
+				drawEndgame(winner, this.context);
+				return false;
 			}
 		}
-		// removed bullets that have collided with something.
-		newBullets = [];
-		for (i in bullets) {
-			if (!bullets[i].collision) {
-				newBullets.push(bullets[i]);
-			}
-		}
-		bullets = [];
-		bullets = newBullets;
 	}
 
 	this.drawWorld = function(context) {
@@ -337,11 +352,11 @@ var Server = function() {
 			drawBot(bot.x, bot.y, bot.angle, bot.color, context);
 		}
 
-		// draw bullets
-		for (i in bullets) {
-			var bullet = bullets[i];
+		// draw weapons
+		for (i in weapons) {
+			var weapon = weapons[i];
 
-			drawBullet(bullet.x, bullet.y, bullet.angle, context);
+			drawWeapon(weapon.x, weapon.y, weapon.angle, context);
 		}
 
 		drawParticles(context);
@@ -410,12 +425,12 @@ var Server = function() {
 		context.restore();
 	}
 
-	function drawBullet(x, y, angle, context) {
+	function drawWeapon(x, y, angle, context) {
 		context.save();
 		context.translate(x, y);
 		context.rotate(angle);
 
-		context.strokeStyle = props.ammo.bullets.color;
+		context.strokeStyle = props.weapons.bullet.color;
 		context.lineWidth = 2;
 
 		context.beginPath();
@@ -613,33 +628,39 @@ var Server = function() {
 	}
 
 	this.collisionBot = function(bot, point) {
-		var rtnBool = false;
 		dx = bot.x - point.x;
 		dy = bot.y - point.y;
+
 		dist = Math.sqrt(dx * dx + dy * dy);
-		if (props.bots.radius > dist) { 
-			rtnBool = true;
-		}
-		return rtnBool;
+
+		return (props.bots.radius > dist);
 	}
 
-	this.collisionBulletObjects = function(bullet) {
-		var state = { "collision": false };
+	this.collisionWeaponObjects = function(weapon) {
+		var state = {
+			"collision": false,
+			"pos": {
+				"x": weapon.x,
+				"y": weapon.y
+			}
+	   	};
 
 		for (i in serverBots) {
-			if (this.collisionBot(serverBots[i], bullet)) {
+			if (this.collisionBot(serverBots[i], weapon)) {
 				state.collision = true;
 				state.type = "bot";
-				state.the_object = i;
+				state.objectIndex = i;
+				state.object = serverBots[i];
 			}
 		}
 
 		if (!state.collision) {
 			for (i in obstacles) {
-				if (this.collisionObstacle(bullet, obstacles[i])) {
+				if (this.collisionObstacle(weapon, obstacles[i])) {
 					state.collision = true;
 					state.type = "obstacle";
-					state.the_object = i;
+					state.objectIndex = i;
+					state.object = obstacles[i];
 				}
 			}
 		}
@@ -693,23 +714,17 @@ var Server = function() {
 		return fxParticles.slice(0);
 	}
 
-	this.getBullets = function() {
-		return bullets.slice(0);
+	this.getWeapons = function() {
+		return weapons.slice(0);
 	}
 
 	this.getObstacles = function() {
 		return obstacles.slice(0);
 	}
 
-	this.addBullet = function(bullet) {
-		bullets.push(bullet);
+	this.addWeapon = function(weapon) {
+		weapons.push(weapon);
 	}
-
-	/*
-	function playSound(type) {
-		sounds[type].play();
-	}
-	*/
 
 	this.helpers = {};
 
