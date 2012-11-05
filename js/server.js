@@ -5,6 +5,8 @@ var Server = function() {
 	var ruleset = new Ruleset(this);
 	var props = ruleset.properties;			// shorthand access
 
+	var draw;
+
 	var tournamentIntervalId = 0;			// private
 
 	/* Object lists */
@@ -30,6 +32,7 @@ var Server = function() {
 
 	this.setContext = function(context) {
 		this.context = context;
+		draw = new Draw(this.context, this, props.world.width, props.world.height);
 	}
 
 
@@ -303,228 +306,21 @@ var Server = function() {
 				bots[i].copy(bot);
 			}
 
-			if (!ruleset.gameOver()) {
-				// Draw everything
-				this.drawWorld(this.context);
-			} else {
+			if (ruleset.gameOver()) {
 				paused = true;
 
 				// Get the winner
 				winner = ruleset.getWinner();
-				console.log("Game over: ", winner);
 
 				// Endgame
-				drawHealth();
-				drawEndgame(winner, this.context);
+				draw.health();
+				draw.endgame(winner);
 				return false;
-			}
-		}
-	}
-
-	this.drawWorld = function(context) {
-		this.context = context;
-
-		// background stuff
-		clearCanvas(context);
-		drawGrid(context);
-		drawHealth();
-		drawObstacles(context);
-
-		// draw bots
-		for (i in serverBots) {
-			var bot = serverBots[i];
-
-			drawBot(bot.x, bot.y, bot.angle, bot.color, context);
-		}
-
-		// draw weapons
-		for (i in weapons) {
-			var weapon = weapons[i];
-
-			drawWeapon(weapon.x, weapon.y, weapon.angle, context);
-		}
-
-		drawParticles(context);
-	}
-
-	function clearCanvas(context) {
-		context.clearRect(0, 0, props.world.width, props.world.height);
-	}
-
-	function drawGrid(context) {
-		context.beginPath();
-
-		for (var x = 20; x < props.world.width; x += 20) {
-			context.moveTo(x, 0);
-			context.lineTo(x, props.world.height);
-		}
-
-		for (var y = 20; y < props.world.height; y += 20) {
-			context.moveTo(0, y);
-			context.lineTo(props.world.width, y);
-		}
-
-		context.strokeStyle = "#333";
-		context.stroke();
-	}
-
-	function drawObstacles(context) {
-		context.save();
-		context.strokeStyle = "#666";
-		context.lineWidth = 3;
-		context.fillStyle = "rgba(80, 200, 255, 0.2)";
-
-		for (i in obstacles) {
-			var obst = obstacles[i];
-			context.beginPath();
-			context.fillRect(obst.x, obst.y, obst.width, obst.height);
-			context.strokeRect(obst.x, obst.y, obst.width, obst.height);
-		}
-
-		context.restore();
-	}
-
-	function drawBot(x, y, angle, color, context) {
-		var radius = props.bots.radius;
-
-		context.save();
-		context.translate(x, y);
-
-		context.fillStyle = color;
-		context.lineWidth = 4;
-
-		// draw filled/stroked circle
-		context.beginPath();
-		context.arc(0, 0, radius, 0, Math.PI * 2, true);
-		context.closePath();
-		context.fill();
-		context.stroke();
-
-		// now draw the turret
-		context.rotate(angle);
-		context.strokeStyle = "#fff";
-		context.moveTo(0, 0);
-		context.lineTo(20, 0);
-		context.stroke();
-
-		context.restore();
-	}
-
-	function drawWeapon(x, y, angle, context) {
-		context.save();
-		context.translate(x, y);
-		context.rotate(angle);
-
-		context.strokeStyle = props.weapons.bullet.color;
-		context.lineWidth = 2;
-
-		context.beginPath();
-		context.moveTo(1, 0);
-		context.lineTo(-9, 0);
-		context.closePath();
-		context.stroke();
-
-		context.restore();
-	}
-
-	function drawParticles(context) {
-		particles_to_remove = [];
-
-		context.save();
-		context.lineWidth = 2;
-
-		for (i in fxParticles) {
-			var particle = fxParticles[i];
-
-			particle.life--;
-			if (particle.life == 0) {
-				// delete from array
-				delete fxParticles[i];
 			} else {
-				// draw
-				pos = calcVector(particle.x, particle.y, particle.angle, particle.speed);
-
-				context.beginPath();
-				context.strokeStyle = particle.color;
-				context.moveTo(particle.x, particle.y);
-				context.lineTo(pos.x, pos.y);
-				context.globalAlpha = particle.life / 20;
-				context.stroke();
-				context.closePath();
-
-				particle.x = pos.x;
-				particle.y = pos.y;
+				// Draw everything
+				draw.world();
 			}
 		}
-
-		context.restore();
-	}
-
-	function drawHealth() {
-		var teamHealth = ruleset.updateHealth();
-		var numBots = ruleset.properties.botsPerTeam;
-
-		var i = 0;
-		for (var key in teamHealth) {
-			var teamNum = i + 1;
-
-			// 200 is the width of the percentage bar
-			$("#status #bot" + teamNum + "status .health").css("width", (teamHealth[key] / (numBots * 100) * 200) + "px");
-
-			i++;
-		}
-	}
-
-	function drawPaused(context) {
-		context.beginPath();
-		context.fillStyle = "rgba(0, 0, 0, 0.3)";
-		context.fillRect(0, 0, props.world.width, props.world.height);
-		context.fill();
-		context.closePath();
-
-		context.save();
-		context.strokeStyle = "#fff";
-		context.lineWidth = 15;
-		context.beginPath();
-		context.moveTo(482, 250);
-		context.lineTo(482, 300);
-		context.moveTo(508, 250);
-		context.lineTo(508, 300);
-		context.stroke();
-		context.closePath();
-		context.restore();
-	}
-
-	function drawEndgame(winner, context) {
-		// transparent black
-		context.save();
-		context.beginPath();
-		context.fillStyle = "rgba(0, 0, 0, 0.3)";
-		context.fillRect(0, 0, props.world.width, props.world.height);
-		context.closePath();
-
-		// now do the champion banner
-		context.beginPath();
-		context.fillStyle = "rgba(0, 0, 0, 0.9)";
-		context.fillRect(0, 220, props.world.width, 100);
-		context.moveTo(0, 220);
-		context.lineTo(props.world.width, 220);
-		context.moveTo(0, 320);
-		context.lineTo(props.world.width, 320);
-		context.strokeStyle = bots[winner].color;
-		context.lineWidth = 5;
-		context.stroke();
-		context.closePath();
-		context.restore();
-
-		// text and bot
-		context.save();
-		context.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
-		context.fillStyle = "#fff";
-		context.fillText("Champion: " + bots[winner].name, 400, 277);
-		drawBot(360, 268, 3 * Math.PI / 2, bots[winner].color, context);
-		context.closePath();
-		context.restore();
 	}
 
 	// creates a circular particle explosion at the specified point
@@ -542,22 +338,24 @@ var Server = function() {
 		}
 	}
 
+
+	/* Toggle paused condition */
+	/* -------------------------------------------------- */
+
 	this.togglePause = function() {
 		if (gameOver) return;
 		if (!gameStarted) return;
 
 		if (paused) { 
 			paused = false;
-		//	$("audio#mainsong")[0].play();
 		} else {
 			paused = true;
-			drawPaused(this.context);
-		//	$("audio#mainsong")[0].pause();
+			draw.paused(this.context);
 		}
 	}
 
 
-	/* Get a random point in the world*/
+	/* Get a random point in the world */
 	/* -------------------------------------------------- */
 
 	this.getRandomPoint = function() {
@@ -716,12 +514,20 @@ var Server = function() {
 		return fxParticles.slice(0);
 	}
 
+	this.setParticles = function(particles) {
+		fxParticles = particles;
+	}
+
 	this.getWeapons = function() {
 		return weapons.slice(0);
 	}
 
 	this.getObstacles = function() {
 		return obstacles.slice(0);
+	}
+
+	this.getRuleset = function() {
+		return ruleset;
 	}
 
 	this.addWeapon = function(weapon) {
