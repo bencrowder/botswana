@@ -184,7 +184,7 @@ function Ruleset(server) {
 		"fire": function(bot) {
 			// TODO: modify to allow for other weapon types
 			if (bot.weapons.bullet > 0 && bot.canShoot && bot.waitFire <= 0) {
-				bot.weapons.bullet -= 1;
+				bot.weapons.bullet--;
 				bot.canShoot = false;
 				bot.waitFire = this.properties.weapons.bullet.waitTime;
 
@@ -300,6 +300,7 @@ function Ruleset(server) {
 		bot.waitFire = 0;
 
 		// Assign the weapon type's number of ammo
+		bot.weapons = [];
 		for (var key in this.properties.weapons) {
 			bot.weapons[key] = this.properties.weapons[key].numAllowed;
 		}

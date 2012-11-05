@@ -192,71 +192,69 @@ var Server = function() {
 
 		if (gameStarted && !paused) {
 			// Reset collision flags for all bots
-			for (i=0; i<serverBots; i++) {
-				ruleset.resetCollisionFlags(serverBots[i]);
+			for (i=0; i<serverBots.length; i++) {
+				ruleset.resetCollisionFlag(serverBots[i]);
 			}
 
 			// Move and check collisions for items
-			for (i=0; i<items.length; i++) {
+			for (var i=0; i<items.length; i++) {
 				var item = items[i];
 				var itemProps = props.items[item.type];
 
 				// Call the item's movement callback
 				var movementFunction = props.items[item.type].movementCallback;
-				position = movementFunction.call(item, this, itemProps);
+				newPosition = movementFunction.call(item, this, itemProps);
 
 				// Check for collisions
-				var collisionState = server.collisionWeaponObjects(position);
+				var collisionState = server.collisionWeaponObjects(newPosition);
 
 				// We collided with something
-				if (server.collisionBoundary(position) || collisionState.collision) {
+				if (server.collisionBoundary(newPosition) || collisionState.collision) {
 					// Call the item's collision callback
 					var collisionFunction = props.items[item.type].collisionCallback;
 					collisionFunction.call(item, this, collisionState, itemProps);
 				} else {
 					// We didn't collide with anything, so just update the coordinates
 					// TODO: callback for this?
-					item.collision = false;
-					item.x = position.x;
-					item.y = position.y;
+					item.x = newPosition.x;
+					item.y = newPosition.y;
 				}
 			}
 
 			// Move and check collisions for weapons
-			for (i=0; i<weapons.length; i++) {
+			for (var i=0; i<weapons.length; i++) {
 				var weapon = weapons[i];
 				var weaponProps = props.weapons[weapon.type];
 
 				// Call the weapon's movement callback
 				var movementFunction = weaponProps.movementCallback;
-				position = movementFunction.call(weapon, this, weaponProps);
+				newPosition = movementFunction.call(weapon, this, weaponProps);
 
 				// Check for collisions
-				var collisionState = server.collisionWeaponObjects(position);
+				var collisionState = server.collisionWeaponObjects(newPosition);
 
 				// We collided with something
-				if (server.collisionBoundary(position) || collisionState.collision) {
+				if (server.collisionBoundary(newPosition) || collisionState.collision) {
 					// Call the weapon's collision callback
 					var collisionFunction = weaponProps.collisionCallback;
 					collisionFunction.call(weapon, this, collisionState, weaponProps);
 				} else {
 					// We didn't collide with anything, so just update the coordinates
 					// TODO: callback for this?
-					weapon.remove = false;
-					weapon.x = position.x;
-					weapon.y = position.y;
+					weapon.x = newPosition.x;
+					weapon.y = newPosition.y;
 				}
 			}
 
 			// Remove items and weapons that asked to be removed
 			newItems = [];
 			newWeapons = [];
-			for (i=0; i<weapons.length; i++) {
+			for (var i=0; i<weapons.length; i++) {
 				if (!weapons[i].remove) {
 					newWeapons.push(weapons[i]);
 				}
 			}
-			for (i=0; i<items.length; i++) {
+			for (var i=0; i<items.length; i++) {
 				if (!items[i].remove) {
 					newItems.push(items[i]);
 				}
@@ -276,26 +274,26 @@ var Server = function() {
 			state.items = [];
 
 			// Get current state of bots
-			for (i=0; i<serverBots.length; i++) {
+			for (var i=0; i<serverBots.length; i++) {
 				state.bots.push({ "id": i, "name": serverBots[i].name, "x": serverBots[i].x, "y": serverBots[i].y, "angle": serverBots[i].angle, "health": serverBots[i].health });
 			}
 
 			// Get current state of obstacles
-			for (i=0; i<obstacles.length; i++) {
+			for (var i=0; i<obstacles.length; i++) {
 				var o = obstacles[i];
 
 				state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
 			}
 
 			// Get current state of weapons
-			for (i=0; i<weapons.length; i++) {
+			for (var i=0; i<weapons.length; i++) {
 				var w = weapons[i];
 
 				state.weapons.push({ "x": w.x, "y": w.y, "angle": w.angle, "owner": w.owner, "type": w.type });
 			}
 
 			// Go through each bot
-			for (b=0; b<serverBots.length; b++) {
+			for (var b=0; b<serverBots.length; b++) {
 				var bot = serverBots[b];
 				bot.waitFire--;
 				if (bot.waitFire <= 0) {
@@ -613,17 +611,21 @@ var Server = function() {
 		return rtnBool;
 	}
 
-	this.collisionObstacle = function(point, obs) {
+	this.collisionObstacle = function(obstacle, point) {
 		var rtnBool = false;
-		if (point.radius != undefined) { // we have a bot
-			if (point.x >= obs.x - point.radius && point.x <= obs.x + point.radius + obs.width && point.y >= obs.y - point.radius && point.y <= obs.y + point.radius + obs.height) {
+
+		if (point.radius != undefined) {
+			// We have a bot
+			if (point.x >= obstacle.x - point.radius && point.x <= obstacle.x + point.radius + obstacle.width && point.y >= obstacle.y - point.radius && point.y <= obstacle.y + point.radius + obstacle.height) {
 				rtnBool = true;
 			}
-		} else { // single point - bullet
-			if (point.x >= obs.x && point.x <= obs.x + obs.width && point.y >= obs.y && point.y <= obs.y + obs.height) {
+		} else {
+			// Single point = bullet
+			if (point.x >= obstacle.x && point.x <= obstacle.x + obstacle.width && point.y >= obstacle.y && point.y <= obstacle.y + obstacle.height) {
 				rtnBool = true;
 			}
 		}
+
 		return rtnBool;
 	}
 
@@ -637,6 +639,7 @@ var Server = function() {
 	}
 
 	this.collisionWeaponObjects = function(weapon) {
+		// Default return state
 		var state = {
 			"collision": false,
 			"pos": {
@@ -645,23 +648,25 @@ var Server = function() {
 			}
 	   	};
 
+		// Check for collisions with bots
 		for (i in serverBots) {
 			if (this.collisionBot(serverBots[i], weapon)) {
 				state.collision = true;
 				state.type = "bot";
 				state.objectIndex = i;
 				state.object = serverBots[i];
+				return state;
 			}
 		}
 
-		if (!state.collision) {
-			for (i in obstacles) {
-				if (this.collisionObstacle(weapon, obstacles[i])) {
-					state.collision = true;
-					state.type = "obstacle";
-					state.objectIndex = i;
-					state.object = obstacles[i];
-				}
+		// Check for collisions with obstacles
+		for (i in obstacles) {
+			if (this.collisionObstacle(obstacles[i], weapon)) {
+				state.collision = true;
+				state.type = "obstacle";
+				state.objectIndex = i;
+				state.object = obstacles[i];
+				return state;
 			}
 		}
 
@@ -681,7 +686,7 @@ var Server = function() {
 
 		if (!rtnBool) {
 			for (i in obstacles) {
-				if (this.collisionObstacle(bot, obstacles[i])) {
+				if (this.collisionObstacle(obstacles[i], bot)) {
 					rtnBool = true;
 				}
 			}
