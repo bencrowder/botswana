@@ -323,7 +323,9 @@ var Server = function() {
 		}
 	}
 
-	// creates a circular particle explosion at the specified point
+	/* Create circular particle explosion at specified point */
+	/* -------------------------------------------------- */
+
 	this.createParticleExplosion = function(x, y, num_points, distance, speed, life, color) {
 		var angle = 0;
 		var step = (2 * Math.PI) / num_points;
@@ -367,6 +369,10 @@ var Server = function() {
 		return pos;
 	}
 
+
+	/* Return true if point collides with world boundary */
+	/* -------------------------------------------------- */
+
 	this.collisionBoundary = function(point) {
 		var rtnBool = false;
 
@@ -391,6 +397,10 @@ var Server = function() {
 		return rtnBool;
 	}
 
+
+	/* Return true if bot A collides with bot B */
+	/* -------------------------------------------------- */
+
 	this.collisionBots = function(botA, botB) {
 		var rtnBool = false;
 		dx = botB.x - botA.x;
@@ -401,6 +411,10 @@ var Server = function() {
 		}
 		return rtnBool;
 	}
+
+
+	/* Return true if point collides with obstacle */
+	/* -------------------------------------------------- */
 
 	this.collisionObstacle = function(obstacle, point) {
 		var rtnBool = false;
@@ -420,6 +434,10 @@ var Server = function() {
 		return rtnBool;
 	}
 
+
+	/* Return true if point collides with bot */
+	/* -------------------------------------------------- */
+
 	this.collisionBot = function(bot, point) {
 		dx = bot.x - point.x;
 		dy = bot.y - point.y;
@@ -428,6 +446,10 @@ var Server = function() {
 
 		return (props.bots.radius > dist);
 	}
+
+
+	/* Check weapons to see if they've collided with anything */
+	/* -------------------------------------------------- */
 
 	this.collisionWeaponObjects = function(weapon) {
 		// Default return state
@@ -464,6 +486,10 @@ var Server = function() {
 		return state;
 	}
 
+
+	/* Check bots to see if they've collided with anything */
+	/* -------------------------------------------------- */
+
 	this.collisionBotObjects = function(bot) {
 		var rtnBool = false;
 
@@ -486,6 +512,11 @@ var Server = function() {
 		return rtnBool;
 	}
 
+
+	/* Get bot by name */
+	/* -------------------------------------------------- */
+	/* TODO: rewrite to use team name */
+
 	this.getBotByName = function(name) {
 		for (i in bots) {
 			if (bots[i].name == name) {
@@ -494,6 +525,10 @@ var Server = function() {
 		}
 		return undefined;
 	}
+
+
+	/* Get bot by ID */
+	/* -------------------------------------------------- */
 
 	this.getBotByID = function(id) {
 		return serverBots[id];
