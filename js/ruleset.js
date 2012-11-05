@@ -341,8 +341,31 @@ function Ruleset(server) {
 	/* -------------------------------------------------- */
 
 	this.gameOver = function() {
-		// Test to see if the game is over
-		return this.server.gameOver;
+		var teamHealth = this.updateHealth();
+
+		// If anyone is at health = 0, game over
+		for (var key in teamHealth) {
+			if (teamHealth[key] == 0) return true;
+		}	
+
+		return false;
+	};
+
+
+	/* Get winner */
+	/* -------------------------------------------------- */
+
+	this.getWinner = function() {
+		var teamHealth = this.updateHealth();
+
+		// If anyone is at health = 0, game over
+		var i = 1;
+		for (var key in teamHealth) {
+			if (teamHealth[key] != 0) return i;
+			i++;
+		}	
+
+		return -1;
 	};
 
 
@@ -354,12 +377,38 @@ function Ruleset(server) {
 	};	
 
 
-	/* Get winner */
+	/* Update bot */
 	/* -------------------------------------------------- */
 
-	this.getWinner = function() {
-		// Check which team has health == 0
-		// Return team ID
-		return 1;
+	this.updateBot = function(bot) {
+		bot.waitFire--;
+		if (bot.waitFire <= 0) {
+			bot.waitFire = 0;
+			bot.canShoot = true;
+		}
+	};
+
+
+	/* Update health */
+	/* -------------------------------------------------- */
+	/* Returns the health for each team */
+
+	this.updateHealth = function() {
+		var bots = server.getBots();
+		var teamHealth = {};
+
+		// Loop through bots and calculate team totals
+		for (i=0; i<bots.length; i++) {
+			teamName = bots[i].name;
+			health = parseInt(bots[i].health);
+
+			if (typeof teamHealth[teamName] == 'undefined') {
+				teamHealth[teamName] = health;
+			} else {
+				teamHealth[teamName] += health;
+			}
+		}	
+
+		return teamHealth;
 	};
 };

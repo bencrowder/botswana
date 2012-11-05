@@ -101,16 +101,20 @@ var Server = function() {
 		// Call the ruleset register function
 		var botList = ruleset.registerBotScript(teamNum, team);
 
+		// Get the team color (TODO: rewrite)
+		var color;	
+
 		// Add all returned bots to the main array
 		for (var i=0; i<botList.length; i++) {
 			bots.push(botList[i]);
+			color = botList[i].color;
 		}
 
 		// Update the status bar
 		// TODO: figure out what to do now that we have teams
 		$("#status #bot" + teamNum + "status .name").html(team.name);
-		$("#status #bot" + teamNum + "status .health").css("background-color", team.color);
-		$("#status #bot" + teamNum + "status .width").css("width", team.health * 2);
+		$("#status #bot" + teamNum + "status .health").css("background-color", color);
+		$("#status #bot" + teamNum + "status .width").css("width", 200); // TODO: rewrite to max health from props
 	}
 
 
@@ -183,6 +187,58 @@ var Server = function() {
 	}
 
 
+	/* Call the movement/collision callbacks for all the objects */
+	/* -------------------------------------------------- */
+
+	this.updateObjects = function(list, listName) {
+		// Move and check collisions for items
+		for (var i=0; i<list.length; i++) {
+			var obj = list[i];
+			var objProps = props[listName][obj.type];
+
+			// Call the item's movement callback
+			var movementFunction = props[listName][obj.type].movementCallback;
+			newPosition = movementFunction.call(obj, this, objProps);
+
+			// Check for collisions
+			var collisionState = server.collisionWeaponObjects(newPosition);
+
+			// We collided with something
+			if (server.collisionBoundary(newPosition) || collisionState.collision) {
+				// Call the item's collision callback
+				var collisionFunction = props[listName][obj.type].collisionCallback;
+				collisionFunction.call(obj, this, collisionState, objProps);
+			} else {
+				// We didn't collide with anything, so just update the coordinates
+				// TODO: callback for this?
+				obj.x = newPosition.x;
+				obj.y = newPosition.y;
+			}
+		}
+
+		// Remove items and weapons that asked to be removed
+		newList = [];
+
+		for (var i=0; i<list.length; i++) {
+			if (!list[i].remove) {
+				newList.push(list[i]);
+			}
+		}
+
+		switch (listName) {
+			case 'weapons':
+				weapons = [];
+				weapons = newList;
+				break;
+
+			case 'items':
+				items = [];
+				items = newList;
+				break;
+		}
+	}
+
+
 	/* Game loop */
 	/* -------------------------------------------------- */
 
@@ -196,75 +252,9 @@ var Server = function() {
 				ruleset.resetCollisionFlag(serverBots[i]);
 			}
 
-			// Move and check collisions for items
-			for (var i=0; i<items.length; i++) {
-				var item = items[i];
-				var itemProps = props.items[item.type];
-
-				// Call the item's movement callback
-				var movementFunction = props.items[item.type].movementCallback;
-				newPosition = movementFunction.call(item, this, itemProps);
-
-				// Check for collisions
-				var collisionState = server.collisionWeaponObjects(newPosition);
-
-				// We collided with something
-				if (server.collisionBoundary(newPosition) || collisionState.collision) {
-					// Call the item's collision callback
-					var collisionFunction = props.items[item.type].collisionCallback;
-					collisionFunction.call(item, this, collisionState, itemProps);
-				} else {
-					// We didn't collide with anything, so just update the coordinates
-					// TODO: callback for this?
-					item.x = newPosition.x;
-					item.y = newPosition.y;
-				}
-			}
-
-			// Move and check collisions for weapons
-			for (var i=0; i<weapons.length; i++) {
-				var weapon = weapons[i];
-				var weaponProps = props.weapons[weapon.type];
-
-				// Call the weapon's movement callback
-				var movementFunction = weaponProps.movementCallback;
-				newPosition = movementFunction.call(weapon, this, weaponProps);
-
-				// Check for collisions
-				var collisionState = server.collisionWeaponObjects(newPosition);
-
-				// We collided with something
-				if (server.collisionBoundary(newPosition) || collisionState.collision) {
-					// Call the weapon's collision callback
-					var collisionFunction = weaponProps.collisionCallback;
-					collisionFunction.call(weapon, this, collisionState, weaponProps);
-				} else {
-					// We didn't collide with anything, so just update the coordinates
-					// TODO: callback for this?
-					weapon.x = newPosition.x;
-					weapon.y = newPosition.y;
-				}
-			}
-
-			// Remove items and weapons that asked to be removed
-			newItems = [];
-			newWeapons = [];
-			for (var i=0; i<weapons.length; i++) {
-				if (!weapons[i].remove) {
-					newWeapons.push(weapons[i]);
-				}
-			}
-			for (var i=0; i<items.length; i++) {
-				if (!items[i].remove) {
-					newItems.push(items[i]);
-				}
-			}
-
-			// Clear the original arrays and assign them
-			weapons = [];
-			weapons = newWeapons;
-			items = [];
-			items = newItems;
+			// Move and update objects
+			this.updateObjects(items, "items");
+			this.updateObjects(weapons, "weapons");
 
 			// Clear state
 			state = {};
@@ -293,35 +283,32 @@ var Server = function() {
 			}
 
 			// Go through each bot
-			for (var b=0; b<serverBots.length; b++) {
-				var bot = serverBots[b];
-				bot.waitFire--;
-				if (bot.waitFire <= 0) {
-					bot.waitFire = 0;
-					bot.canShoot = true;
-				}
+			for (var i=0; i<serverBots.length; i++) {
+				var bot = serverBots[i];
+
+				// Do rule checking
+				ruleset.updateBot(bot);
 
 				// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
-				bots[b].state = state;
+				bots[i].state = state;
 
-				// Now run the bot
-				command = bots[b].run();
-
-				// Parse the command
+				// Now run the bot and parse the returned command
+				command = bots[i].run();
 				ruleset.parseCommand(command, bot);
 
 				// Normalize the returned angle
 				bot.angle = this.helpers.normalizeAngle(bot.angle);
 
 				// Copy the server bot data to the bots
-				bots[b].copy(bot);
+				bots[i].copy(bot);
 			}
 
-			// TODO: change to ruleset.gameOver()
 			if (!ruleset.gameOver()) {
 				// Draw everything
 				this.drawWorld(this.context);
 			} else {
+				paused = true;
+
 				// Get the winner
 				winner = ruleset.getWinner();
 				console.log("Game over: ", winner);
@@ -474,11 +461,17 @@ var Server = function() {
 	}
 
 	function drawHealth() {
-		for (i in serverBots) {
-			var bot = serverBots[i];
-			var botnum = parseInt(i) + 1;
+		var teamHealth = ruleset.updateHealth();
+		var numBots = ruleset.properties.botsPerTeam;
 
-			$("#status #bot" + botnum + "status .health").css("width", bot.health * 2);
+		var i = 0;
+		for (var key in teamHealth) {
+			var teamNum = i + 1;
+
+			// 200 is the width of the percentage bar
+			$("#status #bot" + teamNum + "status .health").css("width", (teamHealth[key] / (numBots * 100) * 200) + "px");
+
+			i++;
 		}
 	}
 
@@ -710,6 +703,10 @@ var Server = function() {
 
 	// these functions need to be modified to return copies of the arrays
 	// instead of the actual objects (which can then be modified)
+
+	this.getTeams = function() {
+		return teams.slice(0);
+	}
 
 	this.getBots = function() {
 		return serverBots.slice(0);
