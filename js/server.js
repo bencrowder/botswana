@@ -2,91 +2,80 @@
 /* by Ben Crowder and Chad Hansen */
 
 var Server = function() {
-	var ruleset = new Ruleset(
-		{'numPlayers':2
-		,'numBots':2
-		,'world': {'width':1000, 'height':600}
-		,'bots': {'angleStep':0.1, 'speed':2, 'radius':15}
-		,'bullets': {'speed':5, 'strength':5, 'waitTime':15,'numAllowed':5}
-		,'mines': {'strength':10, 'waitTime':25,'numAllowed':3}
-		});
+	var ruleset = new Ruleset(this);
+	var props = ruleset.properties;			// shorthand access
 
-	var NUM_PLAYERS = ruleset.get('NUM_PLAYERS');
-	var WORLD_WIDTH = ruleset.get('WORLD_WIDTH');
-	var WORLD_HEIGHT = ruleset.get('WORLD_HEIGHT');
-	var ANGLE_STEP = ruleset.get('BOT_ANGLE_STEP');
-	var SPEED = ruleset.get('BOT_SPEED');
-	var RADIUS = ruleset.get('BOT_RADIUS');
+	var tournamentIntervalId = 0;			// private
 
-	var bot_colors = ["#e95050", "#589ebc"]; // red, blue
-
-	var BULLET_COLOR = "#d2f783";
-	var BULLET_SPEED = ruleset.get('BULLET_SPEED');
-	var BULLET_STRENGTH = ruleset.get('BULLET_STRENGTH');
-	var BULLET_WAIT = ruleset.get('BULLET_WAIT');
-	var NUM_ALLOWED_BULLETS = ruleset.get('BULLET_NUM_ALLOWED');
-
-	var tournamentIntervalId = 0;			 // private
+	/* Object lists */
 
 	var bots = [];
-	var server_bots = [];
-	var fxparticles = [];
+	var serverBots = [];
+	var fxParticles = [];
 	var bullets = [];
 	var obstacles = [];
 
+	/* Game engine properties */
+
 	var paused = true;
-	var gamestarted = false;
-	var gameover = false;
+	var gameStarted = false;
+	var gameOver = false;
 	var clicks = 0;
 
-	/*
-	// load sound effects
-	var sounds = [];
-	sounds["collision"] = new Audio("audio/collision.wav");
-	sounds["hitbot"] = new Audio("audio/hitbot.wav");
-	sounds["hitobstacle"] = new Audio("audio/hitobstacle.wav");
-	sounds["laser"] = new Audio("audio/laser.wav");
-	*/
+
+	/* Set the canvas context */
+	/* -------------------------------------------------- */
 
 	this.setContext = function(context) {
 		this.context = context;
 	}
 
+
+	/* Load the user scripts */
+	/* -------------------------------------------------- */
+
 	this.loadScripts = function() {
 		// clear things out
-		bots = [];
-		server_bots = [];
-		bullets = [];
-		obstacles = [];
-		fxparticles = [];
 		paused = false;
-		gamestarted = false;
-		gameover = false;
+		gameStarted = false;
+		gameOver = false;
 		clicks = 0;
 
-		// load the scripts
-		var botsUnloaded = NUM_PLAYERS;	// counter to keep track of how many are left to load
+		bots = [];
+		serverBots = [];
+		bullets = [];
+		obstacles = [];
+		fxParticles = [];
 
-		for (var i=1; i<=NUM_PLAYERS; i++) {
+		// Reset everything
+		ruleset.resetGame();
+		
+		// Counter to keep track of how many are left to load, since we do things asynchronously
+		var scriptsUnloaded = props.numTeams;
+
+		// Load the scripts, one for each team
+		for (var i=1; i<=props.numTeams; i++) {
 			var url = $("#bot" + i + "url").val();
 
-			// get the file and execute it
+			// Load the script and execute it
 			$.ajax({
 				url: url,
 				dataType: 'script',
+
 				error: function() {
-					// find the bot with the bad URL and flag it
-					for (var i=1; i<=NUM_PLAYERS; i++) {
+					// Find the bot with the bad URL and flag it
+					for (var i=1; i<=props.numTeams; i++) {
 						if ($("#bot" + i + "url").val() == url) {
 							$("#bot" + i + "url").addClass("invalid_url");
 						}
 					}
 				},
-				success: function() {
-					botsUnloaded = botsUnloaded - 1;
 
-					// start the tournament once all these are loaded
-					if (botsUnloaded == 0) {
+				success: function() {
+					scriptsUnloaded--;
+
+					// Start the tournament once all these are loaded
+					if (scriptsUnloaded == 0) {
 						server.startTournament();
 					}
 				}
@@ -94,105 +83,113 @@ var Server = function() {
 		}
 	}
 
-	// public
-	this.registerBot = function(bot) {
-		// add bot to main array
-		bots.push(bot);
 
-		var botnum = bots.length;
+	/* Register a bot script */
+	/* -------------------------------------------------- */
 
-		bot.color = bot_colors[bots.length - 1];
+	this.registerBotScript = function(team) {
+		// Team #
+		var teamNum = bots.length + 1;
 
-		// update the status bar
-		$("#status #bot" + botnum + "status .name").html(bot.name);
-		$("#status #bot" + botnum + "status .health").css("background-color", bot.color);
-		$("#status #bot" + botnum + "status .width").css("width", bot.health * 2);
+		// Call the ruleset register function
+		var botList = ruleset.registerBotScript(teamNum, team);
+
+		// Add all returned bots to the main array
+		for (var i=0; i<botList.length; i++) {
+			bots.push(botList[i]);
+		}
+
+		// Update the status bar
+		// TODO: figure out what to do now that we have teams
+		$("#status #bot" + teamNum + "status .name").html(team.name);
+		$("#status #bot" + teamNum + "status .health").css("background-color", team.color);
+		$("#status #bot" + teamNum + "status .width").css("width", team.health * 2);
 	}
 
-	// public
+
+	/* Start the game */
+	/* -------------------------------------------------- */
+
 	this.startTournament = function() {
-		// remove invalid URL flags (if any)
+		// Remove invalid URL flags (if any)
 		$("header input").removeClass("invalid_url");
 
-		bots_state = [];
-		server_bots = [];
+		// Reset state
+		tempBotsState = [];
+		serverBots = [];
 
-		generateObstacles();
+		// Generate obstacles
+		obstacles = ruleset.generateObstacles();
 
-		// initial placement on map
-		for (i in bots) {
+		// Loop through each bot to initialize things
+		for (var i=0; i<bots.length; i++) {
 			var bot = bots[i];
 
-			bot.id = i;
-			bot.angle = Math.random() * Math.PI * 2;			// 0-360 degrees (in radians)
-			bot.health = 100;
-			bot.canShoot = true;
-			bot.waitFire = 0;
-			bot.bullets = NUM_ALLOWED_BULLETS;
-			bot.radius = RADIUS;
-			bot.hitByBullet = false;
+			// Initialize the bot
+			ruleset.initializeBot(bot, i);
 
-			botpos = this.getRandomPoint();
-			bot.x = botpos.x;
-			bot.y = botpos.y;
-			while (server.collisionBotObjects(bot)) {
-				botpos = this.getRandomPoint();
-				bot.x = botpos.x;
-				bot.y = botpos.y;
-			}
+			// Set initial placement on map
+			ruleset.setInitialPlacement(bot);
 
-			// init the world state
-			bot.state.world.width = WORLD_WIDTH;
-			bot.state.world.height = WORLD_HEIGHT;
+			// Init the world state for the bot
+			bot.state.world.width = props.world.width;
+			bot.state.world.height = props.world.height;
 
-			// keep track of initial state
-			bots_state.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
+			// Push the bot's state to the server list
+			tempBotsState.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
 
+			// Call the bot's setup function
 			bot.setup();
 		}
 
-		// update state for each bot
-		for (i in bots) {
-			bots[i].state.bots = bots_state;
+		// Loop through each bot again to give state to all bots
+		for (var i=0; i<bots.length; i++) {
+			bots[i].state.bots = tempBotsState;
 
-			// add obstacles to state
+			// Add obstacles to state
 			bots[i].state.obstacles = [];
 			for (j in obstacles) {
 				var o = obstacles[j];
 				bots[i].state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
 			}
 
+			// Make a copy of the bot for server usage
 			tempBot = new Bot(bots[i].name);
 			tempBot.copy(bots[i]);
-			server_bots.push(tempBot);
+			serverBots.push(tempBot);
 		}
 
-		// if we've got a pre-existing tournament, clear the interval
+		// If we've got a pre-existing tournament, clear the interval
 		if (tournamentIntervalId) {
 			clearInterval(tournamentIntervalId);
 		}
 		
-		// start the game
-		gamestarted = true;
+		// Start the game
+		gameStarted = true;
 
-		// we use the t variable because otherwise we lose scope
+		// We use the t variable because otherwise we lose scope
 		var t = this;
 		tournamentIntervalId = setInterval(function() {
-				t.runGame();
+			t.runGame();
 		}, 25);
 	}
 
-	// public
+
+	/* Game loop */
+	/* -------------------------------------------------- */
+
 	this.runGame = function() {
+		// Up the click counter
 		this.clicks++;
-		if (gamestarted && !paused) {
-			// do rule checking, collisions, update bullets, etc.
+
+		if (gameStarted && !paused) {
+			// Do rule checking, collisions, update bullets, etc.
 			updateBullets(this.context);
 
 			// get current state of bots
-			bots_state = [];
-			for (j in server_bots) {
-				bots_state.push({ "id": j, "name": server_bots[j].name, "x": server_bots[j].x, "y": server_bots[j].y, "angle": server_bots[j].angle, "health": server_bots[j].health });
+			botsState = [];
+			for (j in serverBots) {
+				botsState.push({ "id": j, "name": serverBots[j].name, "x": serverBots[j].x, "y": serverBots[j].y, "angle": serverBots[j].angle, "health": serverBots[j].health });
 			}
 
 			// get current state of obstacles
@@ -212,8 +209,8 @@ var Server = function() {
 			}
 
 			// run the bot
-			for (b in server_bots) {
-				var bot = server_bots[b];
+			for (b in serverBots) {
+				var bot = serverBots[b];
 				bot.waitFire--;
 				if (bot.waitFire <= 0) {
 					bot.waitFire = 0;
@@ -221,99 +218,15 @@ var Server = function() {
 				}
 
 				// update the bot's state (TODO: make copies instead of passing reference to the arrays)
-				bots[b].state.bots = bots_state;
+				bots[b].state.bots = botsState;
 				bots[b].state.obstacles = obstacles_state;
 				bots[b].state.bullets = bullets_state;
 
 				// now run the bot
 				command = bots[b].run();
 
-				// parse command here
-				switch (command) {
-					case "forward":
-						var pos = calcVector(bot.x, bot.y, bot.angle, SPEED);
-						oldX = bot.x;
-						oldY = bot.y;
-						bot.x = pos.x;
-						bot.y = pos.y;
-						if (!this.collisionBoundary(bot) && !this.collisionBotObjects(bot)) {
-							bot.collision = false;
-						} else {
-							bot.x = oldX;
-							bot.y = oldY;
-							bot.collision = true;
-							//playSound("collision");
-						}
-						break;
-
-					case "backward":
-						var pos = calcVector(bot.x, bot.y, bot.angle, -SPEED);
-						oldX = bot.x;
-						oldY = bot.y;
-						bot.x = pos.x;
-						bot.y = pos.y;
-						if (!this.collisionBoundary(bot) && !this.collisionBotObjects(bot)) {
-							bot.collision = false;
-						} else {
-							bot.x = oldX;
-							bot.y = oldY;
-							bot.collision = true;
-							//playSound("collision");
-						}
-						break;
-
-					case "left":
-						bot.angle += ANGLE_STEP;
-						break;
-
-					case "right":
-						bot.angle -= ANGLE_STEP;
-						break;
-
-					case "strafe-left":
-						var pos = calcVector(bot.x, bot.y, bot.angle - (Math.PI / 2), SPEED);
-						oldX = bot.x;
-						oldY = bot.y;
-						bot.x = pos.x;
-						bot.y = pos.y;
-						if (!this.collisionBoundary(bot) && !this.collisionBotObjects(bot)) {
-							bot.collision = false;
-						} else {
-							bot.x = oldX;
-							bot.y = oldY;
-							bot.collision = true;
-						}
-						break;
-
-					case "strafe-right":
-						var pos = calcVector(bot.x, bot.y, bot.angle + (Math.PI / 2), SPEED);
-						oldX = bot.x;
-						oldY = bot.y;
-						bot.x = pos.x;
-						bot.y = pos.y;
-						if (!this.collisionBoundary(bot) && !this.collisionBotObjects(bot)) {
-							bot.collision = false;
-						} else {
-							bot.x = oldX;
-							bot.y = oldY;
-							bot.collision = true;
-						}
-						break;
-
-					case "fire":
-						if (bot.bullets > 0 && bot.canShoot && bot.waitFire <= 0) {
-							//playSound("laser");
-							bot.bullets -= 1;
-							var pos = calcVector(bot.x, bot.y, bot.angle, RADIUS);
-							bullets.push({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id});
-							bot.canShoot = false;
-							bot.waitFire = BULLET_WAIT;
-						}
-						break;
-
-					case "wait":
-						break;
-				}
+				// Parse the command
+				ruleset.parseCommand(command, bot);
 
 				bot.angle = normalizeAngle(bot.angle);
 				// copy the server bot data to the bots
@@ -322,68 +235,22 @@ var Server = function() {
 
 
 			// draw the arena
-			if (!gameover) {
+			if (!gameOver) {
 				this.drawWorld(this.context);
 			}
 		}
 	}
 
-	function generateObstacles() {
-		var num_obstacles = (Math.random() * 3) + 2;
-
-		for (i=0; i<num_obstacles; i++) {
-			clear = false;
-			while (!clear) {
-				var p = server.getRandomPoint();
-				var width = (Math.random() * 80) + 25;
-				var height = (Math.random() * 80) + 25;
-
-				// check boundaries and adjust if necessary
-				if (p.x + width > (WORLD_WIDTH - 50)) {
-					width = WORLD_WIDTH - 50 - p.x;
-				}
-				if (p.y + height > (WORLD_HEIGHT - 50)) {
-					height = WORLD_HEIGHT - 50 - p.y;
-				}
-
-				// make sure we're not overlapping existing obstacles
-				if (obstacles.length > 0) {
-					var pos = { "x1": p.x, "y1": p.y, "x2": p.x + width, "y2": p.y + height };
-					var overlaps = false;
-
-					for (j in obstacles) {
-						var o = obstacles[j];
-						var o_pos = { "x1": o.x, "y1": o.y, "x2": o.x + o.width, "y2": o.y + o.height };
-					
-						if (pos.x1 <= o_pos.x2 && pos.x2 >= o_pos.x1 &&
-							pos.y1 <= o_pos.y2 && pos.y2 >= o_pos.y1) {
-							overlaps = true;
-							break;
-						}
-					}
-
-					if (overlaps) {
-						clear = false;
-					} else {
-						clear = true;
-					}
-				} else {
-					// there aren't any other obstacles yet
-					clear = true;
-				}
-			}
-
-			obstacles.push({ "x": p.x, "y": p.y, "width": width, "height": height });
-		}
-	}
-
 	function updateBullets(context) {
-		for (i in server_bots) {
-			server_bots[i].hitByBullet = false;
+		// Go through all the bots and reset their hitByBullet flag
+		for (i in serverBots) {
+			serverBots[i].hitByBullet = false;
 		}
+
+		// Go through each bullet to see if it hit anything
 		for (i in bullets) {
 			var bullet = bullets[i];
-			var pos = calcVector(bullet.x, bullet.y, bullet.angle, BULLET_SPEED);
+			var pos = calcVector(bullet.x, bullet.y, bullet.angle, props.ammo.bullets.speed);
 
 			var collision_state = server.collisionBulletObjects(pos);
 
@@ -400,14 +267,14 @@ var Server = function() {
 						//playSound("hitbot");
 
 						// decrease the health of the hit bot
-						bot = server_bots[collision_state.the_object];
-						bot.health -= BULLET_STRENGTH;
+						bot = serverBots[collision_state.the_object];
+						bot.health -= props.ammo.bullets.strength;
 						bot.hitByBullet = true;	// bot is responsible to unset this
 
 						// check to see if the bot has died
 						if (bot.health <= 0) {
 							paused = true;
-							gameover = true;
+							gameOver = true;
 
 							// figure out a more elegant way to do this
 							if (collision_state.the_object == 0) {
@@ -437,7 +304,7 @@ var Server = function() {
 				}
 
 				bot = server.getBotByID(bullet.owner);
-				if (bot.bullets < NUM_ALLOWED_BULLETS) {
+				if (bot.bullets < props.ammo.bullets.numAllowed) {
 					bot.bullets += 1;
 				}
 				bot.canShoot = true;
@@ -464,8 +331,8 @@ var Server = function() {
 		drawObstacles(context);
 
 		// draw bots
-		for (i in server_bots) {
-			var bot = server_bots[i];
+		for (i in serverBots) {
+			var bot = serverBots[i];
 
 			drawBot(bot.x, bot.y, bot.angle, bot.color, context);
 		}
@@ -481,20 +348,20 @@ var Server = function() {
 	}
 
 	function clearCanvas(context) {
-		context.clearRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+		context.clearRect(0, 0, props.world.width, props.world.height);
 	}
 
 	function drawGrid(context) {
 		context.beginPath();
 
-		for (var x = 20; x < WORLD_WIDTH; x += 20) {
+		for (var x = 20; x < props.world.width; x += 20) {
 			context.moveTo(x, 0);
-			context.lineTo(x, WORLD_HEIGHT);
+			context.lineTo(x, props.world.height);
 		}
 
-		for (var y = 20; y < WORLD_HEIGHT; y += 20) {
+		for (var y = 20; y < props.world.height; y += 20) {
 			context.moveTo(0, y);
-			context.lineTo(WORLD_WIDTH, y);
+			context.lineTo(props.world.width, y);
 		}
 
 		context.strokeStyle = "#333";
@@ -518,7 +385,7 @@ var Server = function() {
 	}
 
 	function drawBot(x, y, angle, color, context) {
-		var radius = RADIUS;
+		var radius = props.bots.radius;
 
 		context.save();
 		context.translate(x, y);
@@ -548,7 +415,7 @@ var Server = function() {
 		context.translate(x, y);
 		context.rotate(angle);
 
-		context.strokeStyle = BULLET_COLOR;
+		context.strokeStyle = props.ammo.bullets.color;
 		context.lineWidth = 2;
 
 		context.beginPath();
@@ -566,13 +433,13 @@ var Server = function() {
 		context.save();
 		context.lineWidth = 2;
 
-		for (i in fxparticles) {
-			var particle = fxparticles[i];
+		for (i in fxParticles) {
+			var particle = fxParticles[i];
 
 			particle.life--;
 			if (particle.life == 0) {
 				// delete from array
-				delete fxparticles[i];
+				delete fxParticles[i];
 			} else {
 				// draw
 				pos = calcVector(particle.x, particle.y, particle.angle, particle.speed);
@@ -594,8 +461,8 @@ var Server = function() {
 	}
 
 	function drawHealth() {
-		for (i in server_bots) {
-			var bot = server_bots[i];
+		for (i in serverBots) {
+			var bot = serverBots[i];
 			var botnum = parseInt(i) + 1;
 
 			$("#status #bot" + botnum + "status .health").css("width", bot.health * 2);
@@ -605,7 +472,7 @@ var Server = function() {
 	function drawPaused(context) {
 		context.beginPath();
 		context.fillStyle = "rgba(0, 0, 0, 0.3)";
-		context.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+		context.fillRect(0, 0, props.world.width, props.world.height);
 		context.fill();
 		context.closePath();
 
@@ -627,17 +494,17 @@ var Server = function() {
 		context.save();
 		context.beginPath();
 		context.fillStyle = "rgba(0, 0, 0, 0.3)";
-		context.fillRect(0, 0, WORLD_WIDTH, WORLD_HEIGHT);
+		context.fillRect(0, 0, props.world.width, props.world.height);
 		context.closePath();
 
 		// now do the champion banner
 		context.beginPath();
 		context.fillStyle = "rgba(0, 0, 0, 0.9)";
-		context.fillRect(0, 220, WORLD_WIDTH, 100);
+		context.fillRect(0, 220, props.world.width, 100);
 		context.moveTo(0, 220);
-		context.lineTo(WORLD_WIDTH, 220);
+		context.lineTo(props.world.width, 220);
 		context.moveTo(0, 320);
-		context.lineTo(WORLD_WIDTH, 320);
+		context.lineTo(props.world.width, 320);
 		context.strokeStyle = bots[winner].color;
 		context.lineWidth = 5;
 		context.stroke();
@@ -662,16 +529,16 @@ var Server = function() {
 		for (i=0; i<num_points; i++) {
 			var pos = calcVector(x, y, angle, distance);
 
-			// add particle to global fxparticles array
-			fxparticles.push({ "x": pos.x, "y": pos.y, "angle": angle, "speed": speed, "life": life, "color": color });
+			// add particle to global fxParticles array
+			fxParticles.push({ "x": pos.x, "y": pos.y, "angle": angle, "speed": speed, "life": life, "color": color });
 
 			angle += step;
 		}
 	}
 
 	this.togglePause = function() {
-		if (gameover) return;
-		if (!gamestarted) return;
+		if (gameOver) return;
+		if (!gameStarted) return;
 
 		if (paused) { 
 			paused = false;
@@ -683,11 +550,15 @@ var Server = function() {
 		}
 	}
 
+
+	/* Get a random point in the world*/
+	/* -------------------------------------------------- */
+
 	this.getRandomPoint = function() {
 		var pos = {};
 		var padding = 100;
-		pos.x = (Math.random() * (WORLD_WIDTH - (padding * 2))) + padding;
-		pos.y = (Math.random() * (WORLD_HEIGHT - (padding * 2))) + padding;
+		pos.x = (Math.random() * (props.world.width - (padding * 2))) + padding;
+		pos.y = (Math.random() * (props.world.height - (padding * 2))) + padding;
 
 		return pos;
 	}
@@ -701,14 +572,14 @@ var Server = function() {
 			bottom = point.y + point.radius;
 			topp = point.y - point.radius;
 
-			if (left <= 0 || topp <= 0 || right >= WORLD_WIDTH || bottom >= WORLD_HEIGHT) {
+			if (left <= 0 || topp <= 0 || right >= props.world.width || bottom >= props.world.height) {
 				rtnBool = true;
 			}
 		} else {
 			newX = point.x;
 			newY = point.y;
 
-			if (newX <= 0 || newY <= 0 || newX >= WORLD_WIDTH || newY >= WORLD_HEIGHT) {
+			if (newX <= 0 || newY <= 0 || newX >= props.world.width || newY >= props.world.height) {
 				rtnBool = true;
 			}	
 		}
@@ -721,7 +592,7 @@ var Server = function() {
 		dx = botB.x - botA.x;
 		dy = botB.y - botA.y;
 		dist = Math.sqrt(dx * dx + dy * dy);
-		if (2 * RADIUS > dist) {
+		if (2 * props.bots.radius > dist) {
 			rtnBool = true;
 		}
 		return rtnBool;
@@ -746,7 +617,7 @@ var Server = function() {
 		dx = bot.x - point.x;
 		dy = bot.y - point.y;
 		dist = Math.sqrt(dx * dx + dy * dy);
-		if (RADIUS > dist) { 
+		if (props.bots.radius > dist) { 
 			rtnBool = true;
 		}
 		return rtnBool;
@@ -755,8 +626,8 @@ var Server = function() {
 	this.collisionBulletObjects = function(bullet) {
 		var state = { "collision": false };
 
-		for (i in server_bots) {
-			if (this.collisionBot(server_bots[i], bullet)) {
+		for (i in serverBots) {
+			if (this.collisionBot(serverBots[i], bullet)) {
 				state.collision = true;
 				state.type = "bot";
 				state.the_object = i;
@@ -779,9 +650,9 @@ var Server = function() {
 	this.collisionBotObjects = function(bot) {
 		var rtnBool = false;
 
-		for (i in server_bots) {
-			if (server_bots[i].id != bot.id) {
-				if (this.collisionBots(bot, server_bots[i])) {
+		for (i in serverBots) {
+			if (serverBots[i].id != bot.id) {
+				if (this.collisionBots(bot, serverBots[i])) {
 					rtnBool = true;
 				}
 			}
@@ -808,18 +679,18 @@ var Server = function() {
 	}
 
 	this.getBotByID = function(id) {
-		return server_bots[id];
+		return serverBots[id];
 	}
 
 	// these functions need to be modified to return copies of the arrays
 	// instead of the actual objects (which can then be modified)
 
 	this.getBots = function() {
-		return server_bots.slice(0);
+		return serverBots.slice(0);
 	}
 
 	this.getParticles = function() {
-		return fxparticles.slice(0);
+		return fxParticles.slice(0);
 	}
 
 	this.getBullets = function() {
@@ -830,9 +701,38 @@ var Server = function() {
 		return obstacles.slice(0);
 	}
 
+	this.addBullet = function(bullet) {
+		bullets.push(bullet);
+	}
+
 	/*
 	function playSound(type) {
 		sounds[type].play();
 	}
 	*/
+
+	this.helpers = {};
+
+	this.helpers.normalizeAngle = function(theta) {
+		return theta % (2 * Math.PI);
+	};
+
+	this.helpers.distanceToPoint = function(x1, y1, x2, y2) {
+		var dx = x2 - x1;
+		var dy = y2 - y1;
+
+		return Math.sqrt(dx * dx + dy * dy);
+	};
+
+	this.helpers.angleToPoint = function(x1, y1, x2, y2) {
+		return Math.atan2(y2 - y1, x2 - x1);
+	};
+
+	this.helpers.calcVector = function(x, y, angle, magnitude) {
+		var pos = {};
+		pos.x = x + magnitude * Math.cos(angle);
+		pos.y = y + magnitude * Math.sin(angle);
+
+		return pos;
+	};
 }

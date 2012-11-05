@@ -7,5 +7,6 @@ SampleBot.prototype.setup = function() {};
 SampleBot.prototype.run = function() {};
 
 var samplebot = new SampleBot();
+samplebot.className = "SampleBot";
 
-registerBot(samplebot);
+registerBotScript(samplebot);

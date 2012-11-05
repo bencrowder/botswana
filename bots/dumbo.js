@@ -25,5 +25,6 @@ DumboBot.prototype.run = function() {
 };
 
 var dumbobot = new DumboBot();
+dumbobot.className = "DumboBot";
 
-server.registerBot(dumbobot);
+server.registerBotScript(dumbobot);

@@ -102,5 +102,6 @@ Destroyer.prototype.run = function() {
 };
 
 var destroyer = new Destroyer();
+destroyer.className = "Destroyer";
 
-server.registerBot(destroyer);
+server.registerBotScript(destroyer);

@@ -52,5 +52,6 @@ CrusherBot.prototype.run = function() {
 };
 
 var crusherbot = new CrusherBot();
+crusherbot.className = "CrusherBot";
 
-server.registerBot(crusherbot);
+server.registerBotScript(crusherbot);
