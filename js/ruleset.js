@@ -49,8 +49,6 @@ function Ruleset(server) {
 						bot.health -= properties.strength;
 						bot.hitByBullet = true;	// bot is responsible to unset this
 
-						// TODO: make sure we check for endgame conditions
-
 						// Create a red explosion
 						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 20, 5, 20, "#db4e22");
 						break;

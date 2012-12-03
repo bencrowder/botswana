@@ -98,7 +98,7 @@ Destroyer.prototype.run = function() {
 			}
 		}
 	}
-	return action;
+	return {'command': action, 'payload': {}}
 };
 
 var destroyer = new Destroyer();

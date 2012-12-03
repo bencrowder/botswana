@@ -10,19 +10,37 @@ CrusherBot.prototype.run = function() {
 	this.timer++;
 	target = undefined;
 
+	rtnCommand = '';
 	// get the opponent's information
+	teamStuff = this.state.payload;
+	if (typeof teamStuff.targets == 'undefined') {
+		teamStuff.targets = {}
+		myteam = [];
+		oppteam = [];
+		for (i in this.state.bots) {
+			var bot = this.state.bots[i];
+			if (bot.name != this.name) {
+				oppteam.push(bot.id);
+			} else {
+				myteam.push(bot.id);
+			}
+		}
+		for (i in myteam) {
+			teamStuff.targets[myteam[i]] = oppteam[i]
+		}
+	}
 	for (i in this.state.bots) {
 		var bot = this.state.bots[i];
-		if (bot.id != this.id) {
+		if (bot.id == teamStuff.targets[this.id]) {
 			target = bot;
 		}
 	}
 
 	if (this.hitByBullet) {
 		if (this.timer % 5 == 0) {
-			return "left";
+			rtnCommand = "left";
 		} else {
-			return "backward";
+			rtnCommand = "backward";
 		}
 	}
 
@@ -32,23 +50,24 @@ CrusherBot.prototype.run = function() {
 		dist = distanceToPoint(this.x, this.y, target.x, target.y);
 
 		if (dir > 0.05) {
-			return "right";
+			rtnCommand = "right";
 		} else if (dir < -0.05) {
-			return "left";
+			rtnCommand = "left";
 		} else {
 			if (this.timer % 15 == 0 && dist < 7 * this.radius) {
-				return "fire";
+				rtnCommand = "fire";
 			} else if (this.timer % 15 == 0) {
-				return "fire";
+				rtnCommand = "fire";
 			} else if (dist < 7 * this.radius) {
-				return "wait";
+				rtnCommand = "wait";
 			} else {	
-				return "forward";
+				rtnCommand = "forward";
 			}
 		}
 	} else {
-		return "wait";
+		rtnCommand = "wait";
 	}
+	return {'command': rtnCommand, 'team': {}}
 };
 
 var crusherbot = new CrusherBot();

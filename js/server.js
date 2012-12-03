@@ -285,6 +285,7 @@ var Server = function() {
 				state.weapons.push({ "x": w.x, "y": w.y, "angle": w.angle, "owner": w.owner, "type": w.type });
 			}
 
+			payloads = {}
 			// Go through each bot
 			for (var i=0; i<serverBots.length; i++) {
 				var bot = serverBots[i];
@@ -295,9 +296,18 @@ var Server = function() {
 				// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
 				bots[i].state = state;
 
+				if (payloads[bot.name]) {
+					bots[i].state.payload = payloads[bot.name]
+				} else {
+					bots[i].state.payload = {}
+				}
+
 				// Now run the bot and parse the returned command
 				command = bots[i].run();
-				ruleset.parseCommand(command, bot);
+				ruleset.parseCommand(command.command, bot);
+				if (typeof command.payload != 'undefined') {
+					payloads[bot.name] = command.payload;
+				}
 
 				// Normalize the returned angle
 				bot.angle = this.helpers.normalizeAngle(bot.angle);
