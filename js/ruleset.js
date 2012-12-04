@@ -35,7 +35,7 @@ function Ruleset(server) {
 			'strength': 5,
 			'waitTime': 5,
 			'numAllowed': 5,
-			'color': "#2fe783",
+			'color': "#c2e72f",
 			'movementCallback': function(server, properties) {
 				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
 			},
@@ -285,9 +285,9 @@ function Ruleset(server) {
 		// Simpler obstacle generation for now
 		obstacles = [
 			{ "x": 50, "y": 200, "width": 50, "height": 200 },
-			{ "x": 950, "y": 200, "width": 50, "height": 200 },
-			{ "x": 400, "y": 200, "width": 200, "height": 200 },
-			{ "x": 100, "y": 80, "width": 800, "height": 40 },
+			{ "x": 900, "y": 200, "width": 50, "height": 200 },
+			{ "x": 450, "y": 250, "width": 100, "height": 100 },
+			{ "x": 100, "y": 40, "width": 800, "height": 40 },
 			{ "x": 100, "y": 520, "width": 800, "height": 40 }
 		];
 
@@ -328,11 +328,11 @@ function Ruleset(server) {
 			var padding = 20;
 
 			// Clamp the rect to world boundaries
-			if (x + width > props.world.width) {
-				width = props.world.width - x;
+			if (x + width > this.properties.world.width) {
+				width = this.properties.world.width - x;
 			}
-			if (y + height > props.world.height) {
-				height = props.world.height - y;
+			if (y + height > this.properties.world.height) {
+				height = this.properties.world.height - y;
 			}
 		
 			// And get the random position	
@@ -342,12 +342,12 @@ function Ruleset(server) {
 			return pos;
 		};
 
-		botPos = this.getRandomPointWithinRect(200, 200, 200, 200);
+		botPos = this.getRandomPointWithinRect(100, 100, 250, 400);
 		bot.x = botPos.x;
 		bot.y = botPos.y;
 
 		while (this.server.collisionBotObjects(bot)) {
-			botPos = this.getRandomPointWithinRect(200, 200, 200, 200);
+			botPos = this.getRandomPointWithinRect(100, 100, 250, 400);
 			bot.x = botPos.x;
 			bot.y = botPos.y;
 		}
