@@ -323,6 +323,7 @@ function Ruleset(server) {
 	/* Updates object in place */
 
 	this.setInitialPlacement = function(bot) {
+		/*
 		this.getRandomPointWithinRect = function(x, y, width, height) {
 			var pos = {};
 			var padding = 20;
@@ -351,8 +352,8 @@ function Ruleset(server) {
 			bot.x = botPos.x;
 			bot.y = botPos.y;
 		}
+		*/
 
-		/*
 		// Get a random position
 		botPos = this.server.getRandomPoint();
 		bot.x = botPos.x;
@@ -364,7 +365,6 @@ function Ruleset(server) {
 			bot.x = botPos.x;
 			bot.y = botPos.y;
 		}
-		*/
 	};
 
 
