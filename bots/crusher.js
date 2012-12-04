@@ -33,6 +33,7 @@ CrusherBot.prototype.run = function() {
 			teamStuff.targets[myteam[i]] = oppteam[i]
 		}
 	}
+
 	for (i in this.state.bots) {
 		var bot = this.state.bots[i];
 		if (bot.id == teamStuff.targets[this.id]) {
@@ -45,7 +46,7 @@ CrusherBot.prototype.run = function() {
 		//dist = this.distanceToPoint(this.x, this.y, target.x, target.y);
 		dist = this.myDistanceToPoint(target.x, target.y);
 		//console.log(this.canShoot, this.weapons, dist, this.radius);
-		console.log(this.id, dir);
+		//console.log(this.id, dir, "xy", this.x, this.y, "txy", target.x, target.y);
 
 		if (dir.command != 'forward') {
 			rtnCommand = dir.command;

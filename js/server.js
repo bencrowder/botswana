@@ -416,7 +416,7 @@ var Server = function() {
 		dx = botB.x - botA.x;
 		dy = botB.y - botA.y;
 		dist = Math.sqrt(dx * dx + dy * dy);
-		if (2 * props.bots.radius > dist) {
+		if (botA.radius * botB.radius > dist) { // 2 * this.props.bots.radius
 			rtnBool = true;
 		}
 		return rtnBool;
@@ -454,7 +454,7 @@ var Server = function() {
 
 		dist = Math.sqrt(dx * dx + dy * dy);
 
-		return (props.bots.radius > dist);
+		return (bot.radius > dist);
 	}
 
 

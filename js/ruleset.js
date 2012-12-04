@@ -21,6 +21,7 @@ function Ruleset(server) {
 			'angleStep': 0.1,
 			'speed': 2,
 			'radius': 15,
+			'radiusMargin': 8,
 			'colors': [ "#e95050", "#589ebc" ]
 		}
 	};
@@ -36,6 +37,7 @@ function Ruleset(server) {
 			'waitTime': 5,
 			'numAllowed': 5,
 			'color': "#c2e72f",
+			'color2': "#d6750b",
 			'movementCallback': function(server, properties) {
 				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
 			},
@@ -50,12 +52,12 @@ function Ruleset(server) {
 						bot.hitByBullet = true;	// bot is responsible to unset this
 
 						// Create a red explosion
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 20, 5, 20, "#db4e22");
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
 						break;
 						
 					default:
 						// Collision with obstacle, item, or world boundary
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 20, 5, 20, "#96e0ff");
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#96e0ff");
 						break;
 				}
 
@@ -186,7 +188,7 @@ function Ruleset(server) {
 				bot.canShoot = false;
 				bot.waitFire = this.properties.weapons.bullet.waitTime;
 
-				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, this.properties.bots.radius);
+				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, bot.radius);
 
 				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "bullet", "remove": false });
 			}
@@ -314,7 +316,7 @@ function Ruleset(server) {
 			bot.weapons[key] = this.properties.weapons[key].numAllowed;
 		}
 
-		bot.radius = this.properties.bots.radius;
+		bot.radius = this.properties.bots.radius + ((Math.random() * this.properties.bots.radiusMargin) - this.properties.bots.radiusMargin / 2);
 	};
 
 

@@ -26,7 +26,7 @@ var Draw = function(context, server, width, height) {
 		for (i in bots) {
 			var bot = bots[i];
 
-			this.bot(bot.x, bot.y, bot.angle, bot.color);
+			this.bot(bot.x, bot.y, bot.angle, bot.color, bot.radius);
 		}
 
 		// draw weapons
@@ -57,15 +57,15 @@ var Draw = function(context, server, width, height) {
 			this.c.lineTo(this.width, y);
 		}
 
-		this.c.strokeStyle = "#333";
+		this.c.strokeStyle = "#282828";
 		this.c.stroke();
 	};
 
 	this.obstacles = function() {
 		this.c.save();
-		this.c.strokeStyle = "#666";
+		this.c.strokeStyle = "#33383a";
 		this.c.lineWidth = 3;
-		this.c.fillStyle = "rgba(80, 200, 255, 0.2)";
+		this.c.fillStyle = "rgba(140, 160, 180, 0.15)";
 
 		var obstacles = this.server.getObstacles();
 
@@ -80,9 +80,7 @@ var Draw = function(context, server, width, height) {
 		this.c.restore();
 	};
 
-	this.bot = function(x, y, angle, color) {
-		var radius = this.ruleset.properties.bots.radius;
-
+	this.bot = function(x, y, angle, color, radius) {
 		this.c.save();
 		this.c.translate(x, y);
 
@@ -100,7 +98,7 @@ var Draw = function(context, server, width, height) {
 		this.c.rotate(angle);
 		this.c.strokeStyle = "#fff";
 		this.c.moveTo(0, 0);
-		this.c.lineTo(20, 0);
+		this.c.lineTo(radius + 5, 0);
 		this.c.stroke();
 
 		this.c.restore();
@@ -108,16 +106,25 @@ var Draw = function(context, server, width, height) {
 
 	this.weapon = function(x, y, angle, type) {
 		this.c.save();
+		this.c.globalCompositeOperation = "lighter";
 		this.c.translate(x, y);
 		this.c.rotate(angle);
 
 		switch (type) {
 			case 'bullet':
-				this.c.strokeStyle = this.ruleset.properties.weapons.bullet.color;
 				this.c.lineWidth = 2;
+				// TODO: abstract this into ruleset
 
+				this.c.strokeStyle = this.ruleset.properties.weapons.bullet.color;
 				this.c.beginPath();
 				this.c.moveTo(1, 0);
+				this.c.lineTo(-6, 0);
+				this.c.closePath();
+				this.c.stroke();
+
+				this.c.strokeStyle = this.ruleset.properties.weapons.bullet.color2;
+				this.c.beginPath();
+				this.c.moveTo(-6, 0);
 				this.c.lineTo(-9, 0);
 				this.c.closePath();
 				this.c.stroke();
@@ -131,6 +138,7 @@ var Draw = function(context, server, width, height) {
 		particlesToRemove = [];
 
 		this.c.save();
+		this.c.globalCompositeOperation = "lighter";
 		this.c.lineWidth = 2;
 
 		var fxParticles = this.server.getParticles();
@@ -228,7 +236,7 @@ var Draw = function(context, server, width, height) {
 		this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
 		this.c.fillStyle = "#fff";
 		this.c.fillText("Champion: " + bots[winner].name, 70, 277);
-		this.bot(900, 268, 3 * Math.PI / 2, bots[winner].color);
+		this.bot(900, 268, 3 * Math.PI / 2, bots[winner].color, bots[winner].radius);
 		this.c.closePath();
 		this.c.restore();
 	};
