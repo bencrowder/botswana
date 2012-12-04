@@ -22,7 +22,7 @@ function Ruleset(server) {
 			'speed': 2,
 			'radius': 15,
 			'radiusMargin': 8,
-			'colors': [ "#e95050", "#589ebc" ]
+			'colors': [ "#c48244", "#3081b8" ]
 		}
 	};
 
@@ -238,7 +238,6 @@ function Ruleset(server) {
 	this.generateObstacles = function() {
 		var obstacles = [];
 
-		/*
 		for (i=0; i<this.properties.world.obstacles.num; i++) {
 			clear = false;
 
@@ -282,8 +281,8 @@ function Ruleset(server) {
 
 			obstacles.push({ "x": p.x, "y": p.y, "width": width, "height": height });
 		}
-		*/
 
+		/*
 		// Simpler obstacle generation for now
 		obstacles = [
 			{ "x": 50, "y": 200, "width": 50, "height": 200 },
@@ -292,6 +291,7 @@ function Ruleset(server) {
 			{ "x": 100, "y": 40, "width": 800, "height": 40 },
 			{ "x": 100, "y": 520, "width": 800, "height": 40 }
 		];
+		*/
 
 		return obstacles;
 	};

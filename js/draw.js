@@ -85,6 +85,7 @@ var Draw = function(context, server, width, height) {
 		this.c.translate(x, y);
 
 		this.c.fillStyle = color;
+		this.c.strokeStyle = "#fff";
 		this.c.lineWidth = 4;
 
 		// Draw filled/stroked circle
@@ -95,10 +96,12 @@ var Draw = function(context, server, width, height) {
 		this.c.stroke();
 
 		// Now draw the turret
+		this.c.beginPath();
+		this.c.strokeStyle = "#000";
 		this.c.rotate(angle);
-		this.c.strokeStyle = "#fff";
 		this.c.moveTo(0, 0);
 		this.c.lineTo(radius + 5, 0);
+		this.c.closePath();
 		this.c.stroke();
 
 		this.c.restore();
