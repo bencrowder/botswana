@@ -4,6 +4,9 @@ CrusherBot.prototype = new Bot("Crusher");
 
 CrusherBot.prototype.setup = function() {
 	this.timer = 0;			// keep track of how many clicks
+	this.attrStrength = 6;
+	this.safety = 6;
+	this.repStrength = 2;
 };
 
 CrusherBot.prototype.run = function() {
@@ -36,17 +39,8 @@ CrusherBot.prototype.run = function() {
 		}
 	}
 
-	if (this.hitByBullet) {
-		if (this.timer % 5 == 0) {
-			rtnCommand = "left";
-		} else {
-			rtnCommand = "backward";
-		}
-	}
-
 	if (target != undefined) {
-		target_angle = normalizeAngle(angleToPoint(this.x, this.y, target.x, target.y));
-		dir = this.angle - target_angle;
+		dir = this.getDirection(target);
 		dist = distanceToPoint(this.x, this.y, target.x, target.y);
 
 		if (dir > 0.05) {
@@ -54,12 +48,10 @@ CrusherBot.prototype.run = function() {
 		} else if (dir < -0.05) {
 			rtnCommand = "left";
 		} else {
-			if (this.timer % 15 == 0 && dist < 7 * this.radius) {
+			if (dist > 20 * this.radius) {
+				rtnCommand = "forward";
+			} else if (this.canShoot) {
 				rtnCommand = "fire";
-			} else if (this.timer % 15 == 0) {
-				rtnCommand = "fire";
-			} else if (dist < 7 * this.radius) {
-				rtnCommand = "wait";
 			} else {	
 				rtnCommand = "forward";
 			}
