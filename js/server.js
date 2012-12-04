@@ -413,10 +413,8 @@ var Server = function() {
 
 	this.collisionBots = function(botA, botB) {
 		var rtnBool = false;
-		dx = botB.x - botA.x;
-		dy = botB.y - botA.y;
-		dist = Math.sqrt(dx * dx + dy * dy);
-		if (botA.radius * botB.radius > dist) { // 2 * this.props.bots.radius
+		dist = distanceToPoint(botA.x, botA.y, botB.x, botB.y);
+		if (dist < botA.radius + botB.radius + 0.05) {
 			rtnBool = true;
 		}
 		return rtnBool;

@@ -43,10 +43,7 @@ CrusherBot.prototype.run = function() {
 
 	if (target != undefined) {
 		dir = this.getDirection(target, 0.05);
-		//dist = this.distanceToPoint(this.x, this.y, target.x, target.y);
 		dist = this.myDistanceToPoint(target.x, target.y);
-		//console.log(this.canShoot, this.weapons, dist, this.radius);
-		//console.log(this.id, dir, "xy", this.x, this.y, "txy", target.x, target.y);
 
 		if (dir.command != 'forward') {
 			rtnCommand = dir.command;
