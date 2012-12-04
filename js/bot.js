@@ -35,14 +35,15 @@ function Bot(botname) {
 		this.state = aBot.state;
 	}
 
-	this.getDirection = function(target) {
+	this.getDirection = function(target, threshold) {
 		// simplified path finding algorithm using potential fields.
 		// returns a target angle for the bot to point.
 		var targetAngle = this.angle;
-		var dist = distanceToPoint(this.x, this.y, target.x, target.y);
-		var angle = normalizeAngle(angleToPoint(this.x, this.y, target.x, target.y));
+		var dist = this.myDistanceToPoint(target.x, target.y);
+		var angle = server.helpers.normalizeAngle(angleToPoint(this.x, this.y, target.x, target.y));
 		var strength = typeof this.attrStrength !== 'undefined'? this.attrStrength : 5;
 		var repelStrength = typeof this.repStrength !== 'undefined'? this.repStrength : 2;
+		var threshold = typeof threshold !== 'undefined'? threshold : 0.05;
 		var dx = 0;
 		var dy = 0;
 
@@ -65,9 +66,9 @@ function Bot(botname) {
 			var obs = obstacles[i];
 			obsX = obs.x + (obs.width / 2);
 			obsY = obs.y + (obs.height / 2);
-			obsR = distanceToPoint(obsX, obsY, obs.x, obs.y);
-			var dist = distanceToPoint(this.x, this.y, obsX, obsY);
-			var angle = normalizeAngle(angleToPoint(this.x, this.y, obsX, obsY));
+			obsR = this.distanceToPoint(obsX, obsY, obs.x, obs.y);
+			var dist = this.myDistanceToPoint(obsX, obsY);
+			var angle = server.helpers.normalizeAngle(angleToPoint(this.x, this.y, obsX, obsY));
 			if (dist < obsR) {
 				dx += (-1.0 * Math.cos(angle)) * 100000000;
 				dy += (-1.0 * Math.sin(angle)) * 100000000;
@@ -79,8 +80,24 @@ function Bot(botname) {
 
 		// was there a change in my location
 		if (dx != 0 || dy != 0) {
-			targetAngle = normalizeAngle(angleToPoint(this.x, this.y, this.x + dx, this.y + dy));
+			targetAngle = server.helpers.normalizeAngle(angleToPoint(this.x, this.y, this.x + dx, this.y + dy));
 		}
-		return this.angle - targetAngle;
-	};
+		targetAngle = server.helpers.normalizeAngle(targetAngle - this.angle);
+		rtnCommand = 'right';
+		if (targetAngle > Math.PI)
+			rtnCommand = 'left';
+		if (targetAngle <= threshold || targetAngle >= ((2*Math.PI) - threshold)) {
+			rtnCommand = "forward";
+		}
+		// console.log(rtnCommand, this.id, "a", this.angle, "ta", targetAngle, "dir", this.angle - targetAngle, "loc", this.x, this.y);
+		return {'command':rtnCommand, 'angle':targetAngle};
+	}
+
+	this.myDistanceToPoint = function(x, y) {
+		return distanceToPoint(this.x, this.y, x, y);
+	}
+
+	this.distanceToPoint = function(x1, y1, x2, y2) {
+		return distanceToPoint(x1, y1, x2, y2);
+	}
 };

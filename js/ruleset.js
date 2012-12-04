@@ -138,11 +138,11 @@ function Ruleset(server) {
 		},
 
 		"left": function(bot) {
-			bot.angle += this.properties.bots.angleStep;
+			bot.angle -= this.properties.bots.angleStep;
 		},
 
 		"right": function(bot) {
-			bot.angle -= this.properties.bots.angleStep;
+			bot.angle += this.properties.bots.angleStep;
 		},
 
 		"strafe-left": function(bot) {
