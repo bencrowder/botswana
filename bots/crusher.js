@@ -4,9 +4,10 @@ CrusherBot.prototype = new Bot("Crusher");
 
 CrusherBot.prototype.setup = function() {
 	this.timer = 0;			// keep track of how many clicks
-	this.attrStrength = 6;
-	this.safety = 6;
-	this.repStrength = 2;
+	this.attrStrength = 7;
+	this.safety = 8;
+	this.repStrength = 2.5;
+	this.strafe = 50;
 };
 
 CrusherBot.prototype.run = function() {
@@ -40,10 +41,11 @@ CrusherBot.prototype.run = function() {
 	}
 
 	if (target != undefined) {
-		dir = this.getDirection(target, 0.06);
+		dir = this.getDirection(target, 0.05);
 		//dist = this.distanceToPoint(this.x, this.y, target.x, target.y);
 		dist = this.myDistanceToPoint(target.x, target.y);
 		//console.log(this.canShoot, this.weapons, dist, this.radius);
+		console.log(this.id, dir);
 
 		if (dir.command != 'forward') {
 			rtnCommand = dir.command;
@@ -52,9 +54,17 @@ CrusherBot.prototype.run = function() {
 				rtnCommand = "forward";
 			} else if (this.canShoot && this.weapons.bullet > 0) {
 				rtnCommand = "fire";
-			} else {	
-				rtnCommand = "strafe-left";
-			}
+			} else {
+				if (this.strafe > 25) {
+					rtnCommand = "strafe-left";
+				} else {
+					rtnCommand = "strafe-right";
+				}
+				this.strafe--;
+				if (this.strafe == 0) {
+					this.strafe = 50;
+				}
+			} 
 		}
 	} else {
 		rtnCommand = "wait";
