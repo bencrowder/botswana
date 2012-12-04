@@ -236,6 +236,7 @@ function Ruleset(server) {
 	this.generateObstacles = function() {
 		var obstacles = [];
 
+		/*
 		for (i=0; i<this.properties.world.obstacles.num; i++) {
 			clear = false;
 
@@ -279,6 +280,16 @@ function Ruleset(server) {
 
 			obstacles.push({ "x": p.x, "y": p.y, "width": width, "height": height });
 		}
+		*/
+
+		// Simpler obstacle generation for now
+		obstacles = [
+			{ "x": 50, "y": 200, "width": 50, "height": 200 },
+			{ "x": 950, "y": 200, "width": 50, "height": 200 },
+			{ "x": 400, "y": 200, "width": 200, "height": 200 },
+			{ "x": 100, "y": 80, "width": 800, "height": 40 },
+			{ "x": 100, "y": 520, "width": 800, "height": 40 }
+		];
 
 		return obstacles;
 	};
@@ -312,6 +323,36 @@ function Ruleset(server) {
 	/* Updates object in place */
 
 	this.setInitialPlacement = function(bot) {
+		this.getRandomPointWithinRect = function(x, y, width, height) {
+			var pos = {};
+			var padding = 20;
+
+			// Clamp the rect to world boundaries
+			if (x + width > props.world.width) {
+				width = props.world.width - x;
+			}
+			if (y + height > props.world.height) {
+				height = props.world.height - y;
+			}
+		
+			// And get the random position	
+			pos.x = (Math.random() * (width - (padding * 2))) + x + padding;
+			pos.y = (Math.random() * (height - (padding * 2))) + y + padding;
+			
+			return pos;
+		};
+
+		botPos = this.getRandomPointWithinRect(200, 200, 200, 200);
+		bot.x = botPos.x;
+		bot.y = botPos.y;
+
+		while (this.server.collisionBotObjects(bot)) {
+			botPos = this.getRandomPointWithinRect(200, 200, 200, 200);
+			bot.x = botPos.x;
+			bot.y = botPos.y;
+		}
+
+		/*
 		// Get a random position
 		botPos = this.server.getRandomPoint();
 		bot.x = botPos.x;
@@ -323,6 +364,7 @@ function Ruleset(server) {
 			bot.x = botPos.x;
 			bot.y = botPos.y;
 		}
+		*/
 	};
 
 
