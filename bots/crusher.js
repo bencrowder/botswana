@@ -40,25 +40,26 @@ CrusherBot.prototype.run = function() {
 	}
 
 	if (target != undefined) {
-		dir = this.getDirection(target);
-		dist = distanceToPoint(this.x, this.y, target.x, target.y);
+		dir = this.getDirection(target, 0.06);
+		//dist = this.distanceToPoint(this.x, this.y, target.x, target.y);
+		dist = this.myDistanceToPoint(target.x, target.y);
+		//console.log(this.canShoot, this.weapons, dist, this.radius);
 
-		if (dir > 0.05) {
-			rtnCommand = "right";
-		} else if (dir < -0.05) {
-			rtnCommand = "left";
+		if (dir.command != 'forward') {
+			rtnCommand = dir.command;
 		} else {
-			if (dist > 20 * this.radius) {
+			if (dist > 10 * this.radius) {
 				rtnCommand = "forward";
-			} else if (this.canShoot) {
+			} else if (this.canShoot && this.weapons.bullet > 0) {
 				rtnCommand = "fire";
 			} else {	
-				rtnCommand = "forward";
+				rtnCommand = "strafe-left";
 			}
 		}
 	} else {
 		rtnCommand = "wait";
 	}
+	//console.log(this.id, rtnCommand)
 	return {'command': rtnCommand, 'team': {}}
 };
 

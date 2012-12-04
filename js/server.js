@@ -582,7 +582,12 @@ var Server = function() {
 	this.helpers = {};
 
 	this.helpers.normalizeAngle = function(theta) {
-		return theta % (2 * Math.PI);
+		twopi = 2 * Math.PI;
+		if (theta < 0)
+			theta = twopi + theta;
+		else if (theta > twopi)
+			theta = theta - twopi;
+		return theta;
 	};
 
 	this.helpers.distanceToPoint = function(x1, y1, x2, y2) {
