@@ -33,4 +33,23 @@ ruleset.generateObstacles = function() {
 	return obstacles;
 };
 
+ruleset.setInitialPlacement = function(bot) {
+	var positions = [
+		{ 'x': 200, 'y': 140 },
+		{ 'x': 200, 'y': 180 },
+		{ 'x': 200, 'y': 220 },
+		{ 'x': 200, 'y': 260 },
+		{ 'x': 800, 'y': 320 },
+		{ 'x': 800, 'y': 360 },
+		{ 'x': 800, 'y': 400 },
+		{ 'x': 800, 'y': 440 },
+	];
+
+	bot.x = positions[bot.id].x;
+	bot.y = positions[bot.id].y;
+};
+
 server.setRuleset(ruleset);
+
+body = document.getElementsByTagName("body")[0];
+body.style.backgroundColor = "#000";
