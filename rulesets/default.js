@@ -33,7 +33,7 @@ function Ruleset(server) {
 	this.properties.weapons = {
 		'bullet': {
 			'speed': 5,
-			'strength': 5,
+			'strength': 4,
 			'waitTime': 5,
 			'numAllowed': 5,
 			'movementCallback': function(server, properties) {
