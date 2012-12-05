@@ -36,9 +36,8 @@ CrusherBot.prototype.run = function() {
 
 	rtnCommand = '';
 	// get the opponent's information
-	teamStuff = this.state.payload;
-	if (typeof teamStuff.targets == 'undefined') {
-		teamStuff.targets = {}
+	if (typeof this.state.payload.targets == 'undefined') {
+		this.state.payload.targets = {}
 		myteam = [];
 		oppteam = [];
 		for (i in this.state.bots) {
@@ -50,7 +49,7 @@ CrusherBot.prototype.run = function() {
 			}
 		}
 		for (i in myteam) {
-			teamStuff.targets[myteam[i]] = oppteam[i]
+			this.state.payload.targets[myteam[i]] = oppteam[i]
 		}
 	}
 
@@ -82,7 +81,7 @@ CrusherBot.prototype.run = function() {
 	} else {
 		rtnCommand = "wait";
 	}
-	//console.log(this.id, rtnCommand)
+	//console.log(this.id, rtnCommand, this.state.payload);
 	return {'command': rtnCommand, 'team': this.state.payload}
 };
 

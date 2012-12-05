@@ -62,10 +62,12 @@ function Ruleset(server) {
 				}
 
 				owner = server.getBotByID(this.owner);
-				if (owner.weapons[this.type] < properties.numAllowed) {
-					owner.weapons[this.type]++;
+				if (owner != undefined) {
+					if (owner.weapons[this.type] < properties.numAllowed) {
+						owner.weapons[this.type]++;
+					}
+					owner.canShoot = true;
 				}
-				owner.canShoot = true;
 			}
 		},
 		'mine': {
@@ -450,7 +452,7 @@ function Ruleset(server) {
 		var teamHealth = {};
 
 		// Loop through bots and calculate team totals
-		for (i=0; i<bots.length; i++) {
+		for (i=0; i< bots.length; i++) {
 			teamName = bots[i].name;
 			health = parseInt(bots[i].health);
 
@@ -459,7 +461,7 @@ function Ruleset(server) {
 			} else {
 				teamHealth[teamName] += health;
 			}
-		}	
+		}
 
 		return teamHealth;
 	};

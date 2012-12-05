@@ -11,7 +11,7 @@ var Server = function() {
 
 	/* Object lists */
 
-	var teams = [];							// teams
+	var teams = {};							// teams
 	var bots = [];							// bots
 	var serverBots = [];					// server copy of bot info
 	var weapons = [];						// damage-causing objects (bullets, mines, etc.)
@@ -46,7 +46,7 @@ var Server = function() {
 		gameOver = false;
 		clicks = 0;
 
-		teams = [];
+		teams = {};
 		bots = [];
 		serverBots = [];
 		weapons = [];
@@ -120,10 +120,13 @@ var Server = function() {
 
 	this.registerBotScript = function(team) {
 		// Team #
-		var teamNum = teams.length + 1;
+		var teamNum = Object.keys(teams).length + 1;
 
 		// Add this script
-		teams.push(team);
+		teams[team.className] = {
+			'bots': [],
+			'health': 0,
+		};
 
 		// Call the ruleset register function
 		var botList = ruleset.registerBotScript(teamNum, team);
@@ -135,6 +138,7 @@ var Server = function() {
 		for (var i=0; i<botList.length; i++) {
 			bots.push(botList[i]);
 			color = botList[i].color;
+			teams[team.className].bots.push(botList[i]);
 		}
 
 		// Update the status bar
@@ -319,7 +323,7 @@ var Server = function() {
 				state.weapons.push({ "x": w.x, "y": w.y, "angle": w.angle, "owner": w.owner, "type": w.type });
 			}
 
-			payloads = {}
+			payloads = {};
 			// Go through each bot
 			for (var i=0; i<serverBots.length; i++) {
 				var bot = serverBots[i];
@@ -349,7 +353,7 @@ var Server = function() {
 
 					// Copy the server bot data to the bots
 					bots[i].copy(bot);
-				}
+				} 
 			}
 
 			if (ruleset.gameOver()) {
@@ -508,7 +512,7 @@ var Server = function() {
 
 		// Check for collisions with bots
 		for (i in serverBots) {
-			if (this.collisionBot(serverBots[i], weapon)) {
+			if (serverBots[i].alive && this.collisionBot(serverBots[i], weapon)) {
 				state.collision = true;
 				state.type = "bot";
 				state.objectIndex = i;
@@ -539,7 +543,7 @@ var Server = function() {
 		var rtnBool = false;
 
 		for (i in serverBots) {
-			if (serverBots[i].id != bot.id) {
+			if (serverBots[i].alive && serverBots[i].id != bot.id) {
 				if (this.collisionBots(bot, serverBots[i])) {
 					rtnBool = true;
 				}
@@ -583,7 +587,7 @@ var Server = function() {
 	// instead of the actual objects (which can then be modified)
 
 	this.getTeams = function() {
-		return teams.slice(0);
+		return teams;
 	}
 
 	this.getBots = function() {
