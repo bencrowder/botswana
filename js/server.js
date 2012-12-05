@@ -54,40 +54,64 @@ var Server = function() {
 		obstacles = [];
 		fxParticles = [];
 
-		// Reset everything
-		ruleset.resetGame();
-		
-		// Counter to keep track of how many are left to load, since we do things asynchronously
-		var scriptsUnloaded = props.numTeams;
+		// Load the ruleset script and execute it
+		var rulesetUrl = $("#ruleset_url").val();
 
-		// Load the scripts, one for each team
-		for (var i=1; i<=props.numTeams; i++) {
-			var url = $("#bot" + i + "url").val();
+		$.ajax({
+			url: rulesetUrl,
+			dataType: 'script',
 
-			// Load the script and execute it
-			$.ajax({
-				url: url,
-				dataType: 'script',
+			error: function(data) {
+				// TODO: message
+				console.log("Uh-oh", data);
+			},
 
-				error: function() {
-					// Find the bot with the bad URL and flag it
-					for (var i=1; i<=props.numTeams; i++) {
-						if ($("#bot" + i + "url").val() == url) {
-							$("#bot" + i + "url").addClass("invalid_url");
+			success: function() {
+				// Init the ruleset
+				ruleset = new Ruleset(server);
+				props = ruleset.properties;			// shorthand access
+
+				// Set up the canvas (we need props.world.width/height)
+				var canvas = document.getElementById("canvas");
+				var context = canvas.getContext("2d");
+				server.setContext(context);
+
+				// Reset everything
+				ruleset.resetGame();
+				
+				// Counter to keep track of how many are left to load, since we do things asynchronously
+				var scriptsUnloaded = props.numTeams;
+
+				// Load the scripts, one for each team
+				for (var i=1; i<=props.numTeams; i++) {
+					var url = $("#bot" + i + "_url").val();
+
+					// Load the script and execute it
+					$.ajax({
+						url: url,
+						dataType: 'script',
+
+						error: function() {
+							// Find the bot with the bad URL and flag it
+							for (var i=1; i<=props.numTeams; i++) {
+								if ($("#bot" + i + "_url").val() == url) {
+									$("#bot" + i + "_url").addClass("invalid_url");
+								}
+							}
+						},
+
+						success: function() {
+							scriptsUnloaded--;
+
+							// Start the tournament once all these are loaded
+							if (scriptsUnloaded == 0) {
+								server.startTournament();
+							}
 						}
-					}
-				},
-
-				success: function() {
-					scriptsUnloaded--;
-
-					// Start the tournament once all these are loaded
-					if (scriptsUnloaded == 0) {
-						server.startTournament();
-					}
+					});
 				}
-			});
-		}
+			}
+		});
 	}
 
 

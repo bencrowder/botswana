@@ -100,7 +100,7 @@ var Draw = function(context, server, width, height) {
 		this.c.strokeStyle = "#000";
 		this.c.rotate(angle);
 		this.c.moveTo(0, 0);
-		this.c.lineTo(radius + 5, 0);
+		this.c.lineTo(radius + 3, 0);
 		this.c.closePath();
 		this.c.stroke();
 
