@@ -28,10 +28,10 @@ function Ruleset(server) {
 
 	this.properties.weapons = {
 		'bullet': {
-			'speed': 5,
-			'strength': 5,
-			'waitTime': 5,
-			'numAllowed': 5,
+			'speed': 8,
+			'strength': 3,
+			'waitTime': 15,
+			'numAllowed': 3,
 			'movementCallback': function(server, properties) {
 				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
 			},
