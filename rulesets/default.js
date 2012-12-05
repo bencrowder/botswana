@@ -653,6 +653,18 @@ function Ruleset(server) {
 	};
 
 	this.draw.paused = function() {
+		var lineWidth = 15;
+		var distanceBetween = 15;
+
+		var pauseWidth = lineWidth * 2 + distanceBetween;
+		var pauseHeight = 50;
+
+		var x1 = (this.width / 2) - (pauseWidth / 2);
+		var x2 = x1 + lineWidth + distanceBetween;
+
+		// A little higher than center
+		var y = (this.height / 2) - pauseHeight;
+
 		this.c.beginPath();
 		this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
 		this.c.fillRect(0, 0, this.width, this.height);
@@ -661,12 +673,14 @@ function Ruleset(server) {
 
 		this.c.save();
 		this.c.strokeStyle = "#fff";
-		this.c.lineWidth = 15;
+		this.c.lineWidth = lineWidth;
 		this.c.beginPath();
-		this.c.moveTo(487, 245);
-		this.c.lineTo(487, 295);
-		this.c.moveTo(513, 245);
-		this.c.lineTo(513, 295);
+
+		this.c.moveTo(x1, y);
+		this.c.lineTo(x1, y + pauseHeight);
+		this.c.moveTo(x2, y);
+		this.c.lineTo(x2, y + pauseHeight);
+
 		this.c.stroke();
 		this.c.closePath();
 		this.c.restore();
