@@ -206,6 +206,11 @@ var Draw = function(context, server, width, height) {
 
 	this.endgame = function(winner) {
 		var bots = this.server.getBots();
+		var team = undefined;
+		for (i in bots) {
+			if (bots[i].name == winner) team = bots[i];
+		}
+		if (team === undefined) return;
 
 		// transparent black
 		this.c.save();
@@ -222,7 +227,7 @@ var Draw = function(context, server, width, height) {
 		this.c.lineTo(this.width, 220);
 		this.c.moveTo(0, 320);
 		this.c.lineTo(this.width, 320);
-		this.c.strokeStyle = bots[winner].color; // TODO: fix
+		this.c.strokeStyle = team.color; // TODO: fix
 		this.c.lineWidth = 5;
 		this.c.stroke();
 		this.c.closePath();
@@ -232,8 +237,8 @@ var Draw = function(context, server, width, height) {
 		this.c.save();
 		this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
 		this.c.fillStyle = "#fff";
-		this.c.fillText("Champion: " + bots[winner].name, 70, 277);
-		this.bot(900, 268, 3 * Math.PI / 2, bots[winner].color, bots[winner].radius, 100);
+		this.c.fillText("Champion: " + team.name, 70, 277);
+		this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
 		this.c.closePath();
 		this.c.restore();
 	};

@@ -389,9 +389,9 @@ function Ruleset(server) {
 	this.gameOver = function() {
 		var teamHealth = this.updateHealth();
 
-		stillalive = false;
 		// If anyone is at health = 0, game over
 		for (var key in teamHealth) {
+			stillalive = false;
 			bots = server.getBots();
 			for (i in bots) {
 				if (bots[i].name == key && bots[i].alive){
@@ -412,13 +412,11 @@ function Ruleset(server) {
 		var teamHealth = this.updateHealth();
 
 		// If anyone is at health = 0, the other team is the winner.
-		var i = 1;
 		for (var key in teamHealth) {
-			if (teamHealth[key] > 0) return i;
-			i++;
+			if (teamHealth[key] > 0) return key;
 		}	
 
-		return -1;
+		return '';
 	};
 
 
