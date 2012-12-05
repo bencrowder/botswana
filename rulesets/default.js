@@ -36,6 +36,10 @@ function Ruleset(server) {
 			'strength': 4,
 			'waitTime': 5,
 			'numAllowed': 5,
+			'display': {
+				'length': 8,
+				'width': 2,
+			},
 			'movementCallback': function(server, properties) {
 				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
 			},

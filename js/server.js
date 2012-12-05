@@ -68,8 +68,8 @@ var Server = function() {
 
 			success: function() {
 				// Init the ruleset
-				ruleset = new Ruleset(server);
-				props = ruleset.properties;			// shorthand access
+				//ruleset = new Ruleset(server);
+				//props = ruleset.properties;			// shorthand access
 
 				// Set up the canvas (we need props.world.width/height)
 				var canvas = document.getElementById("canvas");
@@ -161,10 +161,14 @@ var Server = function() {
 		state.weapons = [];
 		state.items = [];
 
-		serverBots = [];
-
 		// Generate obstacles
 		obstacles = ruleset.generateObstacles();
+
+		// Create the initial serverBots array for placement
+		serverBots = [];
+		for (var i=0; i<bots.length; i++) {
+			serverBots.push(bots[i]);
+		}
 
 		// Loop through each bot to initialize things
 		for (var i=0; i<bots.length; i++) {
@@ -172,6 +176,11 @@ var Server = function() {
 
 			// Initialize the bot
 			ruleset.initializeBot(bot, i);
+		}
+
+		// Loop through each bot to set placement
+		for (var i=0; i<bots.length; i++) {
+			var bot = bots[i];
 
 			// Set initial placement on map
 			ruleset.setInitialPlacement(bot);
@@ -190,6 +199,7 @@ var Server = function() {
 		}
 
 		// Loop through each bot again to give state to all bots
+		serverBots = [];
 		for (var i=0; i<bots.length; i++) {
 			bots[i].state = state;
 
@@ -450,15 +460,15 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.collisionBots = function(botA, botB) {
-		var rtnBool = false;
+		var collided = false;
 
 		dist = this.helpers.distanceToPoint(botA.x, botA.y, botB.x, botB.y);
 
-		if (dist < botA.radius + botB.radius + 0.05) {
-			rtnBool = true;
+		if (dist < botA.radius + botB.radius) {
+			collided = true;
 		}
 
-		return rtnBool;
+		return collided;
 	}
 
 
@@ -488,12 +498,9 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.collisionBot = function(bot, point) {
-		dx = bot.x - point.x;
-		dy = bot.y - point.y;
+		dist = this.helpers.distanceToPoint(bot.x, bot.y, point.x, point.y);
 
-		dist = Math.sqrt(dx * dx + dy * dy);
-
-		return (bot.radius > dist);
+		return (dist < bot.radius);
 	}
 
 
@@ -540,25 +547,25 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.collisionBotObjects = function(bot) {
-		var rtnBool = false;
+		var collided = false;
 
 		for (i in serverBots) {
 			if (serverBots[i].alive && serverBots[i].id != bot.id) {
 				if (this.collisionBots(bot, serverBots[i])) {
-					rtnBool = true;
+					collided = true;
 				}
 			}
 		}
 
-		if (!rtnBool) {
+		if (!collided) {
 			for (i in obstacles) {
 				if (this.collisionObstacle(obstacles[i], bot)) {
-					rtnBool = true;
+					collided = true;
 				}
 			}
 		}
 
-		return rtnBool;
+		return collided;
 	}
 
 
@@ -622,6 +629,10 @@ var Server = function() {
 
 	this.getRuleset = function() {
 		return ruleset;
+	}
+
+	this.setRuleset = function(newRuleset) {
+		ruleset = newRuleset;
 	}
 
 	this.addWeapon = function(weapon) {

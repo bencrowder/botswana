@@ -112,19 +112,16 @@ var Draw = function(context, server, width, height) {
 
 	this.weapon = function(x, y, angle, type, owner) {
 		this.c.save();
-		this.c.globalCompositeOperation = "lighter";
 		this.c.translate(x, y);
 		this.c.rotate(angle);
 
 		switch (type) {
 			case 'bullet':
-				this.c.lineWidth = 2;
-				// TODO: abstract this into ruleset
-
+				this.c.lineWidth = this.ruleset.properties.weapons.bullet.display.width;
 				this.c.strokeStyle = this.ruleset.properties.bots.colors[this.server.getBotTeam(owner)];
 				this.c.beginPath();
 				this.c.moveTo(1, 0);
-				this.c.lineTo(-9, 0);
+				this.c.lineTo(-this.ruleset.properties.weapons.bullet.display.length, 0);
 				this.c.closePath();
 				this.c.stroke();
 
