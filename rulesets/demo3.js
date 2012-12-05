@@ -88,7 +88,10 @@ ruleset.draw.bot = function(x, y, angle, color, radius, health) {
 	this.c.restore();
 };
 
-
 server.setRuleset(ruleset);
 
 $("body").css("background", "#050505");
+
+// 3D transform
+$("#main").css("-webkit-perspective", "300px");
+$("#main .container").css("-webkit-transform", "rotateX(5deg) rotateY(2deg)");
