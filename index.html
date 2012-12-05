@@ -2,12 +2,14 @@
 <head>
 	<title>Botswana</title>
 
-	<link rel="stylesheet" href="css/botswana.css" type="text/css" media="screen" charset="utf-8" />	
+	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />	
 
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script> 
-	<script type="text/javascript" src="js/utils.js"></script> 
-	<script type="text/javascript" src="js/bot.js"></script> 
-	<script type="text/javascript" src="js/ruleset.js"></script> 
+	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script> 
+
+	<script type="text/javascript" src="bots/bot.js"></script> 
+
+	<script type="text/javascript" src="rulesets/default.js"></script> 
+
 	<script type="text/javascript" src="js/draw.js"></script> 
 	<script type="text/javascript" src="js/server.js"></script> 
 	<script type="text/javascript" src="js/botswana.js"></script> 
@@ -15,32 +17,50 @@
 
 <body>
 	<header>
-		<h1>Botswana: Javascript Bot Wars</h1>
+		<div class="container">
+			<div class="group">
+				<label>Team 1 script</label>
+				<input type="text" name="bot1url" id="bot1url" placeholder="URL" value="bots/destroyer.js" />
+			</div>
 
-		<label>Bot #1:</label> <input type="text" name="bot1url" id="bot1url" placeholder="URL" value="bots/destroyer.js" />
-		<label>Bot #2:</label> <input type="text" name="bot2url" id="bot2url" placeholder="URL" value="bots/crusher.js" />
+			<div class="group">
+				<label>Team 2 script</label>
+				<input type="text" name="bot2url" id="bot2url" placeholder="URL" value="bots/crusher.js" />
+			</div>
 
-		<input type="button" id="go_button" name="go_button" value="Start Tournament" />
+			<div class="group divided">
+				<label>Ruleset script</label>
+				<input type="text" name="bot2url" id="bot2url" placeholder="URL" value="rulesets/default.js" />
+			</div>
+
+			<input type="button" id="go_button" name="go_button" value="Start Tournament" />
+		</div>
 	</header>
 
-	<section id="status">
-		<div class="left" id="bot1status">
-			<span class="name">Player 1</span>
-			<span class="healthbar"><span class="health"></span></span>
-		</div>
+	<section id="main">
+		<div class="container">
+			<section id="status">
+				<div class="left" id="bot1status">
+					<span class="name">Team 1</span>
+					<span class="healthbar"><span class="health"></span></span>
+				</div>
 
-		<div class="right" id="bot2status">
-			<span class="name">Player 2</span>
-			<span class="healthbar"><span class="health"></span></span>
-		</div>
-	</section>
+				<div class="right" id="bot2status">
+					<span class="name">Team 2</span>
+					<span class="healthbar"><span class="health"></span></span>
+				</div>
+			</section>
 
-	<section id="container">
-		<canvas width="1000" height="600" id="canvas" />
+			<section id="wrapper">
+				<canvas width="1000" height="600" id="canvas" />
+			</section>
+		</div>
 	</section>
 
 	<footer>
-		By <a href="http://bencrowder.net/">Ben Crowder</a> and <a href="http://chadgh.com/">Chad Hansen</a>.
+		<div class="container">
+			By <a href="http://bencrowder.net/">Ben Crowder</a> and <a href="http://chadgh.com/">Chad Hansen</a>.
+		</div>
 	</footer>
 </body>
 

@@ -341,7 +341,7 @@ var Server = function() {
 		var step = (2 * Math.PI) / num_points;
 
 		for (i=0; i<num_points; i++) {
-			var pos = calcVector(x, y, angle, distance);
+			var pos = this.helpers.calcVector(x, y, angle, distance);
 
 			// add particle to global fxParticles array
 			fxParticles.push({ "x": pos.x, "y": pos.y, "angle": angle, "speed": speed, "life": life, "color": color });

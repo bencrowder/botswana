@@ -1,0 +1,54 @@
+/* Botswana */
+
+*							{ -moz-box-sizing: border-box; box-sizing: border-box; }
+
+body						{ font-family: "Lucida Grande", Helvetica, Arial, sans-serif; margin: 0; font-size: .8em; background: #161616; color: #fff; }
+
+.container					{ width: 1010px; margin: 0px auto; }
+
+
+/* Header */
+/* -------------------------------------------------- */
+
+header						{ background: #111; padding: 24px 0 12px; border-bottom: solid 1px #1e1e1e; }
+
+header .group				{ overflow: hidden; position: relative; display: inline-block; }
+
+header label				{ color: #3c444e; font-weight: bold; margin-right: 3px; font-size: .8em; position: absolute; top: 5px; left: 5px; text-shadow: 1px 1px #111c22; text-transform: uppercase; }
+header input[type=text]		{ width: 200px; margin-right: 15px; font-size: 1em; font-weight: bold; background: #1d1d1d; border: solid 1px #1d1d1d; -moz-border-radius: 3px; border-radius: 3px; color: #678aa2; padding: 3px; padding-top: 18px; }
+header input[type=text]:focus	{ border: solid 1px #444; outline: none; }
+
+header input[type=button]	{ background: #435669; color: #fff; padding: 5px 10px 6px; -moz-border-radius: 5px; border-radius: 5px; border: none; font-size: 1em; font-weight: bold; line-height: 1em; cursor: pointer; float: right; }
+header input[type=button]:hover	{ background: #4e85bb; }
+header input[type=button]:focus	{ outline: none; }
+
+.invalid_url				{ border: solid 1px #f00; background: #fdd; color: #f00; }
+
+
+/* Status bar */
+/* -------------------------------------------------- */
+
+section#status				{ margin-top: 20px; background: #1f1f1f; clear: both; overflow: hidden; color: #fff; font-weight: bold; -moz-border-radius: 0 0 5px 5px; border-radius: 5px 5px 0 0; border: solid 5px #111; }
+
+.name						{ position: relative; top: -2; margin-right: 5px; display: inline-block;  text-align: right; }
+.left						{ float: left; padding: 4px 8px; }
+.right						{ float: right; padding: 4px 8px; }
+
+.healthbar					{ background: #000; width: 200px; height: 16px; display: inline-block; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; position: relative; top: 2px; }
+.health						{ width: 0px; height: 16px; display: inline-block; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; -webkit-transition: all .5s ease-in-out; -moz-transition: all .5s ease-in-out; -o-transition: all .5s ease-in-out; -webkit-transition: all .5s ease-in-out; transition: all .5s ease-in-out; }
+
+
+/* Canvas */
+/* -------------------------------------------------- */
+
+#wrapper					{ -moz-border-radius: 0 0 5px 5px; border-radius: 0 0 5px 5px; border-style: solid; border-width: 0 5px 5px 5px; border-color: #111; }
+
+canvas						{ background: #000; -moz-border-radius: 0 0 5px 5px; border-radius: 0 0 5px 5px; }
+
+
+/* Footer */
+/* -------------------------------------------------- */
+footer						{ font-size: .7em; color: #222; margin: 3px 0 20px; text-align: right; }
+footer a					{ font-weight: bold; color: #222; text-decoration: none; }
+footer a:hover				{ text-decoration: underline; }
+

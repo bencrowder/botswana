@@ -155,7 +155,7 @@ var Draw = function(context, server, width, height) {
 				delete fxParticles[i];
 			} else {
 				// draw
-				pos = calcVector(particle.x, particle.y, particle.angle, particle.speed);
+				pos = this.server.helpers.calcVector(particle.x, particle.y, particle.angle, particle.speed);
 
 				this.c.beginPath();
 				this.c.strokeStyle = particle.color;
