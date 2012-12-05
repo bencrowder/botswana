@@ -1,9 +1,7 @@
-/* Test ruleset, used for development */
+/* Demo ruleset #1 */
 
 var ruleset = server.getRuleset();
 ruleset = new Ruleset(server);
-
-ruleset.properties.name = "test";
 
 ruleset.properties.botsPerTeam = 4;
 
@@ -50,6 +48,3 @@ ruleset.setInitialPlacement = function(bot) {
 };
 
 server.setRuleset(ruleset);
-
-body = document.getElementsByTagName("body")[0];
-body.style.backgroundColor = "#000";

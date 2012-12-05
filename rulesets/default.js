@@ -41,7 +41,7 @@ function Ruleset(server) {
 				'width': 2,
 			},
 			'movementCallback': function(server, properties) {
-				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
+				return server.helpers.calcVector(this.x, this.y, this.angle, this.speed);
 			},
 			'collisionCallback': function(server, collision, properties) {
 				this.remove = true;
@@ -194,7 +194,7 @@ function Ruleset(server) {
 
 				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, bot.radius);
 
-				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "bullet", "remove": false });
+				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "bullet", "speed": this.properties.weapons.bullet.speed, "remove": false });
 			}
 		},
 
@@ -532,23 +532,26 @@ function Ruleset(server) {
 	};
 
 	this.draw.obstacles = function() {
-		this.c.save();
-		this.c.strokeStyle = "#33383a";
-		this.c.lineWidth = 3;
-		this.c.fillStyle = "rgba(140, 160, 180, 0.15)";
-
 		var obstacles = this.server.getObstacles();
 
-		for (i in obstacles) {
-			var obstacle = obstacles[i];
+		this.c.save();
 
-			this.c.beginPath();
-			this.c.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-			this.c.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+		for (i in obstacles) {
+			this.obstacle(obstacles[i]);
 		}
 
 		this.c.restore();
 	};
+
+	this.draw.obstacle = function(obstacle) {
+		this.c.strokeStyle = "#33383a";
+		this.c.lineWidth = 3;
+		this.c.fillStyle = "rgba(140, 160, 180, 0.15)";
+
+		this.c.beginPath();
+		this.c.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+		this.c.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+	}
 
 	this.draw.bot = function(x, y, angle, color, radius, health) {
 		this.c.save();

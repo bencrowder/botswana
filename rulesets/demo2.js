@@ -1,8 +1,6 @@
-/* Test ruleset, used for development */
+/* Demo ruleset #2 */
 
 var ruleset = new Ruleset(server);
-
-ruleset.properties.name = "test";
 
 ruleset.properties.botsPerTeam = 4;
 
