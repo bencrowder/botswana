@@ -195,10 +195,10 @@ var Draw = function(context, server, width, height) {
 		this.c.strokeStyle = "#fff";
 		this.c.lineWidth = 15;
 		this.c.beginPath();
-		this.c.moveTo(482, 250);
-		this.c.lineTo(482, 300);
-		this.c.moveTo(508, 250);
-		this.c.lineTo(508, 300);
+		this.c.moveTo(487, 245);
+		this.c.lineTo(487, 295);
+		this.c.moveTo(513, 245);
+		this.c.lineTo(513, 295);
 		this.c.stroke();
 		this.c.closePath();
 		this.c.restore();
