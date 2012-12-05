@@ -32,8 +32,6 @@ function Ruleset(server) {
 			'strength': 5,
 			'waitTime': 5,
 			'numAllowed': 5,
-			'color': "#f00",
-			'color2': "#f33",
 			'movementCallback': function(server, properties) {
 				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
 			},
@@ -58,10 +56,12 @@ function Ruleset(server) {
 				}
 
 				owner = server.getBotByID(this.owner);
-				if (owner.weapons[this.type] < properties.numAllowed) {
-					owner.weapons[this.type]++;
+				if (owner != undefined) {
+					if (owner.weapons[this.type] < properties.numAllowed) {
+						owner.weapons[this.type]++;
+					}
+					owner.canShoot = true;
 				}
-				owner.canShoot = true;
 			}
 		},
 	};
@@ -220,11 +220,13 @@ function Ruleset(server) {
 	this.generateObstacles = function() {
 		// Simpler obstacle generation for now
 		var obstacles = [
+			/*
 			{ "x": 50, "y": 200, "width": 50, "height": 200 },
 			{ "x": 900, "y": 200, "width": 50, "height": 200 },
 			{ "x": 450, "y": 250, "width": 100, "height": 100 },
 			{ "x": 100, "y": 40, "width": 800, "height": 40 },
 			{ "x": 100, "y": 520, "width": 800, "height": 40 }
+			*/
 		];
 
 		return obstacles;
@@ -393,7 +395,7 @@ function Ruleset(server) {
 			} else {
 				teamHealth[teamName] += health;
 			}
-		}	
+		}
 
 		return teamHealth;
 	};

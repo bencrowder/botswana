@@ -36,8 +36,6 @@ function Ruleset(server) {
 			'strength': 5,
 			'waitTime': 5,
 			'numAllowed': 5,
-			'color': "#c2e72f",
-			'color2': "#d6750b",
 			'movementCallback': function(server, properties) {
 				return server.helpers.calcVector(this.x, this.y, this.angle, properties.speed);
 			},
@@ -452,7 +450,7 @@ function Ruleset(server) {
 		var teamHealth = {};
 
 		// Loop through bots and calculate team totals
-		for (i=0; i< bots.length; i++) {
+		for (i=0; i<bots.length; i++) {
 			teamName = bots[i].name;
 			health = parseInt(bots[i].health);
 
