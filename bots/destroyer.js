@@ -27,27 +27,29 @@ Destroyer.prototype.run = function() {
 	// to I have a target opponent selected
 	if (this.opponent >= 0) {
 		var target = this.state.bots[this.opponent];
-		var dir = this.getDirection(target);
-
-		// if I am hurt bad and my health is less than my opponents, retreat
-		if (this.health < 50 && this.health < this.state.bots[this.opponent].health) {
-			if (this.clicks % 3 == 0) {
-				action = 'backward';
-			} else if (this.canShoot) {
-				action = 'fire';
-			} else {
-				action = 'left';
-			}
+		if (target == undefined) {
+			this.opponent = -1;
 		} else {
-			if (dir > 0.05) {
-				action = 'right';
-			} else if (dir < -0.05) {
-				action = 'left';
-			} else {
-				if (this.canShoot) {
+			var dir = this.getDirection(target);
+
+			// if I am hurt bad and my health is less than my opponents, retreat
+			if (this.health < 50 && this.health < this.state.bots[this.opponent].health) {
+				if (this.clicks % 3 == 0) {
+					action = 'backward';
+				} else if (this.canShoot) {
 					action = 'fire';
 				} else {
-					action = 'forward';
+					action = 'left';
+				}
+			} else {
+				if (dir.command != 'forward') {
+					action = dir.command;
+				} else {
+					if (this.canShoot) {
+						action = 'fire';
+					} else {
+						action = 'forward';
+					}
 				}
 			}
 		}

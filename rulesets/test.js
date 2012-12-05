@@ -321,7 +321,7 @@ function Ruleset(server) {
 
 		// If anyone is at health = 0, game over
 		for (var key in teamHealth) {
-			if (teamHealth[key] == 0) return true;
+			if (teamHealth[key] <= 0) return true;
 		}	
 
 		return false;
@@ -334,10 +334,10 @@ function Ruleset(server) {
 	this.getWinner = function() {
 		var teamHealth = this.updateHealth();
 
-		// If anyone is at health = 0, game over
+		// If anyone is at health = 0, the other team is the winner.
 		var i = 1;
 		for (var key in teamHealth) {
-			if (teamHealth[key] != 0) return i;
+			if (teamHealth[key] > 0) return i;
 			i++;
 		}	
 

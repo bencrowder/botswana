@@ -26,7 +26,9 @@ var Draw = function(context, server, width, height) {
 		for (i in bots) {
 			var bot = bots[i];
 
-			this.bot(bot.x, bot.y, bot.angle, bot.color, bot.radius);
+			if (bot.alive) {
+				this.bot(bot.x, bot.y, bot.angle, bot.color, bot.radius);
+			}
 		}
 
 		// draw weapons

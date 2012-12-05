@@ -16,6 +16,7 @@ function Bot(botname) {
 	this.collided = false	// boolean
 	this.hitByBullet;		// boolean
 	this.radius;			// size of bot
+	this.alive = true;		// is the bot alive
 
 	this.state = { world: {}, bots: [], weapons: [], items: [], obstacles: [] };
 
@@ -33,11 +34,14 @@ function Bot(botname) {
 		this.hitByBullet = aBot.hitByBullet;
 		this.radius = aBot.radius;
 		this.state = aBot.state;
+		this.alive = aBot.alive;
 	}
 
 	this.getDirection = function(target, threshold) {
 		// simplified path finding algorithm using potential fields.
 		// returns a target angle for the bot to point.
+		if (target == undefined) 
+			return {'command': 'error', 'angle': 0};
 		var targetAngle = this.angle;
 		var dist = this.myDistanceToPoint(target.x, target.y);
 		var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, target.x, target.y));

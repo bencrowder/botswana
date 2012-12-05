@@ -385,9 +385,16 @@ function Ruleset(server) {
 	this.gameOver = function() {
 		var teamHealth = this.updateHealth();
 
+		stillalive = false;
 		// If anyone is at health = 0, game over
 		for (var key in teamHealth) {
-			if (teamHealth[key] == 0) return true;
+			bots = server.getBots();
+			for (i in bots) {
+				if (bots[i].name == key && bots[i].alive){
+					stillalive = true;
+				}
+			}
+			if (teamHealth[key] <= 0 && !stillalive) return true;
 		}	
 
 		return false;
@@ -400,10 +407,10 @@ function Ruleset(server) {
 	this.getWinner = function() {
 		var teamHealth = this.updateHealth();
 
-		// If anyone is at health = 0, game over
+		// If anyone is at health = 0, the other team is the winner.
 		var i = 1;
 		for (var key in teamHealth) {
-			if (teamHealth[key] != 0) return i;
+			if (teamHealth[key] > 0) return i;
 			i++;
 		}	
 
@@ -427,6 +434,9 @@ function Ruleset(server) {
 		if (bot.waitFire <= 0) {
 			bot.waitFire = 0;
 			bot.canShoot = true;
+		}
+		if (bot.health <= 0) {
+			bot.alive = false;
 		}
 	};
 

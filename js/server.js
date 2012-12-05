@@ -292,7 +292,17 @@ var Server = function() {
 
 			// Get current state of bots
 			for (var i=0; i<serverBots.length; i++) {
-				state.bots.push({ "id": i, "name": serverBots[i].name, "x": serverBots[i].x, "y": serverBots[i].y, "angle": serverBots[i].angle, "health": serverBots[i].health });
+				if (serverBots[i].alive) {
+					state.bots.push({ 
+						"id": i, 
+						"name": serverBots[i].name,
+						"x": serverBots[i].x,
+						"y": serverBots[i].y,
+						"angle": serverBots[i].angle,
+						"health": serverBots[i].health,
+						"alive": serverBots[i].alive,
+					});
+				}
 			}
 
 			// Get current state of obstacles
@@ -317,27 +327,29 @@ var Server = function() {
 				// Do rule checking
 				ruleset.updateBot(bot);
 
-				// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
-				bots[i].state = state;
+				if (bot.alive) {
+					// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
+					bots[i].state = state;
 
-				if (payloads[bot.name]) {
-					bots[i].state.payload = payloads[bot.name]
-				} else {
-					bots[i].state.payload = {}
+					if (payloads[bot.name]) {
+						bots[i].state.payload = payloads[bot.name]
+					} else {
+						bots[i].state.payload = {}
+					}
+
+					// Now run the bot and parse the returned command
+					command = bots[i].run();
+					ruleset.parseCommand(command.command, bot);
+					if (typeof command.payload != 'undefined') {
+						payloads[bot.name] = command.payload;
+					}
+
+					// Normalize the returned angle
+					bot.angle = this.helpers.normalizeAngle(bot.angle);
+
+					// Copy the server bot data to the bots
+					bots[i].copy(bot);
 				}
-
-				// Now run the bot and parse the returned command
-				command = bots[i].run();
-				ruleset.parseCommand(command.command, bot);
-				if (typeof command.payload != 'undefined') {
-					payloads[bot.name] = command.payload;
-				}
-
-				// Normalize the returned angle
-				bot.angle = this.helpers.normalizeAngle(bot.angle);
-
-				// Copy the server bot data to the bots
-				bots[i].copy(bot);
 			}
 
 			if (ruleset.gameOver()) {
@@ -347,6 +359,7 @@ var Server = function() {
 				winner = ruleset.getWinner();
 
 				// Endgame
+				draw.world();
 				draw.health();
 				draw.endgame(winner);
 				return false;

@@ -4,11 +4,31 @@ CrusherBot.prototype = new Bot("Crusher");
 
 CrusherBot.prototype.setup = function() {
 	this.timer = 0;			// keep track of how many clicks
-	this.attrStrength = 7;
+	this.attrStrength = 8;
 	this.safety = 8;
 	this.repStrength = 2.5;
 	this.strafe = 50;
 };
+
+CrusherBot.prototype.acquireTarget = function() {
+	target = undefined;
+	for (i in this.state.bots) {
+		var bot = this.state.bots[i];
+		if (bot.id == this.state.payload.targets[this.id]) {
+			target = bot;
+		}
+	}
+	if (typeof target == 'undefined') {
+		for (i in this.state.bots) {
+			var bot = this.state.bots[i];
+			if (bot.name != this.name) {
+				this.state.payload.targets[this.id] = bot.id;
+				target = bot;
+			}
+		}
+	}
+	return target;
+}
 
 CrusherBot.prototype.run = function() {
 	this.timer++;
@@ -34,12 +54,7 @@ CrusherBot.prototype.run = function() {
 		}
 	}
 
-	for (i in this.state.bots) {
-		var bot = this.state.bots[i];
-		if (bot.id == teamStuff.targets[this.id]) {
-			target = bot;
-		}
-	}
+	target = this.acquireTarget();
 
 	if (target != undefined) {
 		dir = this.getDirection(target, 0.05);
@@ -68,7 +83,7 @@ CrusherBot.prototype.run = function() {
 		rtnCommand = "wait";
 	}
 	//console.log(this.id, rtnCommand)
-	return {'command': rtnCommand, 'team': {}}
+	return {'command': rtnCommand, 'team': this.state.payload}
 };
 
 var crusherbot = new CrusherBot();
