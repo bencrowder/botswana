@@ -616,16 +616,9 @@ function Ruleset(server) {
 				// delete from array
 				delete fxParticles[i];
 			} else {
-				// draw
 				pos = this.server.helpers.calcVector(particle.x, particle.y, particle.angle, particle.speed);
 
-				this.c.beginPath();
-				this.c.strokeStyle = particle.color;
-				this.c.moveTo(particle.x, particle.y);
-				this.c.lineTo(pos.x, pos.y);
-				this.c.globalAlpha = particle.life / 20;
-				this.c.stroke();
-				this.c.closePath();
+				this.particle(particle, pos);
 
 				particle.x = pos.x;
 				particle.y = pos.y;
@@ -636,6 +629,17 @@ function Ruleset(server) {
 
 		this.c.restore();
 	};
+
+	// Draw a single particle
+	this.draw.particle = function(particle, newPos) {
+		this.c.beginPath();
+		this.c.strokeStyle = particle.color;
+		this.c.moveTo(particle.x, particle.y);
+		this.c.lineTo(pos.x, pos.y);
+		this.c.globalAlpha = particle.life / 20;
+		this.c.stroke();
+		this.c.closePath();
+	}
 
 	this.draw.health = function() {
 		var teamHealth = this.ruleset.updateHealth();
