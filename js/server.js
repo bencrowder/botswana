@@ -5,8 +5,6 @@ var Server = function() {
 	var ruleset = new Ruleset(this);
 	var props = ruleset.properties;			// shorthand access
 
-	var draw;
-
 	var tournamentIntervalId = 0;			// private
 
 	/* Object lists */
@@ -32,7 +30,7 @@ var Server = function() {
 
 	this.setContext = function(context) {
 		this.context = context;
-		draw = new Draw(this.context, this, props.world.width, props.world.height);
+		//draw = new Draw(this.context, this, props.world.width, props.world.height);
 	}
 
 
@@ -67,14 +65,11 @@ var Server = function() {
 			},
 
 			success: function() {
-				// Init the ruleset
-				//ruleset = new Ruleset(server);
-				//props = ruleset.properties;			// shorthand access
-
 				// Set up the canvas (we need props.world.width/height)
 				var canvas = document.getElementById("canvas");
 				var context = canvas.getContext("2d");
 				server.setContext(context);
+				ruleset.draw.c = context;
 
 				// Reset everything
 				ruleset.resetGame();
@@ -370,13 +365,13 @@ var Server = function() {
 				winner = ruleset.getWinner();
 
 				// Endgame
-				draw.world();
-				draw.health();
-				draw.endgame(winner);
+				ruleset.draw.world();
+				ruleset.draw.health();
+				ruleset.draw.endgame(winner);
 				return false;
 			} else {
 				// Draw everything
-				draw.world();
+				ruleset.draw.world();
 			}
 		}
 	}
@@ -410,7 +405,7 @@ var Server = function() {
 			paused = false;
 		} else {
 			paused = true;
-			draw.paused(this.context);
+			ruleset.draw.paused(this.context);
 		}
 	}
 

@@ -20,7 +20,7 @@ header input[type=text]:focus	{ border: solid 1px #444; outline: none; color: #f
 
 header .group.ruleset		{ margin-left: 15px; }
 header .group.ruleset label	{ color: #423c34; }
-header .group.ruleset input[type=text]	{ color: #645643; }
+header .group.ruleset input[type=text]	{ color: #7e6c54; }
 header .group.ruleset input[type=text]:focus	{ color: #fff; }
 
 header input[type=button]	{ background: #435669; color: #fff; padding: 5px 10px 6px; -moz-border-radius: 5px; border-radius: 5px; border: none; font-size: 1em; font-weight: bold; line-height: 1em; cursor: pointer; float: right; }
