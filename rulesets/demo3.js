@@ -94,4 +94,11 @@ $("body").css("background", "#050505");
 
 // 3D transform
 $("#main").css("-webkit-perspective", "300px");
-$("#main .container").css("-webkit-transform", "rotateX(5deg) rotateY(2deg)");
+
+$("#main .container").css({
+	"-webkit-transform": "rotateX(5deg) rotateY(2deg)",
+	"-webkit-transition": "all 1s ease-in-out",
+	"-webkit-animation": "pulse 1000ms infinite",
+});
+
+document.styleSheets[0].insertRule("@-webkit-keyframes pulse { 0% { -webkit-transform: rotateX(5deg) rotateY(2deg); } 50% { -webkit-transform: rotateX(-5deg) rotateY(-2deg); } 100% { -webkit-transform: rotateX(5deg) rotateY(2deg); } }");
