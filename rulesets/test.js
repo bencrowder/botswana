@@ -14,10 +14,10 @@ function Ruleset(server) {
 			'height': 600,
 		},
 		'bots': {
-			'angleStep': 0.05,
+			'angleStep': 0.1,
 			'speed': 5,
 			'radius': 10,
-			'radiusMargin': 2,
+			'radiusMargin': 0,
 			'colors': [ "#01eb5f", "#b11e1e" ]
 		}
 	};

@@ -27,7 +27,7 @@ var Draw = function(context, server, width, height) {
 			var bot = bots[i];
 
 			if (bot.alive) {
-				this.bot(bot.x, bot.y, bot.angle, bot.color, bot.radius);
+				this.bot(bot.x, bot.y, bot.angle, bot.color, bot.radius, bot.health);
 			}
 		}
 
@@ -82,15 +82,16 @@ var Draw = function(context, server, width, height) {
 		this.c.restore();
 	};
 
-	this.bot = function(x, y, angle, color, radius) {
+	this.bot = function(x, y, angle, color, radius, health) {
 		this.c.save();
 		this.c.translate(x, y);
 
 		this.c.fillStyle = color;
-		this.c.strokeStyle = "#fff";
 		this.c.lineWidth = 4;
 
 		// Draw filled/stroked circle
+		var healthValue = parseInt(health * (255 / 100)); // hardcoded for now
+		this.c.strokeStyle = "rgba(255, " + healthValue + ", " + healthValue + ", 1.0)";
 		this.c.beginPath();
 		this.c.arc(0, 0, radius, 0, Math.PI * 2, true);
 		this.c.closePath();
@@ -235,7 +236,7 @@ var Draw = function(context, server, width, height) {
 		this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
 		this.c.fillStyle = "#fff";
 		this.c.fillText("Champion: " + bots[winner].name, 70, 277);
-		this.bot(900, 268, 3 * Math.PI / 2, bots[winner].color, bots[winner].radius);
+		this.bot(900, 268, 3 * Math.PI / 2, bots[winner].color, bots[winner].radius, 100);
 		this.c.closePath();
 		this.c.restore();
 	};
