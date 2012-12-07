@@ -664,7 +664,7 @@ function Ruleset(server) {
 		var lineWidth = 15;
 		var distanceBetween = 15;
 
-		var pauseWidth = lineWidth * 2 + distanceBetween;
+		var pauseWidth = lineWidth + distanceBetween;
 		var pauseHeight = 50;
 
 		var x1 = (this.width / 2) - (pauseWidth / 2);
