@@ -4,6 +4,8 @@ SampleBot.prototype = new Bot();
 
 SampleBot.prototype.setup = function() {};
 
-SampleBot.prototype.run = function() {};
+SampleBot.prototype.run = function() {
+	return {'command': 'wait', 'team': {}};
+};
 
-registerBotScript("SampleBot");
+server.registerBotScript("SampleBot");

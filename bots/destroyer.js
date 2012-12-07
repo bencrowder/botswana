@@ -33,23 +33,13 @@ Destroyer.prototype.run = function() {
 			var dir = this.getDirection(target);
 
 			// if I am hurt bad and my health is less than my opponents, retreat
-			if (this.health < 50 && this.health < this.state.bots[this.opponent].health) {
-				if (this.clicks % 3 == 0) {
-					action = 'backward';
-				} else if (this.canShoot) {
+			if (dir.command != 'forward') {
+				action = dir.command;
+			} else {
+				if (this.canShoot) {
 					action = 'fire';
 				} else {
-					action = 'left';
-				}
-			} else {
-				if (dir.command != 'forward') {
-					action = dir.command;
-				} else {
-					if (this.canShoot) {
-						action = 'fire';
-					} else {
-						action = 'forward';
-					}
+					action = 'forward';
 				}
 			}
 		}

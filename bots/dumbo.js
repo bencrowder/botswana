@@ -9,19 +9,21 @@ Dumbo.prototype.setup = function() {
 
 Dumbo.prototype.run = function() {
 	this.timer++;
+	command = 'wait';
 	if (this.hitByBullet) {
 		this.hit = 10;
 	}
 	if (this.hit > 0) {
 		if (this.timer % 5 == 0) {
-			return "left";
+			command = "left";
 		} else {
-			return "forward";
+			command = "forward";
 		}
 		this.hit--;
 	} else {
-		return "fire";
+		command = "fire";
 	}
+	return {'command': command, 'team': {}};
 };
 
 server.registerBotScript("Dumbo");
