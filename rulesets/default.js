@@ -14,7 +14,7 @@ function Ruleset(server) {
 			'width': 1000,
 			'height': 600,
 			'obstacles': {
-				'num': (Math.random() * 3) + 2
+				'num': (Math.random() * 4) + 2
 			}
 		},
 		'bots': {
@@ -529,6 +529,21 @@ function Ruleset(server) {
 
 		this.c.strokeStyle = "#282828";
 		this.c.stroke();
+	};
+
+	this.draw.miniObs = function() {
+		this.c.strokeStyle = "#fff";
+		this.c.fillStyle = "rgba(0,0,255,0.3)";
+		for (i in server.miniObstacles) {
+			obs = server.miniObstacles[i];
+			this.c.beginPath();
+			if (obs.radius != undefined) {
+				this.c.arc(obs.x, obs.y, obs.radius, 0, 2 * Math.PI);
+			}
+			this.c.closePath();
+			this.c.fill();
+			this.c.stroke();
+		}
 	};
 
 	this.draw.obstacles = function() {
