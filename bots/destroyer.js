@@ -1,6 +1,6 @@
 var Destroyer = function() {};
 
-Destroyer.prototype = new Bot("Destroyer");
+Destroyer.prototype = new Bot();
 
 Destroyer.prototype.setup = function() {
 	this.clicks = 0;			// keep track of how many clicks
@@ -57,7 +57,4 @@ Destroyer.prototype.run = function() {
 	return {'command': action, 'payload': {}}
 };
 
-var destroyer = new Destroyer();
-destroyer.className = "Destroyer";
-
-server.registerBotScript(destroyer);
+server.registerBotScript("Destroyer");

@@ -1,9 +1,8 @@
 /* Botswana */
 /* by Ben Crowder and Chad Hansen */
 
-function Bot(botname) {
-	this.name = botname;
-
+function Bot() {
+	this.name;
 	this.id;
 	this.x;
 	this.y;
@@ -21,6 +20,7 @@ function Bot(botname) {
 	this.state = { world: {}, bots: [], weapons: [], items: [], obstacles: [] };
 
 	this.copy = function(aBot) {
+		this.name = aBot.name;
 		this.id = aBot.id;
 		this.x = aBot.x;
 		this.y = aBot.y;

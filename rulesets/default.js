@@ -216,16 +216,17 @@ function Ruleset(server) {
 	/* -------------------------------------------------- */
 	/* Returns an array of bots (based on botsPerTeam) */
 
-	this.registerBotScript = function(teamNum, botScript) {
+	this.registerBotScript = function(teamNum, botScript, name) {
 		var botList = [];
 		var fn = (window || this);
 
 		// Create botsPerTeam # of bots
 		for (var i=0; i<this.properties.botsPerTeam; i++) {
 			// Instantiate the class
-			var bot = new fn[botScript.className](botScript.name);
+			var bot = new fn[botScript]();
 
-			// Assign the team color
+			// Assign the team name and color
+			bot.name = name;
 			bot.color = this.properties.bots.colors[teamNum - 1];
 
 			botList.push(bot);

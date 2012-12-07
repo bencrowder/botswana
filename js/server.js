@@ -113,12 +113,23 @@ var Server = function() {
 	/* Register a bot script */
 	/* -------------------------------------------------- */
 
-	this.registerBotScript = function(team) {
+	this.registerBotScript = function(botClassName) {
 		// Team #
 		var teamNum = teams.length + 1;
 
+		// Check team name for duplicates
+		var name = botClassName;
+		if ($.inArray(name, teams) != -1) {
+			counter = 2;
+
+			while ($.inArray(name, teams) != -1) {
+				name = botClassName + "-" + counter;
+				counter++;
+			}
+		}
+
 		// Call the ruleset register function
-		var botList = ruleset.registerBotScript(teamNum, team);
+		var botList = ruleset.registerBotScript(teamNum, botClassName, name);
 
 		// Get the team color (TODO: rewrite)
 		var color;	
@@ -135,7 +146,7 @@ var Server = function() {
 
 		// Update the status bar
 		// TODO: figure out what to do now that we have teams
-		$("#status #bot" + teamNum + "status .name").html(team.name);
+		$("#status #bot" + teamNum + "status .name").html(name);
 		$("#status #bot" + teamNum + "status .health").css("background-color", color);
 		$("#status #bot" + teamNum + "status .width").css("width", 200); // TODO: rewrite to max health from props
 	}

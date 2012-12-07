@@ -1,13 +1,13 @@
-var DumboBot = function() {};
+var Dumbo = function() {};
 
-DumboBot.prototype = new Bot("Dumbo");
+Dumbo.prototype = new Bot();
 
-DumboBot.prototype.setup = function() {
+Dumbo.prototype.setup = function() {
 	this.timer = 0;
 	this.hit = 0;
 };
 
-DumboBot.prototype.run = function() {
+Dumbo.prototype.run = function() {
 	this.timer++;
 	if (this.hitByBullet) {
 		this.hit = 10;
@@ -24,7 +24,4 @@ DumboBot.prototype.run = function() {
 	}
 };
 
-var dumbobot = new DumboBot();
-dumbobot.className = "DumboBot";
-
-server.registerBotScript(dumbobot);
+server.registerBotScript("Dumbo");

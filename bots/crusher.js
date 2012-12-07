@@ -1,8 +1,8 @@
-var CrusherBot = function() {};
+var Crusher = function() {};
 
-CrusherBot.prototype = new Bot("Crusher");
+Crusher.prototype = new Bot();
 
-CrusherBot.prototype.setup = function() {
+Crusher.prototype.setup = function() {
 	this.timer = 0;			// keep track of how many clicks
 	this.attrStrength = 8;
 	this.safety = 8;
@@ -10,7 +10,7 @@ CrusherBot.prototype.setup = function() {
 	this.strafe = 50;
 };
 
-CrusherBot.prototype.acquireTarget = function() {
+Crusher.prototype.acquireTarget = function() {
 	target = undefined;
 	for (i in this.state.bots) {
 		var bot = this.state.bots[i];
@@ -30,7 +30,7 @@ CrusherBot.prototype.acquireTarget = function() {
 	return target;
 }
 
-CrusherBot.prototype.run = function() {
+Crusher.prototype.run = function() {
 	this.timer++;
 	target = undefined;
 
@@ -85,7 +85,4 @@ CrusherBot.prototype.run = function() {
 	return {'command': rtnCommand, 'team': this.state.payload}
 };
 
-var crusherbot = new CrusherBot();
-crusherbot.className = "CrusherBot";
-
-server.registerBotScript(crusherbot);
+server.registerBotScript("Crusher");
