@@ -30,7 +30,6 @@ var Server = function() {
 
 	this.setContext = function(context) {
 		this.context = context;
-		//draw = new Draw(this.context, this, props.world.width, props.world.height);
 	}
 
 

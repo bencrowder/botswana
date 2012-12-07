@@ -5,9 +5,9 @@ Crusher.prototype = new Bot();
 Crusher.prototype.setup = function() {
 	this.timer = 0;			// keep track of how many clicks
 	this.attrStrength = 8;
-	this.safety = 8;
-	this.repStrength = 2.5;
-	this.strafe = 50;
+	this.safety = 9;
+	this.repStrength = 4;
+	this.strafe = 75;
 };
 
 Crusher.prototype.acquireTarget = function() {

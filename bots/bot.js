@@ -65,20 +65,50 @@ function Bot() {
 		}
 
 		// repulsive potential field from obstacles
-		obstacles = server.getObstacles();
+		var obstacles = server.getObstacles();
+		server.miniObstacles = [];
 		for (i in obstacles) {
 			var obs = obstacles[i];
-			obsX = obs.x + (obs.width / 2);
-			obsY = obs.y + (obs.height / 2);
-			obsR = this.distanceToPoint(obsX, obsY, obs.x, obs.y);
-			var dist = this.myDistanceToPoint(obsX, obsY);
-			var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, obsX, obsY));
-			if (dist < obsR) {
-				dx += (-1.0 * Math.cos(angle)) * 100000000;
-				dy += (-1.0 * Math.sin(angle)) * 100000000;
-			} else if (obsR <= dist && dist <= (3 * this.radius) + obsR) {
-				dx += -1.0 * repelStrength * (3 * this.radius + obsR - dist) * Math.cos(angle);
-				dy += -1.0 * repelStrength * (3 * this.radius + obsR - dist) * Math.sin(angle);
+			if ((obs.x != undefined && obs.y != undefined && obs.radius != undefined) || (obs.width == obs.height)) {
+				// a circle thing
+				var middleX = obs.x + Math.ceil(obs.width / 2);
+				var middleY = obs.y + Math.ceil(obs.width / 2);
+				radius = this.distanceToPoint(obs.x, obs.y, middleX , middleY) + 3;
+				server.miniObstacles.push({'x': middleX, 'y': middleY, 'radius': radius});
+				dxdy = this.avoidCircle(radius, middleX, middleY, repelStrength);
+				dx += dxdy[0];
+				dy += dxdy[1];
+			} else if (obs.x != undefined && obs.y != undefined && obs.width != undefined && obs.height != undefined) {
+				// a four sided thing
+				// take the shortest dimension, halve it, and divide the larger dimension by that number.
+				// that is the number of circles to draw along the larger dimension. do the repulsion field stuff from those obsticles.
+
+				var middle = Math.ceil(obs.width / 2);
+				var radius = this.distanceToPoint(obs.x, obs.y, obs.x + middle, obs.y + middle) + 3;
+				var propagate = 'height';
+				var numMiniObs = Math.ceil(obs.height / middle);
+				if (Math.ceil(obs.height / 2) < obs.width) {
+					middle = Math.ceil(obs.height / 2);
+					radius = this.distanceToPoint(obs.x, obs.y, obs.x + middle, obs.y + middle) + 3;
+					propagate = 'width';
+					numMiniObs = Math.ceil(obs.width / middle);
+				}
+				numMiniObs -= 2;
+				for (i=0; i<=numMiniObs; i++) {
+					var x = obs.x + middle;
+					var y = obs.y + (middle * (i+1));
+					if (propagate == 'width') {
+						x = obs.x + (middle * (i+1));
+						y = obs.y + middle;
+					}
+					server.miniObstacles.push({'x': x, 'y': y, 'radius': radius});
+					dxdy = this.avoidCircle(radius, x, y, repelStrength);
+					dx += dxdy[0];
+					dy += dxdy[1];
+				}
+			} else { 
+				// something else entirely
+				console.log("shouldn't be here yet");
 			}
 		}
 
@@ -103,5 +133,20 @@ function Bot() {
 
 	this.distanceToPoint = function(x1, y1, x2, y2) {
 		return server.helpers.distanceToPoint(x1, y1, x2, y2);
+	}
+
+	this.avoidCircle = function(radius, x, y, repelStrength) {
+		var dist = this.myDistanceToPoint(x, y);
+		var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, x, y));
+		var dx = 0;
+		var dy = 0;
+		if (dist <= radius) {
+			dx = (-1.0 * Math.cos(angle)) * 100000000;
+			dy = (-1.0 * Math.sin(angle)) * 100000000;
+		} else if (dist > radius && dist <= (3 * this.radius) + radius) {
+			dx = -1.0 * repelStrength * (3 * this.radius + radius - dist) * Math.cos(angle);
+			dy = -1.0 * repelStrength * (3 * this.radius + radius - dist) * Math.sin(angle);
+		}
+		return [dx, dy];
 	}
 };
