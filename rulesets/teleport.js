@@ -2,8 +2,11 @@
 
 var ruleset = new Ruleset(server);
 
+ruleset.name = "teleport";
+
 ruleset.properties.botsPerTeam = 4;
 ruleset.properties.bloating = 1;		// how much bigger a bot gets from teleporting
+ruleset.properties.maxBloat = 30;
 ruleset.properties.teleportWait = 15;	// only allow teleporting once every 30 clicks
 
 teleportTime = 30;						// for now, a global (figure out a better way to do it)
@@ -23,7 +26,7 @@ ruleset.commands.teleport = function(bot) {
 			bot.y = botPos.y;
 		} 
 
-		if (bot.radius < 30) {
+		if (bot.radius < ruleset.properties.maxBloat) {
 			bot.radius += ruleset.properties.bloating;
 		}
 

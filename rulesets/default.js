@@ -4,8 +4,7 @@
 function Ruleset(server) {
 	this.server = server;
 
-	// ID for this ruleset, used by bot scripts for compatibility
-	this.name = "Botswana";
+	this.name = "default";
 
 	this.properties = {
 		'numTeams': 2,
@@ -326,6 +325,12 @@ function Ruleset(server) {
 	this.postProcess = function(bot) { };
 
 
+	// Start round
+	// --------------------------------------------------
+
+	this.startRound = function(clicks) { };	
+
+
 	// End-round hook
 	// --------------------------------------------------
 
@@ -367,12 +372,6 @@ function Ruleset(server) {
 
 		return '';
 	};
-
-
-	// Start round
-	// --------------------------------------------------
-
-	this.startRound = function(clicks) { };	
 
 
 	// Reset collision flags

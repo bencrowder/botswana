@@ -4,8 +4,11 @@
 
 var ruleset = new Ruleset(server);
 
+ruleset.name = "orbit";
+
 ruleset.properties.botsPerTeam = 4;
 ruleset.properties.bots.radius = 10;
+ruleset.properties.orbitSpeed = 0.008;
 
 ruleset.generateObstacles = function() {
 	// Central planet
@@ -52,7 +55,7 @@ ruleset.updateBot = function(bot, pos) {
 	var halfWidth = ruleset.properties.world.width / 2;
 	var halfHeight = ruleset.properties.world.height / 2;
 	var radius = bot.distanceToPoint(pos.x, pos.y, halfWidth, halfHeight);
-	var angle = 0.008;
+	var angle = ruleset.properties.orbitSpeed;
 
 	// Switch direction depending on team
 	angle = angle * ((teamIndex == 0) ? 1 : -1);

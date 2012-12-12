@@ -5,6 +5,8 @@
 
 var ruleset = new Ruleset(server);
 
+ruleset.name = "expulsion";
+
 ruleset.properties.botsPerTeam = 4;
 ruleset.properties.bots.radiusMargin = 10;
 ruleset.properties.world.teleportationCircleRadius = 100;

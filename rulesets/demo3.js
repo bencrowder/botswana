@@ -1,6 +1,8 @@
-/* Demo ruleset #3 */
+// Demo ruleset #3
 
 var ruleset = new Ruleset(server);
+
+ruleset.name = "demo3";
 
 ruleset.properties.botsPerTeam = 5;
 

@@ -7,18 +7,19 @@ var Destroyer = function() {};
 Destroyer.prototype = new Bot();
 
 Destroyer.prototype.setup = function() {
-	this.clicks = 0;			// keep track of how many clicks
-	this.opponent = -1;
-	this.speed = 2;
-	this.safety = 7;
+	// For getDirection()
 	this.attrStrength = 5;
+	this.safety = 7;
 	this.repStrength = 2;
+
+	// ID of bot's opponent
+	this.opponent = -1;
 };
 
 Destroyer.prototype.run = function() {
-	this.clicks++;
-	var action = 'wait';
-	// get the opponent's information
+	var command = 'wait';
+
+	// Choose an opponent
 	if (this.opponent == -1) {
 		for (i in this.state.bots) {
 			var bot = this.state.bots[i];
@@ -28,27 +29,31 @@ Destroyer.prototype.run = function() {
 		}
 	}
 
-	// to I have a target opponent selected
+	// If there's an opponent selected
 	if (this.opponent >= 0) {
 		var target = this.state.bots[this.opponent];
+
 		if (target == undefined) {
+			// The opponent must have died, so reset and get a new one next round
 			this.opponent = -1;
 		} else {
+			// Get direction towards target
 			var dir = this.getDirection(target);
 
-			// if I am hurt bad and my health is less than my opponents, retreat
+			// If hurt bad and health is less than the opponent's, retreat
 			if (dir.command != 'forward') {
-				action = dir.command;
+				command = dir.command;
 			} else {
 				if (this.canShoot) {
-					action = 'fire';
+					command = 'fire';
 				} else {
-					action = 'forward';
+					command = 'forward';
 				}
 			}
 		}
 	}
-	return {'command': action, 'payload': {}}
+
+	return { 'command': command, 'team': {} };
 };
 
 server.registerBotScript("Destroyer");
