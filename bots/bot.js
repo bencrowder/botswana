@@ -1,5 +1,5 @@
-/* Botswana */
-/* by Ben Crowder and Chad Hansen */
+// Parent bot class
+// --------------------------------------------------
 
 function Bot() {
 	this.name;

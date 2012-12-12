@@ -330,37 +330,6 @@ function Ruleset(server) {
 	/* Updates object in place */
 
 	this.setInitialPlacement = function(bot) {
-		/*
-		this.getRandomPointWithinRect = function(x, y, width, height) {
-			var pos = {};
-			var padding = 20;
-
-			// Clamp the rect to world boundaries
-			if (x + width > this.properties.world.width) {
-				width = this.properties.world.width - x;
-			}
-			if (y + height > this.properties.world.height) {
-				height = this.properties.world.height - y;
-			}
-		
-			// And get the random position	
-			pos.x = (Math.random() * (width - (padding * 2))) + x + padding;
-			pos.y = (Math.random() * (height - (padding * 2))) + y + padding;
-			
-			return pos;
-		};
-
-		botPos = this.getRandomPointWithinRect(100, 100, 250, 400);
-		bot.x = botPos.x;
-		bot.y = botPos.y;
-
-		while (this.server.collisionBotObjects(bot)) {
-			botPos = this.getRandomPointWithinRect(100, 100, 250, 400);
-			bot.x = botPos.x;
-			bot.y = botPos.y;
-		}
-		*/
-
 		// Get a random position
 		botPos = this.server.getRandomPoint();
 		bot.x = botPos.x;

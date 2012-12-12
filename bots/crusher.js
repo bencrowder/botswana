@@ -1,3 +1,7 @@
+// Bot: Crusher
+// Ruleset: default
+// --------------------------------------------------
+
 var Crusher = function() {};
 
 Crusher.prototype = new Bot();

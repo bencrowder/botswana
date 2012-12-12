@@ -1,3 +1,7 @@
+// Bot: Destroyer
+// Ruleset: default
+// --------------------------------------------------
+
 var Destroyer = function() {};
 
 Destroyer.prototype = new Bot();
