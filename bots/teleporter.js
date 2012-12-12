@@ -79,7 +79,7 @@ Teleporter.prototype.run = function() {
 		rtnCommand = "wait";
 	}
 
-	return { 'command': rtnCommand, 'team': this.state.payload };
+	return { command: rtnCommand, team: this.state.payload };
 };
 
 server.registerBotScript("Teleporter");

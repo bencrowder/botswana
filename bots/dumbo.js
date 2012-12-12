@@ -37,7 +37,7 @@ Dumbo.prototype.run = function() {
 		command = "fire";
 	}
 
-	return { 'command': command, 'team': {} };
+	return { command: command, team: {} };
 };
 
 server.registerBotScript("Dumbo");

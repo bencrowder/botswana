@@ -337,7 +337,7 @@ function Ruleset(server) {
 	// End-round hook
 	// --------------------------------------------------
 
-	this.endRound = function(bot) { };
+	this.endRound = function() { };
 
 
 	// Game over condition

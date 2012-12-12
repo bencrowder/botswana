@@ -112,7 +112,7 @@ Crusher.prototype.run = function() {
 		command = "wait";
 	}
 
-	return { 'command': command, 'team': this.state.payload };
+	return { command: command, team: this.state.payload };
 };
 
 server.registerBotScript("Crusher");
