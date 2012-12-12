@@ -25,39 +25,40 @@ function Bot() {
 	// Copy (used to prevent cheating)
 	// --------------------------------------------------
 
-	this.copy = function(aBot) {
-		this.name = aBot.name;
-		this.id = aBot.id;
-		this.x = aBot.x;
-		this.y = aBot.y;
-		this.color = aBot.color;
-		this.angle = aBot.angle;	
-		this.health = aBot.health;
-		this.weapons = aBot.weapons;
-		this.canShoot = aBot.canShoot;
-		this.waitFire = aBot.waitFire;
-		this.collided = aBot.collided;
-		this.hitByBullet = aBot.hitByBullet;
-		this.radius = aBot.radius;
-		this.state = aBot.state;
-		this.alive = aBot.alive;
+	this.copy = function(sourceBot) {
+		this.name = sourceBot.name;
+		this.id = sourceBot.id;
+		this.x = sourceBot.x;
+		this.y = sourceBot.y;
+		this.color = sourceBot.color;
+		this.angle = sourceBot.angle;	
+		this.health = sourceBot.health;
+		this.weapons = sourceBot.weapons;
+		this.canShoot = sourceBot.canShoot;
+		this.waitFire = sourceBot.waitFire;
+		this.collided = sourceBot.collided;
+		this.hitByBullet = sourceBot.hitByBullet;
+		this.radius = sourceBot.radius;
+		this.state = sourceBot.state;
+		this.alive = sourceBot.alive;
 	}
 
 
-	// Pathfinding helper function
+	// Pathfinding helper function, uses potential fields
 	// --------------------------------------------------
 
 	this.getDirection = function(target, threshold) {
-		// simplified path finding algorithm using potential fields.
-		// returns a target angle for the bot to point.
-		if (target == undefined) 
-			return {'command': 'error', 'angle': 0};
+		// Make sure the target is real
+		if (target == undefined) {
+			return { 'command': 'error', 'angle': 0 };
+		}
+
 		var targetAngle = this.angle;
 		var dist = this.myDistanceToPoint(target.x, target.y);
 		var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, target.x, target.y));
-		var strength = typeof this.attrStrength !== 'undefined'? this.attrStrength : 5;
-		var repelStrength = typeof this.repStrength !== 'undefined'? this.repStrength : 2;
-		var threshold = typeof threshold !== 'undefined'? threshold : 0.05;
+		var strength = (typeof this.attrStrength !== 'undefined') ? this.attrStrength : 5;
+		var repelStrength = (typeof this.repStrength !== 'undefined') ? this.repStrength : 2;
+		var threshold = (typeof threshold !== 'undefined') ? threshold : 0.05;
 		var dx = 0;
 		var dy = 0;
 
@@ -65,7 +66,7 @@ function Bot() {
 			this.safety = 7;
 		}
 
-		// attractive potential field to target
+		// Attractive potential field to target
 		if (this.radius <= dist && dist <= this.safety * this.radius) {
 			dx = strength * (dist - this.radius) * Math.cos(angle);
 			dy = strength * (dist - this.radius) * Math.sin(angle);
@@ -74,67 +75,86 @@ function Bot() {
 			dy = strength * this.safety * Math.sin(angle);
 		}
 
-		// repulsive potential field from obstacles
+		// Repulsive potential field from obstacles
 		var obstacles = server.getObstacles();
 		server.miniObstacles = [];
+
 		for (i in obstacles) {
 			var obs = obstacles[i];
+
 			if ((obs.x != undefined && obs.y != undefined && obs.radius != undefined) || (obs.width == obs.height)) {
-				// a circle thing
+				// It's a circle type object
 				var middleX = obs.x + Math.ceil(obs.width / 2);
 				var middleY = obs.y + Math.ceil(obs.width / 2);
+
 				radius = this.distanceToPoint(obs.x, obs.y, middleX , middleY) + 3;
-				server.miniObstacles.push({'x': middleX, 'y': middleY, 'radius': radius});
+
+				server.miniObstacles.push({ 'x': middleX, 'y': middleY, 'radius': radius });
+
 				dxdy = this.avoidCircle(radius, middleX, middleY, repelStrength);
+
 				dx += dxdy[0];
 				dy += dxdy[1];
 			} else if (obs.x != undefined && obs.y != undefined && obs.width != undefined && obs.height != undefined) {
-				// a four sided thing
-				// take the shortest dimension, halve it, and divide the larger dimension by that number.
-				// that is the number of circles to draw along the larger dimension. do the repulsion field stuff from those obsticles.
+				// It's a four-sided thing
+
+				// Take the shortest dimension, halve it, and divide the larger dimension by that number.
+				// That's the number of circles to draw along the larger dimension. Do the repulsion field stuff from those obstacles.
 
 				var middle = Math.ceil(obs.width / 2);
 				var radius = this.distanceToPoint(obs.x, obs.y, obs.x + middle, obs.y + middle) + 3;
 				var propagate = 'height';
 				var numMiniObs = Math.ceil(obs.height / middle);
+
 				if (Math.ceil(obs.height / 2) < obs.width) {
 					middle = Math.ceil(obs.height / 2);
 					radius = this.distanceToPoint(obs.x, obs.y, obs.x + middle, obs.y + middle) + 3;
 					propagate = 'width';
 					numMiniObs = Math.ceil(obs.width / middle);
 				}
+
 				numMiniObs -= 2;
+
 				for (i=0; i<=numMiniObs; i++) {
 					var x = obs.x + middle;
 					var y = obs.y + (middle * (i+1));
+
 					if (propagate == 'width') {
 						x = obs.x + (middle * (i+1));
 						y = obs.y + middle;
 					}
-					server.miniObstacles.push({'x': x, 'y': y, 'radius': radius});
+
+					server.miniObstacles.push({ 'x': x, 'y': y, 'radius': radius });
+
 					dxdy = this.avoidCircle(radius, x, y, repelStrength);
+
 					dx += dxdy[0];
 					dy += dxdy[1];
 				}
 			} else { 
-				// something else entirely
-				console.log("shouldn't be here yet");
+				// Something else entirely
+				console.log("Shouldn't be here");
 			}
 		}
 
-		// was there a change in my location
+		// Was there a change in my location?
 		if (dx != 0 || dy != 0) {
 			targetAngle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, this.x + dx, this.y + dy));
 		}
+
 		targetAngle = server.helpers.normalizeAngle(targetAngle - this.angle);
-		var rtnCommand = 'right';
-		if (targetAngle > Math.PI)
-			rtnCommand = 'left';
-		if (targetAngle <= threshold || targetAngle >= ((2*Math.PI) - threshold)) {
-			rtnCommand = "forward";
+
+		var command = 'right';
+
+		if (targetAngle > Math.PI) {
+			command = 'left';
 		}
-		// console.log(rtnCommand, this.id, "a", this.angle, "ta", targetAngle, "dir", this.angle - targetAngle, "loc", this.x, this.y);
-		return {'command':rtnCommand, 'angle':targetAngle};
+
+		if (targetAngle <= threshold || targetAngle >= ((2 * Math.PI) - threshold)) {
+			command = "forward";
+		}
+
+		return { 'command': command, 'angle': targetAngle };
 	}
 
 
@@ -162,6 +182,7 @@ function Bot() {
 		var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, x, y));
 		var dx = 0;
 		var dy = 0;
+
 		if (dist <= radius) {
 			dx = (-1.0 * Math.cos(angle)) * 100000000;
 			dy = (-1.0 * Math.sin(angle)) * 100000000;
@@ -169,6 +190,7 @@ function Bot() {
 			dx = -1.0 * repelStrength * (3 * this.radius + radius - dist) * Math.cos(angle);
 			dy = -1.0 * repelStrength * (3 * this.radius + radius - dist) * Math.sin(angle);
 		}
+
 		return [dx, dy];
 	}
 };
