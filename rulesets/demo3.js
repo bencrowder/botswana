@@ -1,7 +1,6 @@
 /* Demo ruleset #3 */
 
-var ruleset = server.getRuleset();
-ruleset = new Ruleset(server);
+var ruleset = new Ruleset(server);
 
 ruleset.properties.botsPerTeam = 5;
 

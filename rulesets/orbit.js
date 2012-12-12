@@ -1,7 +1,8 @@
-/* Orbit ruleset */
+// Orbit ruleset
+//
+// Teams orbit around the center point in opposite directions
 
-var ruleset = server.getRuleset();
-ruleset = new Ruleset(server);
+var ruleset = new Ruleset(server);
 
 ruleset.properties.botsPerTeam = 4;
 
@@ -20,17 +21,7 @@ ruleset.commands.backward = function(bot) { return; }
 ruleset.commands['strafe-left'] = function(bot) { return; }
 ruleset.commands['strafe-right'] = function(bot) { return; }
 
-ruleset.updateBot = function(bot) {
-	// Standard stuff
-	bot.waitFire--;
-	if (bot.waitFire <= 0) {
-		bot.waitFire = 0;
-		bot.canShoot = true;
-	}
-	if (bot.health <= 0) {
-		bot.alive = false;
-	}
-
+ruleset.postUpdateBot = function(bot) {
 	// Get bot's team
 	var teams = this.server.getTeams();
 	var teamIndex = teams.indexOf(bot.name);
