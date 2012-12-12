@@ -27,8 +27,8 @@ function Ruleset(server) {
 	};
 
 
-	/* Dictionary of weapons */ 
-	/* -------------------------------------------------- */
+	// Dictionary of weapons
+	// --------------------------------------------------
 
 	this.properties.weapons = {
 		'bullet': {
@@ -88,8 +88,8 @@ function Ruleset(server) {
 	};
 	
 
-	/* Dictionary of items */ 
-	/* -------------------------------------------------- */
+	// Dictionary of items
+	// --------------------------------------------------
 
 	this.properties.items = {
 		'health': {
@@ -106,8 +106,8 @@ function Ruleset(server) {
 	};
 
 
-	/* Dictionary of commands */ 
-	/* -------------------------------------------------- */
+	// Dictionary of commands
+	// --------------------------------------------------
 
 	this.commands = {
 		"forward": function(bot) {
@@ -204,17 +204,17 @@ function Ruleset(server) {
 	};
 
 
-	/* Reset any properties for the beginning of a new game */
-	/* -------------------------------------------------- */
+	// Reset any properties for the beginning of a new game
+	// --------------------------------------------------
 
 	this.resetGame = function() {
 
 	};
 
 
-	/* Register a bot script */
-	/* -------------------------------------------------- */
-	/* Returns an array of bots (based on botsPerTeam) */
+	// Register a bot script
+	// --------------------------------------------------
+	// Returns an array of bots (based on botsPerTeam)
 
 	this.registerBotScript = function(teamNum, botScript, name) {
 		var botList = [];
@@ -236,9 +236,9 @@ function Ruleset(server) {
 	};
 
 
-	/* Generate obstacles */
-	/* -------------------------------------------------- */
-	/* Returns array of obstacles */
+	// Generate obstacles
+	// --------------------------------------------------
+	// Returns array of obstacles
 
 	this.generateObstacles = function() {
 		var obstacles = [];
@@ -287,24 +287,13 @@ function Ruleset(server) {
 			obstacles.push({ "x": p.x, "y": p.y, "width": width, "height": height });
 		}
 
-		/*
-		// Simpler obstacle generation for now
-		obstacles = [
-			{ "x": 50, "y": 200, "width": 50, "height": 200 },
-			{ "x": 900, "y": 200, "width": 50, "height": 200 },
-			{ "x": 450, "y": 250, "width": 100, "height": 100 },
-			{ "x": 100, "y": 40, "width": 800, "height": 40 },
-			{ "x": 100, "y": 520, "width": 800, "height": 40 }
-		];
-		*/
-
 		return obstacles;
 	};
 
 
-	/* Initialize bot */
-	/* -------------------------------------------------- */
-	/* Updates object in place */
+	// Initialize bot
+	// --------------------------------------------------
+	// Updates object in place
 
 	this.initializeBot = function(bot, id) {
 		bot.id = id;
@@ -325,9 +314,9 @@ function Ruleset(server) {
 	};
 
 
-	/* Set initial placement */
-	/* -------------------------------------------------- */
-	/* Updates object in place */
+	// Set initial placement
+	// --------------------------------------------------
+	// Updates object in place
 
 	this.setInitialPlacement = function(bot) {
 		// Get a random position
@@ -344,8 +333,8 @@ function Ruleset(server) {
 	};
 
 
-	/* Parse command */
-	/* -------------------------------------------------- */
+	// Parse command
+	// --------------------------------------------------
 
 	this.parseCommand = function(command, bot) {
 		var callback = this.commands[command];
@@ -353,11 +342,17 @@ function Ruleset(server) {
 	};
 
 
-	/* Game over condition */
-	/* -------------------------------------------------- */
+	// Post-command hook
+	// --------------------------------------------------
+
+	this.postCommand = function(bot) { };
+
+
+	// Game over condition
+	// --------------------------------------------------
 
 	this.gameOver = function() {
-		var teamHealth = this.updateHealth();
+		var teamHealth = this.getHealth();
 
 		// If anyone is at health = 0, game over
 		for (var key in teamHealth) {
@@ -375,11 +370,11 @@ function Ruleset(server) {
 	};
 
 
-	/* Get winner */
-	/* -------------------------------------------------- */
+	// Get winner
+	// --------------------------------------------------
 
 	this.getWinner = function() {
-		var teamHealth = this.updateHealth();
+		var teamHealth = this.getHealth();
 
 		// If anyone is at health = 0, the other team is the winner.
 		for (var key in teamHealth) {
@@ -390,16 +385,16 @@ function Ruleset(server) {
 	};
 
 
-	/* Reset collision flags */
-	/* -------------------------------------------------- */
+	// Reset collision flags
+	// --------------------------------------------------
 
 	this.resetCollisionFlag = function(bot) {
 		bot.hitByBullet = false;
 	};	
 
 
-	/* Update bot */
-	/* -------------------------------------------------- */
+	// Update bot
+	// --------------------------------------------------
 
 	this.updateBot = function(bot) {
 		bot.waitFire--;
@@ -413,11 +408,17 @@ function Ruleset(server) {
 	};
 
 
-	/* Update health */
-	/* -------------------------------------------------- */
-	/* Returns the health for each team */
+	// Post-update bot hook
+	// --------------------------------------------------
 
-	this.updateHealth = function() {
+	this.postUpdateBot = function(bot) { };
+
+
+	// Update health
+	// --------------------------------------------------
+	// Returns the health for each team
+
+	this.getHealth = function() {
 		var bots = server.getBots();
 		var teamHealth = {};
 
@@ -437,8 +438,9 @@ function Ruleset(server) {
 	};
 
 
-	/* Draw */
-	/* -------------------------------------------------- */
+	// Drawing code
+	// --------------------------------------------------
+
 	this.draw = {};
 
 	this.draw.width = this.properties.world.width;
@@ -679,7 +681,7 @@ function Ruleset(server) {
 	// --------------------------------------------------
 
 	this.draw.health = function() {
-		var teamHealth = this.ruleset.updateHealth();
+		var teamHealth = this.ruleset.getHealth();
 		var numBots = this.ruleset.properties.botsPerTeam;
 
 		var i = 0;

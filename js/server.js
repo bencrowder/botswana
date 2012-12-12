@@ -295,7 +295,7 @@ var Server = function() {
 				ruleset.resetCollisionFlag(serverBots[i]);
 			}
 
-			// Move and update objects
+			// Move and update objects according to movement callbacks in ruleset
 			this.updateObjects(items, "items");
 			this.updateObjects(weapons, "weapons");
 
@@ -343,6 +343,9 @@ var Server = function() {
 				// Do rule checking
 				ruleset.updateBot(bot);
 
+				// Custom post-update logic
+				ruleset.postUpdateBot(bot);
+
 				if (bot.alive) {
 					// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
 					bots[i].state = state;
@@ -359,6 +362,9 @@ var Server = function() {
 					if (typeof command.payload != 'undefined') {
 						payloads[bot.name] = command.payload;
 					}
+
+					// Post-command hook
+					ruleset.postCommand(bot);
 
 					// Normalize the returned angle
 					bot.angle = this.helpers.normalizeAngle(bot.angle);
