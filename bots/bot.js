@@ -8,16 +8,22 @@ function Bot() {
 	this.y;
 	this.color;
 	this.angle;				// in radians
+	this.radius;			// size of bot
 	this.health;			// 0-100
+	this.alive = true;		// is the bot alive
+
 	this.weapons = {};		// object with number of available ammo
 	this.canShoot;			// boolean
 	this.waitFire;			// clicks to wait before firing
+
 	this.collided = false	// boolean
 	this.hitByBullet;		// boolean
-	this.radius;			// size of bot
-	this.alive = true;		// is the bot alive
 
 	this.state = { world: {}, bots: [], weapons: [], items: [], obstacles: [] };
+
+
+	// Copy (used to prevent cheating)
+	// --------------------------------------------------
 
 	this.copy = function(aBot) {
 		this.name = aBot.name;
@@ -36,6 +42,10 @@ function Bot() {
 		this.state = aBot.state;
 		this.alive = aBot.alive;
 	}
+
+
+	// Pathfinding helper function
+	// --------------------------------------------------
 
 	this.getDirection = function(target, threshold) {
 		// simplified path finding algorithm using potential fields.
@@ -127,13 +137,25 @@ function Bot() {
 		return {'command':rtnCommand, 'angle':targetAngle};
 	}
 
+
+	// Get bot's distance to a point
+	// --------------------------------------------------
+
 	this.myDistanceToPoint = function(x, y) {
 		return server.helpers.distanceToPoint(this.x, this.y, x, y);
 	}
 
+
+	// Get a distance from one point to another
+	// --------------------------------------------------
+
 	this.distanceToPoint = function(x1, y1, x2, y2) {
 		return server.helpers.distanceToPoint(x1, y1, x2, y2);
 	}
+
+
+	// Avoid circle (pathfinding)
+	// --------------------------------------------------
 
 	this.avoidCircle = function(radius, x, y, repelStrength) {
 		var dist = this.myDistanceToPoint(x, y);
