@@ -16,7 +16,7 @@ function Bot() {
 	this.canShoot;			// boolean
 	this.waitFire;			// clicks to wait before firing
 
-	this.collided = false	// boolean
+	this.collisions = []	// list of collision information
 	this.hitByBullet;		// boolean
 
 	this.state = { world: {}, bots: [], weapons: [], items: [], obstacles: [] };
@@ -28,7 +28,6 @@ function Bot() {
 	this.setup = function() {
 
 	};
-
 
 	// Run (override)
 	// --------------------------------------------------
@@ -207,7 +206,7 @@ function Bot() {
 		this.canShoot = sourceBot.canShoot;
 		this.waitFire = sourceBot.waitFire;
 
-		this.collided = sourceBot.collided;
+		this.collisions = sourceBot.collisions;
 		this.hitByBullet = sourceBot.hitByBullet;
 
 		this.state = sourceBot.state;

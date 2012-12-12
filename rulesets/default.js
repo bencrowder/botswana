@@ -310,15 +310,13 @@ function Ruleset(server) {
 		oldY = bot.y;
 		bot.x = newPosition.x;
 		bot.y = newPosition.y;
+		bot.collisions = this.server.getCollisions(bot);
 
 		// Check new coordinates for collisions
-		if (this.server.collisionBoundary(bot) || this.server.collisionBotObjects(bot)) {
-			bot.collided = true;
+		if (bot.collisions.length > 0) {
 			bot.x = oldX;
 			bot.y = oldY;
-		} else {
-			bot.collided = false;
-		}
+		} 
 	}
 
 

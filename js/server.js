@@ -197,7 +197,7 @@ var Server = function() {
 			ruleset.setInitialPlacement(bot);
 
 			// Push the bot's state to the server list
-			state.bots.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "health": bot.health });
+			state.bots.push({ "id": i, "name": bot.name, "x": bot.x, "y": bot.y, "angle": bot.angle, "radius": bot.radius, "health": bot.health });
 
 			// Call the bot's setup function
 			bot.setup();
@@ -603,6 +603,29 @@ var Server = function() {
 		}
 
 		return collided;
+	}
+
+	this.getCollisions = function(bot) {
+		var collisions = [];
+		
+		if (this.collisionBoundary(bot)) {
+			collisions.push({'type': 'boundary'});
+		}
+
+		for (i in serverBots) {
+			if (serverBots[i].alive && serverBots[i].id != bot.id) {
+				if (this.collisionBots(bot, serverBots[i])) {
+					collideBot = {'id': serverBots[i].id, 'name': serverBots[i].name, 'x': serverBots[i].x, 'y': serverBots[i].y, 'radius': serverBots[i].radius, 'angle': serverBots[i].angle, 'health': serverBots[i].health};
+					collisions.push({'type': 'bot', 'obj': collideBot});
+				}
+			}
+		}
+		for (i in obstacles) {
+			if (this.collisionObstacle(obstacles[i], bot)) {
+				collisions.push({'type': 'obstacle', 'obj': obstacles[i]});
+			}
+		}
+		return collisions;
 	}
 
 
