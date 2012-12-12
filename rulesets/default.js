@@ -1,5 +1,4 @@
-/* Botswana */
-/* by Ben Crowder and Chad Hansen */
+// Botswana default ruleset
 
 function Ruleset(server) {
 	this.server = server;
@@ -152,9 +151,7 @@ function Ruleset(server) {
 	// Reset any properties for the beginning of a new game
 	// --------------------------------------------------
 
-	this.resetGame = function() {
-
-	};
+	this.resetGame = function() { };
 
 
 	// Register a bot script
@@ -282,6 +279,12 @@ function Ruleset(server) {
 			bot.y = botPos.y;
 		}
 	};
+
+
+	// Initialize game
+	// --------------------------------------------------
+
+	this.initializeGame = function() { };
 
 
 	// Parse command

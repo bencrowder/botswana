@@ -225,6 +225,9 @@ var Server = function() {
 		// Start the game
 		gameStarted = true;
 
+		// Game init hook
+		ruleset.initializeGame();
+
 		// We use the t variable because otherwise we lose scope
 		var t = this;
 		tournamentIntervalId = setInterval(function() {
