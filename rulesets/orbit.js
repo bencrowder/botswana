@@ -113,4 +113,23 @@ ruleset.draw.obstacle = function(obstacle) {
 	this.c.stroke();
 }
 
+// Stars
+ruleset.draw.bgItems = [];
+for (var x=0; x<280; x++) {
+	ruleset.draw.bgItems.push({ 'x': Math.random() * ruleset.draw.width, 'y': Math.random() * ruleset.draw.height, 'radius': Math.random() * 2 });
+}
+
+ruleset.draw.backgroundLayer = function() {
+	this.c.beginPath();
+
+	for (i in this.bgItems) {
+		var item = this.bgItems[i];
+
+		this.c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, true);
+	}
+
+	this.c.fillStyle = "rgba(255, 255, 255, 0.15)";
+	this.c.fill();
+};
+
 server.setRuleset(ruleset);
