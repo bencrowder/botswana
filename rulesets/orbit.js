@@ -76,4 +76,41 @@ ruleset.updateBot = function(bot, pos) {
 	}
 };
 
+ruleset.draw.obstacle = function(obstacle) {
+	var centerX = obstacle.x + (obstacle.width / 2);
+	var centerY = obstacle.y + (obstacle.height / 2);
+	var radius = obstacle.width / 2;
+
+	this.c.strokeStyle = "#222";
+	this.c.lineWidth = 5;
+	this.c.fillStyle = "#333";
+
+	this.c.beginPath();
+	this.c.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+	this.c.closePath();
+	this.c.fill();
+	this.c.stroke();
+
+	// Laser cavity
+	this.c.fillStyle = "#282828";
+	this.c.beginPath();
+	this.c.arc(centerX + 8, centerY - 9, 6, 0, 2 * Math.PI);
+	this.c.closePath();
+	this.c.fill();
+
+	this.c.fillStyle = "#2c2c2c";
+	this.c.beginPath();
+	this.c.arc(centerX + 10, centerY - 7, 4, 0, 2 * Math.PI);
+	this.c.closePath();
+	this.c.fill();
+
+	// Horizontal line
+	this.c.lineWidth = .5;
+	this.c.beginPath();
+	this.c.moveTo(centerX - radius, centerY);
+	this.c.lineTo(centerX + radius, centerY);
+	this.c.closePath();
+	this.c.stroke();
+}
+
 server.setRuleset(ruleset);
