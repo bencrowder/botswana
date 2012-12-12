@@ -450,8 +450,8 @@ function Ruleset(server) {
 		// Clear background
 		this.clear();
 
-		// Draw grid
-		this.grid();
+		// Draw background layer
+		this.backgroundLayer();
 
 		// Draw health
 		this.health();
@@ -477,14 +477,26 @@ function Ruleset(server) {
 			this.weapon(weapon.x, weapon.y, weapon.angle, weapon.type, weapon.owner);
 		}
 
+		// Draw fx particles
 		this.particles();
+
+		// Draw foreground layer
+		this.foregroundLayer();
 	};
+
+
+	// Clear background
+	// --------------------------------------------------
 
 	this.draw.clear = function() {
 		this.c.clearRect(0, 0, this.width, this.height);
 	};
 
-	this.draw.grid = function() {
+
+	// Background layer (just after clearing)
+	// --------------------------------------------------
+
+	this.draw.backgroundLayer = function() {
 		this.c.beginPath();
 
 		for (var x=20; x<this.width; x+=20) {
@@ -501,6 +513,16 @@ function Ruleset(server) {
 		this.c.stroke();
 	};
 
+
+	// Foreground layer (drawn last of all)
+	// --------------------------------------------------
+
+	this.draw.foregroundLayer = function() { };
+
+
+	// Temp debug (draw mini obstacles for pathfinding)
+	// --------------------------------------------------
+
 	this.draw.miniObs = function() {
 		this.c.strokeStyle = "#fff";
 		this.c.fillStyle = "rgba(0,0,255,0.3)";
@@ -516,6 +538,10 @@ function Ruleset(server) {
 		}
 	};
 
+
+	// Draw obstacles loop
+	// --------------------------------------------------
+
 	this.draw.obstacles = function() {
 		var obstacles = this.server.getObstacles();
 
@@ -528,6 +554,10 @@ function Ruleset(server) {
 		this.c.restore();
 	};
 
+
+	// Draw an obstacle
+	// --------------------------------------------------
+
 	this.draw.obstacle = function(obstacle) {
 		this.c.strokeStyle = "#33383a";
 		this.c.lineWidth = 3;
@@ -537,6 +567,10 @@ function Ruleset(server) {
 		this.c.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 		this.c.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
 	}
+
+
+	// Draw a bot
+	// --------------------------------------------------
 
 	this.draw.bot = function(x, y, angle, color, radius, health) {
 		this.c.save();
@@ -566,6 +600,10 @@ function Ruleset(server) {
 		this.c.restore();
 	};
 
+
+	// Draw a weapon
+	// --------------------------------------------------
+
 	this.draw.weapon = function(x, y, angle, type, owner) {
 		this.c.save();
 		this.c.translate(x, y);
@@ -586,6 +624,10 @@ function Ruleset(server) {
 
 		this.c.restore();
 	};
+
+
+	// Loop through fx particles
+	// --------------------------------------------------
 
 	this.draw.particles = function() {
 		particlesToRemove = [];
@@ -618,7 +660,10 @@ function Ruleset(server) {
 		this.c.restore();
 	};
 
+
 	// Draw a single particle
+	// --------------------------------------------------
+
 	this.draw.particle = function(particle, newPos) {
 		this.c.beginPath();
 		this.c.strokeStyle = particle.color;
@@ -628,6 +673,10 @@ function Ruleset(server) {
 		this.c.stroke();
 		this.c.closePath();
 	}
+
+
+	// Draw the health (status bar)
+	// --------------------------------------------------
 
 	this.draw.health = function() {
 		var teamHealth = this.ruleset.updateHealth();
@@ -643,6 +692,10 @@ function Ruleset(server) {
 			i++;
 		}
 	};
+
+
+	// Draw the paused state
+	// --------------------------------------------------
 
 	this.draw.paused = function() {
 		var lineWidth = 15;
@@ -678,7 +731,12 @@ function Ruleset(server) {
 		this.c.restore();
 	};
 
+
+	// Draw the endgame state
+	// --------------------------------------------------
+
 	this.draw.endgame = function(winner) {
+		// Get the winning team
 		var bots = this.server.getBots();
 		var team = undefined;
 		for (i in bots) {
@@ -686,14 +744,14 @@ function Ruleset(server) {
 		}
 		if (team === undefined) return;
 
-		// transparent black
+		// Transparent black overlay
 		this.c.save();
 		this.c.beginPath();
 		this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
 		this.c.fillRect(0, 0, this.width, this.height);
 		this.c.closePath();
 
-		// now do the champion banner
+		// Champion banner
 		this.c.beginPath();
 		this.c.fillStyle = "rgba(0, 0, 0, 0.9)";
 		this.c.fillRect(0, 220, this.width, 100);
@@ -701,13 +759,13 @@ function Ruleset(server) {
 		this.c.lineTo(this.width, 220);
 		this.c.moveTo(0, 320);
 		this.c.lineTo(this.width, 320);
-		this.c.strokeStyle = team.color; // TODO: fix
+		this.c.strokeStyle = team.color;
 		this.c.lineWidth = 5;
 		this.c.stroke();
 		this.c.closePath();
 		this.c.restore();
 
-		// text and bot
+		// Draw bot with team name
 		this.c.save();
 		this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
 		this.c.fillStyle = "#fff";

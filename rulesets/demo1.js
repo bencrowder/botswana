@@ -55,7 +55,7 @@ ruleset.setInitialPlacement = function(bot) {
 	bot.y = positions[bot.id].y;
 };
 
-ruleset.draw.grid = function() {
+ruleset.draw.backgroundLayer = function() {
 	this.c.beginPath();
 
 	for (var x=20; x<this.width; x+=20) {
