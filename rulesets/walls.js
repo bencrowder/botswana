@@ -6,6 +6,11 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "walls";
 
+ruleset.properties.world.width = 1200;
+ruleset.properties.world.height = 700;
+ruleset.draw.width = ruleset.properties.world.width;
+ruleset.draw.height = ruleset.properties.world.height;
+
 ruleset.properties.world.obstacleSpeed = 3;
 ruleset.properties.world.obstacleSpeedVariation = 3;
 
@@ -82,3 +87,7 @@ ruleset.draw.obstacle = function(obstacle) {
 }
 
 server.setRuleset(ruleset);
+
+$("#canvas").attr("width", ruleset.properties.world.width);
+$("#canvas").attr("height", ruleset.properties.world.height);
+$(".container").css("width", ruleset.properties.world.width + 10 + "px");

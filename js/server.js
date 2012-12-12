@@ -3,7 +3,6 @@
 
 var Server = function() {
 	var ruleset = new Ruleset(this);
-	var props = ruleset.properties;			// shorthand access
 
 	var tournamentIntervalId = 0;			// private
 
@@ -72,6 +71,7 @@ var Server = function() {
 
 				// Reset everything
 				ruleset.resetGame();
+				props = ruleset.properties;
 				
 				// Counter to keep track of how many are left to load, since we do things asynchronously
 				var scriptsUnloaded = props.numTeams;
@@ -155,6 +155,9 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.startTournament = function() {
+		// Properties
+		props = ruleset.properties;
+
 		// Remove invalid URL flags (if any)
 		$("header input").removeClass("invalid_url");
 
@@ -240,6 +243,8 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.updateObjects = function(list, listName) {
+		props = ruleset.properties;
+
 		// Move and check collisions for items
 		for (var i=0; i<list.length; i++) {
 			var obj = list[i];
@@ -448,10 +453,12 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.getRandomPoint = function() {
+		world = ruleset.properties.world;
+
 		var pos = {};
 		var padding = 100;
-		pos.x = (Math.random() * (props.world.width - (padding * 2))) + padding;
-		pos.y = (Math.random() * (props.world.height - (padding * 2))) + padding;
+		pos.x = (Math.random() * (world.width - (padding * 2))) + padding;
+		pos.y = (Math.random() * (world.height - (padding * 2))) + padding;
 
 		return pos;
 	}
@@ -462,6 +469,7 @@ var Server = function() {
 
 	this.collisionBoundary = function(point) {
 		var rtnBool = false;
+		var props = ruleset.properties;
 
 		if (point.radius != undefined) {
 			right = point.x + point.radius;
