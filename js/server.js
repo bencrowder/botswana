@@ -328,6 +328,7 @@ var Server = function() {
 						"x": serverBots[i].x,
 						"y": serverBots[i].y,
 						"angle": serverBots[i].angle,
+						"radius": serverBots[i].radius,
 						"health": serverBots[i].health,
 						"alive": serverBots[i].alive,
 					});
