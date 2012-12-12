@@ -7,7 +7,7 @@ var ruleset = new Ruleset(server);
 ruleset.name = "orbit";
 
 ruleset.properties.botsPerTeam = 4;
-ruleset.properties.bots.radius = 10;
+ruleset.properties.bots.radius = 12;
 ruleset.properties.orbitSpeed = 0.008;
 
 ruleset.generateObstacles = function() {
@@ -130,6 +130,114 @@ ruleset.draw.backgroundLayer = function() {
 
 	this.c.fillStyle = "rgba(255, 255, 255, 0.15)";
 	this.c.fill();
+};
+
+// Draw bot
+ruleset.draw.bot = function(x, y, angle, color, radius, health) {
+	var healthValue = parseInt(health * (255 / 100)); // hardcoded for now
+
+	this.c.save();
+	this.c.translate(x, y);
+	this.c.rotate(angle);
+
+	// Get bot's team
+	var teamIndex = this.ruleset.properties.bots.colors.indexOf(color);
+
+	if (teamIndex == 0) {
+		// TIE Fighter
+
+		this.c.strokeStyle = "#555";
+		this.c.fillStyle = "#555";
+		this.c.lineWidth = 2;
+
+		// Draw lines
+		this.c.beginPath();
+		this.c.moveTo(-radius, -radius);
+		this.c.lineTo(radius, -radius);
+
+		this.c.moveTo(-radius, radius);
+		this.c.lineTo(radius, radius);
+
+		this.c.moveTo(0, -radius);
+		this.c.lineTo(0, radius);
+		this.c.closePath();
+
+		this.c.stroke();
+
+		// Draw gray circle
+		this.c.beginPath();
+		this.c.arc(0, 0, radius * .5, 0, Math.PI * 2, true);
+		this.c.closePath();
+		this.c.fill();
+
+		// Draw color circle
+		this.c.fillStyle = color;
+		this.c.beginPath();
+		this.c.arc(0, 0, radius * .2, 0, Math.PI * 2, true);
+		this.c.closePath();
+		this.c.fill();
+	} else {
+		// X-Wing
+
+		this.c.strokeStyle = "#666";
+		this.c.fillStyle = "#666";
+		this.c.lineWidth = 2;
+
+		// Wings
+		this.c.beginPath();
+		this.c.moveTo(-radius * .6, -radius);
+		this.c.lineTo(-radius * .2, -radius);
+		this.c.lineTo(-radius * .2, radius);
+		this.c.lineTo(-radius * .6, radius);
+		this.c.lineTo(-radius * .8, radius * .35);
+		this.c.lineTo(-radius * .8, -radius * .35);
+		this.c.closePath();
+		this.c.fill();
+
+		// Guns
+		this.c.beginPath();
+		this.c.moveTo(-radius * .2, -radius + 1); // offset lineWidth
+		this.c.lineTo(radius * .3, -radius + 1);
+		this.c.closePath();
+		this.c.stroke();
+
+		this.c.beginPath();
+		this.c.moveTo(-radius * .2, radius - 1);
+		this.c.lineTo(radius * .3, radius - 1);
+		this.c.closePath();
+		this.c.stroke();
+
+		// Engines
+		this.c.beginPath();
+		this.c.rect(-radius, -radius * .3, radius * .2, radius * .1);
+		this.c.closePath();
+		this.c.fill();
+
+		this.c.beginPath();
+		this.c.rect(-radius, radius * .3, radius * .2, radius * .1);
+		this.c.closePath();
+		this.c.fill();
+
+		// Main body
+		this.c.beginPath();
+		this.c.moveTo(-radius * .2, -radius * .15);
+		this.c.lineTo(radius, -0.5);
+		this.c.lineTo(radius, 0.5);
+		this.c.lineTo(-radius * .2, radius * .15);
+		this.c.closePath();
+		this.c.fill();
+
+		// Draw color circle
+		this.c.fillStyle = color;
+		this.c.beginPath();
+		this.c.arc(-radius * .45, 0, radius * .2, 0, Math.PI * 2, true);
+		this.c.closePath();
+		this.c.fill();
+	}
+
+
+
+	this.c.restore();
 };
 
 server.setRuleset(ruleset);
