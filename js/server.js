@@ -290,6 +290,8 @@ var Server = function() {
 		this.clicks++;
 
 		if (gameStarted && !paused) {
+			ruleset.startRound(this.clicks);
+
 			// Reset collision flags for all bots
 			for (i=0; i<serverBots.length; i++) {
 				ruleset.resetCollisionFlag(serverBots[i]);

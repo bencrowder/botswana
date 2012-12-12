@@ -385,6 +385,12 @@ function Ruleset(server) {
 	};
 
 
+	// Start round
+	// --------------------------------------------------
+
+	this.startRound = function(clicks) { };	
+
+
 	// Reset collision flags
 	// --------------------------------------------------
 

@@ -127,7 +127,7 @@ function Bot() {
 			targetAngle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, this.x + dx, this.y + dy));
 		}
 		targetAngle = server.helpers.normalizeAngle(targetAngle - this.angle);
-		rtnCommand = 'right';
+		var rtnCommand = 'right';
 		if (targetAngle > Math.PI)
 			rtnCommand = 'left';
 		if (targetAngle <= threshold || targetAngle >= ((2*Math.PI) - threshold)) {
