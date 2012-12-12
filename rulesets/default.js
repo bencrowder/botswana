@@ -21,7 +21,6 @@ function Ruleset(server) {
 			'angleStep': 0.1,
 			'speed': 2,
 			'radius': 15,
-			'radiusMargin': 8,
 			'colors': [ "#c48244", "#3081b8" ]
 		}
 	};
@@ -111,36 +110,11 @@ function Ruleset(server) {
 
 	this.commands = {
 		"forward": function(bot) {
-			var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, this.properties.bots.speed);
-
-			oldX = bot.x;
-			oldY = bot.y;
-			bot.x = pos.x;
-			bot.y = pos.y;
-
-			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collided = false;
-			} else {
-				bot.x = oldX;
-				bot.y = oldY;
-				bot.collided = true;
-			}
+			return this.server.helpers.calcVector(bot.x, bot.y, bot.angle, this.properties.bots.speed);
 		},
 
 		"backward": function(bot) {
-			var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -this.properties.bots.speed);
-			oldX = bot.x;
-			oldY = bot.y;
-			bot.x = pos.x;
-			bot.y = pos.y;
-
-			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collided = false;
-			} else {
-				bot.x = oldX;
-				bot.y = oldY;
-				bot.collided = true;
-			}
+			return this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -this.properties.bots.speed);
 		},
 
 		"left": function(bot) {
@@ -152,37 +126,11 @@ function Ruleset(server) {
 		},
 
 		"strafe-left": function(bot) {
-			var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle - (Math.PI / 2), this.properties.bots.speed);
-
-			oldX = bot.x;
-			oldY = bot.y;
-			bot.x = pos.x;
-			bot.y = pos.y;
-
-			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collided = false;
-			} else {
-				bot.x = oldX;
-				bot.y = oldY;
-				bot.collided = true;
-			}
+			return this.server.helpers.calcVector(bot.x, bot.y, bot.angle - (Math.PI / 2), this.properties.bots.speed);
 		},
 
 		"strafe-right": function(bot) {
-			var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle + (Math.PI / 2), this.properties.bots.speed);
-
-			oldX = bot.x;
-			oldY = bot.y;
-			bot.x = pos.x;
-			bot.y = pos.y;
-
-			if (!this.server.collisionBoundary(bot) && !this.server.collisionBotObjects(bot)) {
-				bot.collided = false;
-			} else {
-				bot.x = oldX;
-				bot.y = oldY;
-				bot.collided = true;
-			}
+			return this.server.helpers.calcVector(bot.x, bot.y, bot.angle + (Math.PI / 2), this.properties.bots.speed);
 		},
 
 		"fire": function(bot) {
@@ -198,9 +146,7 @@ function Ruleset(server) {
 			}
 		},
 
-		"wait": function(bot) {
-			return;
-		}
+		"wait": function(bot) { }
 	};
 
 
@@ -310,8 +256,14 @@ function Ruleset(server) {
 			bot.weapons[key] = this.properties.weapons[key].numAllowed;
 		}
 
-		bot.radius = this.properties.bots.radius + ((Math.random() * this.properties.bots.radiusMargin) - this.properties.bots.radiusMargin / 2);
+		bot.radius = this.properties.bots.radius;
 	};
+
+
+	// Post-init bot setup
+	// --------------------------------------------------
+
+	this.postInitBot = function(bot) { };
 
 
 	// Set initial placement
@@ -338,14 +290,46 @@ function Ruleset(server) {
 
 	this.parseCommand = function(command, bot) {
 		var callback = this.commands[command];
-		callback.call(this, bot);
+		return callback.call(this, bot);
 	};
 
 
-	// Post-command hook
+	// Do collision detection
+	// --------------------------------------------------
+	
+	this.checkCollisions = function(bot, newPosition) {
+		// If we haven't moved, check the bot's current x/y
+		if (newPosition == undefined) {
+			newPosition = { x: bot.x, y: bot.y };
+		}
+
+		// Set it to the desired new coordinates
+		oldX = bot.x;
+		oldY = bot.y;
+		bot.x = newPosition.x;
+		bot.y = newPosition.y;
+
+		// Check new coordinates for collisions
+		if (this.server.collisionBoundary(bot) || this.server.collisionBotObjects(bot)) {
+			bot.collided = true;
+			bot.x = oldX;
+			bot.y = oldY;
+		} else {
+			bot.collided = false;
+		}
+	}
+
+
+	// Postprocess bot
 	// --------------------------------------------------
 
-	this.postCommand = function(bot) { };
+	this.postProcess = function(bot) { };
+
+
+	// End-round hook
+	// --------------------------------------------------
+
+	this.endRound = function(bot) { };
 
 
 	// Game over condition
@@ -399,25 +383,30 @@ function Ruleset(server) {
 	};	
 
 
-	// Update bot
+	// Update bot flags
 	// --------------------------------------------------
 
-	this.updateBot = function(bot) {
-		bot.waitFire--;
-		if (bot.waitFire <= 0) {
-			bot.waitFire = 0;
+	this.updateFlags = function(bot) {
+		// Update wait counter
+		if (bot.waitFire > 0) {
+			bot.waitFire--;
+		} else {
 			bot.canShoot = true;
 		}
+
+		// Set alive flag
 		if (bot.health <= 0) {
 			bot.alive = false;
 		}
 	};
 
 
-	// Post-update bot hook
+	// Update bot hook
 	// --------------------------------------------------
 
-	this.postUpdateBot = function(bot) { };
+	this.updateBot = function(bot, pos) {
+		return pos;
+	};
 
 
 	// Update health

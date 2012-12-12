@@ -6,7 +6,13 @@
 var ruleset = new Ruleset(server);
 
 ruleset.properties.botsPerTeam = 4;
+ruleset.properties.bots.radiusMargin = 10;
 ruleset.properties.world.teleportationCircleRadius = 100;
+
+// Set the bot radii randomly (within a range)
+ruleset.postInitBot = function(bot) {
+	bot.radius = ruleset.properties.bots.radius + ((Math.random() * ruleset.properties.bots.radiusMargin) - ruleset.properties.bots.radiusMargin / 2);
+};
 
 ruleset.generateObstacles = function() {
 	// Central wall
@@ -18,9 +24,14 @@ ruleset.generateObstacles = function() {
 	return obstacles;
 };
 
-ruleset.postUpdateBot = function(bot) {
-	// If the bot touches the teleportation circle, 
-	var distToCircle = this.server.helpers.distanceToPoint(bot.x, bot.y, this.properties.world.width / 2, this.properties.world.height / 2);
+ruleset.updateBot = function(bot, pos) {
+	// Use the latest position
+	if (pos == undefined) {
+		pos = { x: bot.x, y: bot.y };
+	}
+
+	// If the bot touches the teleportation circle
+	var distToCircle = this.server.helpers.distanceToPoint(pos.x, pos.y, this.properties.world.width / 2, this.properties.world.height / 2);
 
 	if (distToCircle < this.properties.world.teleportationCircleRadius) {
 		// Get a random position
@@ -34,7 +45,12 @@ ruleset.postUpdateBot = function(bot) {
 			bot.x = botPos.x;
 			bot.y = botPos.y;
 		} 
+
+		pos.x = bot.x;
+		pos.y = bot.y;
 	}
+
+	return pos;
 };
 
 ruleset.draw.foregroundLayer = function() {

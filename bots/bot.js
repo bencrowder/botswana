@@ -32,15 +32,18 @@ function Bot() {
 		this.y = sourceBot.y;
 		this.color = sourceBot.color;
 		this.angle = sourceBot.angle;	
+		this.radius = sourceBot.radius;
 		this.health = sourceBot.health;
+		this.alive = sourceBot.alive;
+
 		this.weapons = sourceBot.weapons;
 		this.canShoot = sourceBot.canShoot;
 		this.waitFire = sourceBot.waitFire;
+
 		this.collided = sourceBot.collided;
 		this.hitByBullet = sourceBot.hitByBullet;
-		this.radius = sourceBot.radius;
+
 		this.state = sourceBot.state;
-		this.alive = sourceBot.alive;
 	}
 
 

@@ -181,6 +181,9 @@ var Server = function() {
 
 			// Initialize the bot
 			ruleset.initializeBot(bot, i);
+
+			// Post-init bot setup
+			ruleset.postInitBot(bot);
 		}
 
 		// Loop through each bot to set placement
@@ -342,11 +345,8 @@ var Server = function() {
 			for (var i=0; i<serverBots.length; i++) {
 				var bot = serverBots[i];
 
-				// Do rule checking
-				ruleset.updateBot(bot);
-
-				// Custom post-update logic
-				ruleset.postUpdateBot(bot);
+				// Update bot flags (wait counters, alive status, etc.)
+				ruleset.updateFlags(bot);
 
 				if (bot.alive) {
 					// Update the bot's state (TODO: make copies instead of passing reference to the arrays)
@@ -358,22 +358,32 @@ var Server = function() {
 						bots[i].state.payload = {}
 					}
 
-					// Now run the bot and parse the returned command
+					// Now run the bot
 					command = bots[i].run();
-					ruleset.parseCommand(command.command, bot);
+
+					// Parse the returned command
+					var pos = ruleset.parseCommand(command.command, bot);
+
+					// Update bot hook
+					pos = ruleset.updateBot(bot, pos);
+
+					// Collision detection
+					ruleset.checkCollisions(bot, pos);
+
+					// If the command sent back a payload, add it so the other bots on the team can see it
 					if (typeof command.payload != 'undefined') {
 						payloads[bot.name] = command.payload;
 					}
 
-					// Post-command hook
-					ruleset.postCommand(bot);
-
-					// Normalize the returned angle
+					// Normalize the bot's angle
 					bot.angle = this.helpers.normalizeAngle(bot.angle);
 
 					// Copy the server bot data to the bots
 					bots[i].copy(bot);
 				} 
+
+				// Post-process bot
+				ruleset.postProcess(bot);
 			}
 
 			if (ruleset.gameOver()) {
@@ -391,6 +401,9 @@ var Server = function() {
 				// Draw everything
 				ruleset.draw.world();
 			}
+
+			// End-round hook
+			ruleset.endRound();
 		}
 	}
 

@@ -5,6 +5,7 @@
 var ruleset = new Ruleset(server);
 
 ruleset.properties.botsPerTeam = 4;
+ruleset.properties.bots.radius = 10;
 
 ruleset.generateObstacles = function() {
 	// Central planet
@@ -21,7 +22,28 @@ ruleset.commands.backward = function(bot) { return; }
 ruleset.commands['strafe-left'] = function(bot) { return; }
 ruleset.commands['strafe-right'] = function(bot) { return; }
 
-ruleset.postUpdateBot = function(bot) {
+ruleset.setInitialPlacement = function(bot) {
+	var positions = [
+		{ 'x': 500, 'y': 30 },
+		{ 'x': 500, 'y': 90 },
+		{ 'x': 500, 'y': 150 },
+		{ 'x': 500, 'y': 210 },
+		{ 'x': 500, 'y': 360 },
+		{ 'x': 500, 'y': 420 },
+		{ 'x': 500, 'y': 480 },
+		{ 'x': 500, 'y': 540 },
+	];
+
+	bot.x = positions[bot.id].x;
+	bot.y = positions[bot.id].y;
+};
+
+ruleset.updateBot = function(bot, pos) {
+	// Use the latest position
+	if (pos == undefined) {
+		pos = { x: bot.x, y: bot.y };
+	}
+
 	// Get bot's team
 	var teams = this.server.getTeams();
 	var teamIndex = teams.indexOf(bot.name);
@@ -29,21 +51,26 @@ ruleset.postUpdateBot = function(bot) {
 	// Move the bot in orbit around the center point
 	var halfWidth = ruleset.properties.world.width / 2;
 	var halfHeight = ruleset.properties.world.height / 2;
-
-	var radius = bot.myDistanceToPoint(halfWidth, halfHeight);
+	var radius = bot.distanceToPoint(pos.x, pos.y, halfWidth, halfHeight);
 	var angle = 0.008;
 
 	// Switch direction depending on team
 	angle = angle * ((teamIndex == 0) ? 1 : -1);
 
-	var x = bot.x - halfWidth;
-	var y = bot.y - halfHeight;
+	var x = pos.x - halfWidth;
+	var y = pos.y - halfHeight;
 
+	// Rotate around
 	var newX = x * Math.cos(angle) - y * Math.sin(angle);
 	var newY = y * Math.cos(angle) + x * Math.sin(angle);
 
-	bot.x = halfWidth + newX;
-	bot.y = halfHeight + newY;
+	if (!bot.collided) {
+		botX = halfWidth + newX;
+		botY = halfHeight + newY;
+		return { x: botX, y: botY };
+	} else {
+		return pos;
+	}
 };
 
 server.setRuleset(ruleset);
