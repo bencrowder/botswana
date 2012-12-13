@@ -6,7 +6,6 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "orbit";
 
-ruleset.properties.botsPerTeam = 4;
 ruleset.properties.bots.radius = 12;
 ruleset.properties.orbitSpeed = 0.008;
 ruleset.properties.bots.colors = [ "#78e63a", "#e71d1d" ];

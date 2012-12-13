@@ -4,8 +4,6 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "demo2";
 
-ruleset.properties.botsPerTeam = 4;
-
 ruleset.properties.bots = {
 	'angleStep': 0.1,
 	'speed': 5,
