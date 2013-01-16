@@ -1,6 +1,6 @@
 # Botswana
 
-A web-based game with programmable bots (in Javascript).
+A web-based game with programmable bots (in Javascript).  [Live demo here.](http://bencrowder.github.com/botswana/)
 
 ## Usage
 
