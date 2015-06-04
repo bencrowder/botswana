@@ -71,15 +71,44 @@ function Ruleset(server) {
 		},
 		'mine': {
 			'speed': 0,
-			'strength': 10,
+			'strength': 30,
 			'waitTime': 25,
 			'numAllowed': 5,
+			'display': {
+				'length': 15,
+				'width': 15,
+			},
 			'movementCallback': function(server, properties) {
 				// Don't move mines
 				return { 'x': this.x, 'y': this.y };
 			},
 			'collisionCallback': function(server, collision, properties) {
 				this.remove = true;
+
+				switch (collision.type) {
+					case "bot":
+						// Decrease the health of the bot that was hit
+						bot = collision.object;
+						bot.health -= properties.strength;
+						bot.hitByBullet = true;	// bot is responsible to unset this
+
+						// Create a red explosion
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+						break;
+						
+					default:
+						// Collision with obstacle, item, or world boundary
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#96e0ff");
+						break;
+				}
+
+				owner = server.getBotByID(this.owner);
+				if (owner != undefined) {
+					if (owner.weapons[this.type] < properties.numAllowed) {
+						owner.weapons[this.type]++;
+					}
+					owner.canShoot = true;
+				}
 			}
 		},
 	};
@@ -143,6 +172,14 @@ function Ruleset(server) {
 				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "bullet", "speed": this.properties.weapons.bullet.speed, "remove": false });
 			}
 		},
+
+		"mine": function(bot) {
+			if (bot.weapons.mine > 0) {
+				bot.weapons.mine--;
+				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -bot.radius - 5);
+				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "mine", "speed": 0, "remove": false });
+			}
+		}, 
 
 		"wait": function(bot) { }
 	};
@@ -615,6 +652,14 @@ function Ruleset(server) {
 				this.c.lineTo(-this.ruleset.properties.weapons.bullet.display.length, 0);
 				this.c.closePath();
 				this.c.stroke();
+
+				break;
+			case 'mine':
+				this.c.beginPath();
+				this.c.fillStyle = "rgba(255, 255, 255, 1.0)";
+				this.c.arc(0, 0, 5, 0, 2 * Math.PI);
+				this.c.fill();
+				this.c.closePath();
 
 				break;
 		}
