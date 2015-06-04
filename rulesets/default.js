@@ -381,6 +381,36 @@ function Ruleset(server) {
 
 	// Game over condition
 	// --------------------------------------------------
+	
+	this.isStalemate = function() {
+		// if there is no damage delivered by any team for 1000 ticks, stalemate
+		var stale = false;
+		var bots = server.getBots();
+		if (!this.previous_state) {
+			this.previous_state = {
+				'botshealth': 0
+			};
+			this.stale_ticks = 0
+		}
+		current_state = {
+			'botshealth': 0
+		};
+
+		for (i in bots) {
+			current_state['botshealth'] += bots[i].health;
+		}
+		if (this.previous_state['botshealth'] == current_state['botshealth']) {
+			this.stale_ticks++;
+		} else {
+			this.stale_ticks = 0;
+		}
+		this.previous_state = current_state;
+
+		if (this.stale_ticks >= 1000) {
+			return true;
+		}
+		return false;
+	}
 
 	this.gameOver = function() {
 		var teamHealth = this.getHealth();
@@ -397,15 +427,21 @@ function Ruleset(server) {
 			if (teamHealth[key] <= 0 && !stillalive) return true;
 		}	
 
+		if (this.isStalemate()) {
+			return true;
+		}
+
 		return false;
 	};
-
 
 	// Get winner
 	// --------------------------------------------------
 
 	this.getWinner = function() {
 		var teamHealth = this.getHealth();
+		if (this.isStalemate()) {
+			return 'stalemate';
+		}
 
 		// If anyone is at health = 0, the other team is the winner.
 		for (var key in teamHealth) {
