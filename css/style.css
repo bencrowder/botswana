@@ -48,12 +48,12 @@ section#status				{ margin-top: 20px; background: #1f1f1f; clear: both; overflow
 
 #wrapper					{ -moz-border-radius: 0 0 5px 5px; border-radius: 0 0 5px 5px; border-style: solid; border-width: 0 5px 5px 5px; border-color: #111; }
 
-canvas						{ background: #000; -moz-border-radius: 0 0 5px 5px; border-radius: 0 0 5px 5px; }
+canvas						{ background: #000; -moz-border-radius: 0 0 5px 5px; border-radius: 0 0 5px 5px; width: 1000px; height: 600px; }
 
 
 /* Footer */
 /* -------------------------------------------------- */
+
 footer						{ font-size: .7em; color: #222; margin: 3px 0 20px; text-align: right; }
 footer a					{ font-weight: bold; color: #222; text-decoration: none; }
 footer a:hover				{ text-decoration: underline; }
-

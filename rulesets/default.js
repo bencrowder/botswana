@@ -9,10 +9,10 @@ function Ruleset(server) {
 		'numTeams': 2,
 		'botsPerTeam': 4,
 		'world': {
-			'width': 1000,
-			'height': 600,
+			'width': 1500,
+			'height': 900,
 			'obstacles': {
-				'num': (Math.random() * 4) + 2
+				'num': (Math.random() * 10) + 5
 			}
 		},
 		'bots': {
@@ -531,7 +531,7 @@ function Ruleset(server) {
 	// --------------------------------------------------
 
 	this.draw.backgroundLayer = function() {
-		this.c.beginPath();
+		this.c.strokeStyle = "#181818";
 
 		for (var x=20; x<this.width; x+=20) {
 			this.c.moveTo(x, 0);
@@ -543,7 +543,6 @@ function Ruleset(server) {
 			this.c.lineTo(this.width, y);
 		}
 
-		this.c.strokeStyle = "#282828";
 		this.c.stroke();
 	};
 
@@ -809,7 +808,7 @@ function Ruleset(server) {
 
 		// Draw bot with team name
 		this.c.save();
-		this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
+		this.c.font = "bold 28px Helvetica, Arial, sans-serif";
 		this.c.fillStyle = "#fff";
 		this.c.fillText("Champion: " + team.name, 70, 277);
 		this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
