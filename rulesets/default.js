@@ -42,16 +42,19 @@ function Ruleset(server) {
 			},
 			'collisionCallback': function(server, collision, properties) {
 				this.remove = true;
+				owner = server.getBotByID(this.owner);
 
 				switch (collision.type) {
 					case "bot":
 						// Decrease the health of the bot that was hit
 						bot = collision.object;
-						bot.health -= properties.strength;
-						bot.hitByBullet = true;	// bot is responsible to unset this
+						if (bot.name != owner.name) {
+							bot.health -= properties.strength;
+							bot.hitByBullet = true;	// bot is responsible to unset this
 
-						// Create a red explosion
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+							// Create a red explosion
+							server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+						}
 						break;
 						
 					default:
@@ -60,7 +63,6 @@ function Ruleset(server) {
 						break;
 				}
 
-				owner = server.getBotByID(this.owner);
 				if (owner != undefined) {
 					if (owner.weapons[this.type] < properties.numAllowed) {
 						owner.weapons[this.type]++;
@@ -84,16 +86,19 @@ function Ruleset(server) {
 			},
 			'collisionCallback': function(server, collision, properties) {
 				this.remove = true;
+				owner = server.getBotByID(this.owner);
 
 				switch (collision.type) {
 					case "bot":
 						// Decrease the health of the bot that was hit
 						bot = collision.object;
-						bot.health -= properties.strength;
-						bot.hitByBullet = true;	// bot is responsible to unset this
+						if (bot.name != owner.name) {
+							bot.health -= properties.strength;
+							bot.hitByBullet = true;	// bot is responsible to unset this
 
-						// Create a red explosion
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+							// Create a red explosion
+							server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+						}
 						break;
 						
 					default:
@@ -102,7 +107,6 @@ function Ruleset(server) {
 						break;
 				}
 
-				owner = server.getBotByID(this.owner);
 				if (owner != undefined) {
 					if (owner.weapons[this.type] < properties.numAllowed) {
 						owner.weapons[this.type]++;
