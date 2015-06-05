@@ -421,6 +421,7 @@ function Ruleset(server) {
 		var teamHealth = this.getHealth();
 
 		// If only one team is at health > 0, game over
+		var teamsAlive = 0;
 		for (var key in teamHealth) {
 			var stillAlive = false;
 			var bots = server.getBots();
@@ -431,10 +432,13 @@ function Ruleset(server) {
 				}
 			}
 
-			if (teamHealth[key] <= 0 && !stillAlive) return true;
+			// This team is still alive
+			if (stillAlive) {
+				teamsAlive++;
+			}
 		}	
 
-		if (this.isStalemate()) {
+		if (teamsAlive == 1 || this.isStalemate()) {
 			return true;
 		}
 
