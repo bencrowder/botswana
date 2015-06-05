@@ -864,13 +864,15 @@ function Ruleset(server) {
 			this.c.closePath();
 
 			// Champion banner
+			var bannerTop = this.height * .3;
+			var bannerBottom = this.height * .7;
 			this.c.beginPath();
 			this.c.fillStyle = "rgba(0, 0, 0, 0.9)";
-			this.c.fillRect(0, 220, this.width, 100);
-			this.c.moveTo(0, 220);
-			this.c.lineTo(this.width, 220);
-			this.c.moveTo(0, 320);
-			this.c.lineTo(this.width, 320);
+			this.c.fillRect(0, bannerTop, this.width, bannerBottom - bannerTop);
+			this.c.moveTo(0, bannerTop);
+			this.c.lineTo(this.width, bannerTop);
+			this.c.moveTo(0, bannerBottom);
+			this.c.lineTo(this.width, bannerBottom);
 			this.c.strokeStyle = team.color;
 			this.c.lineWidth = 5;
 			this.c.stroke();
@@ -878,11 +880,22 @@ function Ruleset(server) {
 			this.c.restore();
 
 			// Draw bot with team name
+			var centerX = (this.width / 2) - 5;
+			// TODO: figure out why we need - 5 to get it centered
+
 			this.c.save();
-			this.c.font = "bold 28px Helvetica, Arial, sans-serif";
+			this.c.textAlign = 'center';
+
+			this.c.fillStyle = "#555";
+			this.c.font = "24px Helvetica, Arial, sans-serif";
+			this.c.fillText("CHAMPION", centerX, this.height * .40);
+
 			this.c.fillStyle = "#fff";
-			this.c.fillText("Champion: " + team.name, 70, 277);
-			this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
+			this.c.font = "bold 56px Helvetica, Arial, sans-serif";
+			this.c.fillText(team.name, centerX, this.height * .48);
+
+			this.bot(centerX, this.height * .57, 3 * Math.PI / 2, team.color, team.radius * 2.2, 100);
+
 			this.c.closePath();
 			this.c.restore();
 		}
