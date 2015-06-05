@@ -24,6 +24,19 @@ $(document).ready(function() {
 	});
 
 
+	// Toggle tray
+	$("#tray").click(function() {
+		if ($("header").hasClass("active")) {
+			$("header").removeClass("active");
+		} else {
+			$("header").addClass("active");
+		}
+
+		server.togglePause();
+
+		return false;
+	});
+
 	
 	// Get localStorage store
 	function getLocalStorage(type) {

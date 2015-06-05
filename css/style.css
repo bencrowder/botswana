@@ -19,6 +19,24 @@ body {
 }
 
 
+/* Tray toggle */
+/* -------------------------------------------------- */
+
+#tray {
+	background: #000;
+	cursor: pointer;
+	height: 25px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	z-index: 50000;
+}
+
+#tray:hover {
+	background: #333;
+}
+
 
 /* Header */
 /* -------------------------------------------------- */
@@ -29,7 +47,7 @@ header {
 	display: none;
 	left: 0;
 	overflow: hidden;
-	padding: 25px;
+	padding: 45px 25px 25px;
 	position: absolute;
 	right: 0;
 	top: 0;
@@ -215,7 +233,7 @@ header .group.start input[type=button]:focus {
 /* -------------------------------------------------- */
 
 section#status {
-	margin-top: 20px;
+	margin-top: 40px;
 	background: #1f1f1f;
 	clear: both;
 	overflow: hidden;
