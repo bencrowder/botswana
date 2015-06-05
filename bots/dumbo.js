@@ -25,9 +25,11 @@ Dumbo.prototype.run = function() {
 
 	// If we've been hit
 	if (this.hit > 0) {
-		// Every fifth turn, move left; otherwise move forward
+		// Every fifth turn, move left; every 19th turn, mine; otherwise move forward
 		if (this.timer % 5 == 0) {
 			command = "left";
+		} else if (this.timer % 19 == 0) {
+			command = "mine";
 		} else {
 			command = "forward";
 		}

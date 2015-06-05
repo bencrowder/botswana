@@ -75,6 +75,7 @@ function Ruleset(server) {
 			'strength': 30,
 			'waitTime': 25,
 			'numAllowed': 5,
+			'radius': 10,
 			'display': {
 				'length': 15,
 				'width': 15,
@@ -715,8 +716,11 @@ function Ruleset(server) {
 				break;
 			case 'mine':
 				this.c.beginPath();
-				this.c.fillStyle = "rgba(255, 255, 255, 1.0)";
-				this.c.arc(0, 0, 5, 0, 2 * Math.PI);
+				this.c.lineWidth = 10;
+				this.c.strokeStyle = "rgb(147, 31, 31)";
+				this.c.fillStyle = "rgb(232, 144, 144)";
+				this.c.arc(0, 0, this.ruleset.properties.weapons.mine.radius, 0, 2 * Math.PI);
+				this.c.stroke();
 				this.c.fill();
 				this.c.closePath();
 
