@@ -13,7 +13,7 @@ $(document).ready(function() {
 	var openingScreen = new Image();
 	openingScreen.src = "images/OpeningScreen.jpg";
 	openingScreen.onload = function() {
-		context.drawImage(openingScreen, 0, 0);
+		context.drawImage(openingScreen, 0, 0, canvas.width, canvas.height);
 	}
 
 	$("#go_button").focus();

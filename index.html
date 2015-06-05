@@ -4,7 +4,7 @@
 
 	<link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8" />	
 
-	<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script> 
+	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script> 
 
 	<script type="text/javascript" src="bots/bot.js"></script> 
 
@@ -15,24 +15,95 @@
 </head>
 
 <body>
-	<header>
+	<header class="active">
 		<div class="container">
-			<div class="group">
-				<label>Team 1 script</label>
-				<input type="text" name="bot1_url" id="bot1_url" placeholder="URL" value="bots/destroyer.js" />
+			<div class="group bots">
+				<label>Bots</label>
+
+				<section class="list">
+					<div class="bot item selected" value="bots/crusher.js">
+						<div class="name">Crusher</div>	
+						<div class="sub">bots/crusher.js</div>
+					</div>
+					<div class="bot item selected" value="bots/destroyer.js">
+						<div class="name">Destroyer</div>
+						<div class="sub">bots/destroyer.js</div>
+					</div>
+					<div class="bot item" value="bots/dumbo.js">
+						<div class="name">Dumbo</div>
+						<div class="sub">bots/dumbo.js</div>
+					</div>
+					<div class="bot item" value="bots/samplebot.js">
+						<div class="name">Samplebot</div>
+						<div class="sub">bots/samplebot.js</div>
+					</div>
+					<div class="bot item" value="bots/teleporter.js">
+						<div class="name">Teleporter</div>
+						<div class="sub">bots/teleporter.js</div>
+					</div>
+					<div class="bot item" value="bots/xavier.js">
+						<div class="name">Xavier</div>
+						<div class="sub">bots/xavier.js</div>
+					</div>
+				</section>
+
+				<div class="add-form">
+					<input type="text" name="bot_url" id="bot_url" placeholder="URL to bot" value="" />
+					<input type="submit" value="+" class="add" />
+				</div>
 			</div>
 
-			<div class="group">
-				<label>Team 2 script</label>
-				<input type="text" name="bot2_url" id="bot2_url" placeholder="URL" value="bots/crusher.js" />
+			<div class="group rulesets">
+				<label>Rulesets</label>
+
+				<section class="list">
+					<div class="ruleset item selected" value="rulesets/default.js">
+						<div class="name">Default</div>	
+						<div class="sub">rulesets/default.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/demo1.js">
+						<div class="name">Demo 1</div>	
+						<div class="sub">rulesets/demo1.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/demo2.js">
+						<div class="name">Demo 2</div>	
+						<div class="sub">rulesets/demo2.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/demo3.js">
+						<div class="name">Demo 3</div>	
+						<div class="sub">rulesets/demo3.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/expulsion.js">
+						<div class="name">Expulsion</div>	
+						<div class="sub">rulesets/expulsion.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/orbit.js">
+						<div class="name">Orbit</div>	
+						<div class="sub">rulesets/orbit.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/teleport.js">
+						<div class="name">Teleport</div>	
+						<div class="sub">rulesets/teleport.js</div>
+					</div>
+					<div class="ruleset item" value="rulesets/walls.js">
+						<div class="name">Walls</div>	
+						<div class="sub">rulesets/walls.js</div>
+					</div>
+				</section>
+
+				<div class="add-form">
+					<input type="text" name="ruleset_url" id="ruleset_url" placeholder="URL to ruleset" value="" />
+					<input type="submit" value="+" class="add" />
+				</div>
 			</div>
 
-			<div class="group ruleset">
-				<label>Ruleset script</label>
-				<input type="text" name="ruleset_url" id="ruleset_url" placeholder="URL" value="rulesets/default.js" />
+			<div class="group options">
+				<label>Ruleset Options</label>
 			</div>
 
-			<input type="button" id="go_button" name="go_button" value="Start Tournament" />
+			<div class="group start">
+				<input type="button" id="go_button" name="go_button" value="Start Tournament" />
+			</div>
 		</div>
 	</header>
 
