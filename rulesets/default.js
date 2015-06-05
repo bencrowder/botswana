@@ -73,12 +73,12 @@ function Ruleset(server) {
 		'mine': {
 			'speed': 0,
 			'strength': 30,
-			'waitTime': 25,
-			'numAllowed': 5,
+			'waitTime': 150,
+			'numAllowed': 3,
 			'radius': 10,
 			'display': {
-				'length': 15,
-				'width': 15,
+				'length': 10,
+				'width': 10,
 			},
 			'movementCallback': function(server, properties) {
 				// Don't move mines
@@ -180,6 +180,9 @@ function Ruleset(server) {
 		"mine": function(bot) {
 			if (bot.weapons.mine > 0) {
 				bot.weapons.mine--;
+				bot.canShoot = false;
+				bot.waitFire = this.properties.weapons.mine.waitTime;
+
 				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -bot.radius - 5);
 				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "mine", "speed": 0, "remove": false });
 			}
