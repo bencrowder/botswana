@@ -51,7 +51,7 @@ var Server = function() {
 		fxParticles = [];
 
 		// Load the ruleset script and execute it
-		var rulesetUrl = $("#ruleset_url").val();
+		var rulesetUrl = $(".rulesets .ruleset.selected").attr("data-uri");
 
 		$.ajax({
 			url: rulesetUrl,
@@ -77,8 +77,9 @@ var Server = function() {
 				var scriptsUnloaded = props.numTeams;
 
 				// Load the scripts, one for each team
-				for (var i=1; i<=props.numTeams; i++) {
-					var url = $("#bot" + i + "_url").val();
+				var teamList = $(".bots .bot.selected");
+				for (var i=0; i<teamList.length; i++) {
+					var url = $(teamList[i]).attr("data-uri");
 
 					// Load the script and execute it
 					$.ajax({
@@ -87,11 +88,8 @@ var Server = function() {
 
 						error: function() {
 							// Find the bot with the bad URL and flag it
-							for (var i=1; i<=props.numTeams; i++) {
-								if ($("#bot" + i + "_url").val() == url) {
-									$("#bot" + i + "_url").addClass("invalid_url");
-								}
-							}
+							var bot = $(".bots .bot[data-uri=" + url + "]");
+							bot.addClass("invalid_url");
 						},
 
 						success: function() {
@@ -100,6 +98,8 @@ var Server = function() {
 							// Start the tournament once all these are loaded
 							if (scriptsUnloaded == 0) {
 								server.startTournament();
+
+								$("header").removeClass("active");
 							}
 						}
 					});

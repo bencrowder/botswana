@@ -16,11 +16,54 @@ $(document).ready(function() {
 		context.drawImage(openingScreen, 0, 0, canvas.width, canvas.height);
 	}
 
-	$("#go_button").focus();
+	$("#start-button").focus();
 
-	$("#go_button").click(function() {
-		$("#go_button").blur();
+	$("#start-button").click(function() {
+		$("#start-button").blur();
 		server.loadScripts();
+	});
+
+
+	// Add bot/ruleset to list
+	// Type is "bot" or "ruleset"
+	function addCustomToList(field, type) {
+		var input = field.siblings("input[type=text]");
+		var value = input.val().trim();
+
+		if (value != '') {
+			var html = "<div class='" + type + " item selected' data-uri='" + value  + "'>";
+			html += "<div class='name'>" + value + "</div>";
+			html += "</div>";
+			$("." + type + "s .list").append(html);
+
+			input.val('');
+		}
+	}
+
+	$(".bots .add-form input[type=submit]").click(function() {
+		addCustomToList($(this), "bot");
+		return false;
+	});
+
+	$(".rulesets .add-form input[type=submit]").click(function() {
+		addCustomToList($(this), "ruleset");
+		return false;
+	});
+
+
+	// Selection of bots
+	$(".bots .item").on("click", function() {
+		$(this).toggleClass("selected");
+
+		return false;
+	});
+
+	// Selection of ruleset
+	$(".rulesets .item").on("click", function() {
+		$(this).siblings(".item").removeClass("selected");
+		$(this).addClass("selected");
+
+		return false;
 	});
 });
 
