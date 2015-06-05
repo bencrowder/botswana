@@ -6,7 +6,6 @@ function Ruleset(server) {
 	this.name = "default";
 
 	this.properties = {
-		'numTeams': 2,
 		'botsPerTeam': 4,
 		'world': {
 			'width': 1500,
@@ -19,7 +18,7 @@ function Ruleset(server) {
 			'angleStep': 0.1,
 			'speed': 2,
 			'radius': 15,
-			'colors': [ "#c48244", "#3081b8" ]
+			'colors': [ "#c48244", "#3081b8", "#a755b0", "#55b083", "#8b55b0", "#666" ]
 		}
 	};
 
@@ -386,45 +385,53 @@ function Ruleset(server) {
 		// if there is no damage delivered by any team for 1000 ticks, stalemate
 		var stale = false;
 		var bots = server.getBots();
+
 		if (!this.previous_state) {
 			this.previous_state = {
-				'botshealth': 0
+				'botshealth': 0,
 			};
-			this.stale_ticks = 0
+
+			this.staleTicks = 0;
 		}
-		current_state = {
-			'botshealth': 0
+
+		currentState = {
+			'botshealth': 0,
 		};
 
 		for (i in bots) {
-			current_state['botshealth'] += bots[i].health;
+			currentState['botshealth'] += bots[i].health;
 		}
-		if (this.previous_state['botshealth'] == current_state['botshealth']) {
-			this.stale_ticks++;
-		} else {
-			this.stale_ticks = 0;
-		}
-		this.previous_state = current_state;
 
-		if (this.stale_ticks >= 1000) {
+		if (this.previous_state['botshealth'] == currentState['botshealth']) {
+			this.staleTicks++;
+		} else {
+			this.staleTicks = 0;
+		}
+
+		this.previous_state = currentState;
+
+		if (this.staleTicks >= 1000) {
 			return true;
 		}
+
 		return false;
 	}
 
 	this.gameOver = function() {
 		var teamHealth = this.getHealth();
 
-		// If anyone is at health = 0, game over
+		// If only one team is at health > 0, game over
 		for (var key in teamHealth) {
-			stillalive = false;
-			bots = server.getBots();
+			var stillAlive = false;
+			var bots = server.getBots();
+
 			for (i in bots) {
-				if (bots[i].name == key && bots[i].alive){
-					stillalive = true;
+				if (bots[i].name == key && bots[i].alive) {
+					stillAlive = true;
 				}
 			}
-			if (teamHealth[key] <= 0 && !stillalive) return true;
+
+			if (teamHealth[key] <= 0 && !stillAlive) return true;
 		}	
 
 		if (this.isStalemate()) {

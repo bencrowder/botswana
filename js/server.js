@@ -72,12 +72,16 @@ var Server = function() {
 				// Reset everything
 				ruleset.resetGame();
 				props = ruleset.properties;
+				var teamList = $(".bots .bot.selected");
 				
 				// Counter to keep track of how many are left to load, since we do things asynchronously
-				var scriptsUnloaded = props.numTeams;
+				if (props.numTeams) {
+					var scriptsUnloaded = props.numTeams;
+				} else {
+					var scriptsUnloaded = teamList.length;
+				}
 
 				// Load the scripts, one for each team
-				var teamList = $(".bots .bot.selected");
 				for (var i=0; i<teamList.length; i++) {
 					var url = $(teamList[i]).attr("data-uri");
 
@@ -85,12 +89,6 @@ var Server = function() {
 					$.ajax({
 						url: url,
 						dataType: 'script',
-
-						error: function() {
-							// Find the bot with the bad URL and flag it
-							var bot = $(".bots .bot[data-uri=" + url + "]");
-							bot.addClass("invalid_url");
-						},
 
 						success: function() {
 							scriptsUnloaded--;
@@ -101,7 +99,13 @@ var Server = function() {
 
 								$("header").removeClass("active");
 							}
-						}
+						},
+
+						error: function() {
+							// Find the bot with the bad URL and flag it
+							var bot = $(".bots .bot[data-uri=" + url + "]");
+							bot.addClass("invalid_url");
+						},
 					});
 				}
 			}
