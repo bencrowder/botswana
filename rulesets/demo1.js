@@ -21,7 +21,7 @@ ruleset.generateObstacles = function() {
 	var obstacles = [
 		{ "x": 150, "y": 200, "width": 50, "height": 500 },
 		{ "x": 1300, "y": 200, "width": 50, "height": 500 },
-		{ "x": 450, "y": 250, "width": 100, "height": 100 },
+		{ "x": 700, "y": 400, "width": 100, "height": 100 },
 		{ "x": 250, "y": 100, "width": 1000, "height": 40 },
 		{ "x": 250, "y": 760, "width": 1000, "height": 40 }
 	];
@@ -31,14 +31,14 @@ ruleset.generateObstacles = function() {
 
 ruleset.setInitialPlacement = function(bot) {
 	var positions = [
-		{ 'x': 200, 'y': 140 },
-		{ 'x': 200, 'y': 180 },
-		{ 'x': 200, 'y': 220 },
-		{ 'x': 200, 'y': 260 },
-		{ 'x': 800, 'y': 320 },
-		{ 'x': 800, 'y': 360 },
-		{ 'x': 800, 'y': 400 },
-		{ 'x': 800, 'y': 440 },
+		{ 'x': 300, 'y': 240 },
+		{ 'x': 300, 'y': 280 },
+		{ 'x': 300, 'y': 320 },
+		{ 'x': 300, 'y': 360 },
+		{ 'x': 1200, 'y': 520 },
+		{ 'x': 1200, 'y': 560 },
+		{ 'x': 1200, 'y': 600 },
+		{ 'x': 1200, 'y': 640 },
 	];
 
 	bot.x = positions[bot.id].x;

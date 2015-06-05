@@ -94,6 +94,9 @@ header .group .item {
 	text-overflow: ellipsis;
 	width: 250px;
 	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
 }
 
 header .group .item:hover {

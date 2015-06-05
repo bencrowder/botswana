@@ -178,7 +178,9 @@ $("header .ruleset label").css("color", "#fff");
 
 $("#status").css("border-color", "#cffdff");
 $("#status").css("background", "#aee8ff");
-$("#status .name").css("color", "#0facdd");
+$("section#status .team .name").css("color", "#5B8CA1");
+$("section#status .team .healthbar").css("background", "#fff");
 $(".healthbar").css("background", "#cffdff");
 
 $("#wrapper").css("border-color", "#cffdff");
+$("#wrapper").css("box-shadow", "none");

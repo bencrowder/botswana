@@ -13,7 +13,7 @@ ruleset.properties.bots.colors = [ "#78e63a", "#e71d1d" ];
 ruleset.generateObstacles = function() {
 	// Central planet
 	var obstacles = [
-		{ "x": 475, "y": 275, "width": 50, "height": 50 },
+		{ "x": 675, "y": 375, "width": 150, "height": 150 },
 	];
 
 	return obstacles;
@@ -27,14 +27,17 @@ ruleset.commands['strafe-right'] = function(bot) { return; }
 
 ruleset.setInitialPlacement = function(bot) {
 	var positions = [
-		{ 'x': 500, 'y': 30 },
-		{ 'x': 500, 'y': 90 },
-		{ 'x': 500, 'y': 150 },
-		{ 'x': 500, 'y': 210 },
-		{ 'x': 500, 'y': 360 },
-		{ 'x': 500, 'y': 420 },
-		{ 'x': 500, 'y': 480 },
-		{ 'x': 500, 'y': 540 },
+		// TIE fighters
+		{ 'x': 750, 'y': 50 },
+		{ 'x': 750, 'y': 125 },
+		{ 'x': 750, 'y': 225 },
+		{ 'x': 750, 'y': 300 },
+
+		// X-wings
+		{ 'x': 750, 'y': 625 },
+		{ 'x': 750, 'y': 700 },
+		{ 'x': 750, 'y': 800 },
+		{ 'x': 750, 'y': 875 },
 	];
 
 	bot.x = positions[bot.id].x;
@@ -94,18 +97,18 @@ ruleset.draw.obstacle = function(obstacle) {
 	// Laser cavity
 	this.c.fillStyle = "#282828";
 	this.c.beginPath();
-	this.c.arc(centerX + 8, centerY - 9, 6, 0, 2 * Math.PI);
+	this.c.arc(centerX + 28, centerY - 29, 16, 0, 2 * Math.PI);
 	this.c.closePath();
 	this.c.fill();
 
 	this.c.fillStyle = "#2c2c2c";
 	this.c.beginPath();
-	this.c.arc(centerX + 10, centerY - 7, 4, 0, 2 * Math.PI);
+	this.c.arc(centerX + 30, centerY - 27, 14, 0, 2 * Math.PI);
 	this.c.closePath();
 	this.c.fill();
 
 	// Horizontal line
-	this.c.lineWidth = .5;
+	this.c.lineWidth = 1;
 	this.c.beginPath();
 	this.c.moveTo(centerX - radius, centerY);
 	this.c.lineTo(centerX + radius, centerY);
@@ -120,16 +123,16 @@ for (var x=0; x<280; x++) {
 }
 
 ruleset.draw.backgroundLayer = function() {
-	this.c.beginPath();
+	this.c.fillStyle = "rgba(255, 255, 255, 0.25)";
 
 	for (i in this.bgItems) {
 		var item = this.bgItems[i];
 
+		this.c.beginPath();
 		this.c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, true);
+		this.c.closePath();
+		this.c.fill();
 	}
-
-	this.c.fillStyle = "rgba(255, 255, 255, 0.15)";
-	this.c.fill();
 };
 
 // Draw bot
@@ -234,8 +237,6 @@ ruleset.draw.bot = function(x, y, angle, color, radius, health) {
 		this.c.closePath();
 		this.c.fill();
 	}
-
-
 
 	this.c.restore();
 };

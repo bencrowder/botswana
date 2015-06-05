@@ -23,12 +23,12 @@ ruleset.generateObstacles = function() {
 	// Simpler obstacle generation for now
 	var obstacles = [
 		{ "x": 50, "y": 50, "width": 100, "height": 100 },
-		{ "x": 350, "y": 350, "width": 100, "height": 100 },
+		{ "x": 350, "y": 550, "width": 100, "height": 100 },
 		{ "x": 550, "y": 150, "width": 100, "height": 100 },
-		{ "x": 750, "y": 250, "width": 100, "height": 100 },
-		{ "x": 100, "y": 450, "width": 50, "height": 50 },
-		{ "x": 850, "y": 500, "width": 50, "height": 50 },
-		{ "x": 850, "y": 20, "width": 50, "height": 50 },
+		{ "x": 1250, "y": 250, "width": 100, "height": 100 },
+		{ "x": 100, "y": 750, "width": 50, "height": 50 },
+		{ "x": 1050, "y": 500, "width": 50, "height": 50 },
+		{ "x": 1050, "y": 20, "width": 50, "height": 50 },
 	];
 
 	return obstacles;
@@ -41,16 +41,16 @@ for (var x=0; x<280; x++) {
 }
 
 ruleset.draw.backgroundLayer = function() {
-	this.c.beginPath();
+	this.c.fillStyle = "rgba(255, 255, 255, 0.25)";
 
 	for (i in this.bgItems) {
 		var item = this.bgItems[i];
 
+		this.c.beginPath();
 		this.c.arc(item.x, item.y, item.radius, 0, Math.PI * 2, true);
+		this.c.closePath();
+		this.c.fill();
 	}
-
-	this.c.fillStyle = "rgba(255, 255, 255, 0.15)";
-	this.c.fill();
 };
 
 ruleset.draw.obstacle = function(obstacle) {

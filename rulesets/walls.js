@@ -6,8 +6,8 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "walls";
 
-ruleset.properties.world.width = 1200;
-ruleset.properties.world.height = 700;
+ruleset.properties.world.width = 2000;
+ruleset.properties.world.height = 1200;
 ruleset.draw.width = ruleset.properties.world.width;
 ruleset.draw.height = ruleset.properties.world.height;
 
@@ -18,11 +18,12 @@ ruleset.generateObstacles = function() {
 	var obstacles = [
 		{ "x": 100, "y": 10, "width": 50, "height": 100 },
 		{ "x": 500, "y": 200, "width": 50, "height": 100 },
-		{ "x": 900, "y": 400, "width": 50, "height": 100 },
+		{ "x": 1100, "y": 1000, "width": 50, "height": 100 },
+		{ "x": 900, "y": 475, "width": 250, "height": 250 },
 
 		{ "x": 300, "y": 140, "width": 200, "height": 20 },
-		{ "x": 500, "y": 340, "width": 200, "height": 20 },
-		{ "x": 700, "y": 540, "width": 200, "height": 20 },
+		{ "x": 1800, "y": 940, "width": 200, "height": 20 },
+		{ "x": 1500, "y": 840, "width": 200, "height": 20 },
 	];
 
 	return obstacles;
@@ -90,4 +91,6 @@ server.setRuleset(ruleset);
 
 $("#canvas").attr("width", ruleset.properties.world.width);
 $("#canvas").attr("height", ruleset.properties.world.height);
+/*
 $(".container").css("width", ruleset.properties.world.width + 10 + "px");
+*/

@@ -18,8 +18,8 @@ ruleset.postInitBot = function(bot) {
 ruleset.generateObstacles = function() {
 	// Central wall
 	var obstacles = [
-		{ "x": 475, "y": 0, "width": 50, "height": 200 },
-		{ "x": 475, "y": 400, "width": 50, "height": 200 },
+		{ "x": 725, "y": 0, "width": 50, "height": 350 },
+		{ "x": 725, "y": 550, "width": 50, "height": 350 },
 	];
 
 	return obstacles;
