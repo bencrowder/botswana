@@ -24,6 +24,28 @@ $(document).ready(function() {
 	});
 
 
+	// Load custom bots/rulesets from localStorage
+	function loadLocalStorage(type) {
+		var customList = JSON.parse(localStorage.getItem('botswana_' + type));
+		var listElement = $("." + type + "s .list");
+
+		if (customList) {
+			for (var i in customList.items) {
+				var value = customList.items[i];
+
+				var html = "<div class='" + type + " item custom selected' data-uri='" + value  + "'>";
+				html += "<div class='name'>" + value + "</div>";
+				html += "</div>";
+
+				listElement.append(html);
+			}
+		}
+	}
+
+	loadLocalStorage("bot");
+	loadLocalStorage("ruleset");
+
+
 	// Add bot/ruleset to list
 	// Type is "bot" or "ruleset"
 	function addCustomToList(field, type) {
@@ -31,12 +53,26 @@ $(document).ready(function() {
 		var value = input.val().trim();
 
 		if (value != '') {
-			var html = "<div class='" + type + " item selected' data-uri='" + value  + "'>";
+			var html = "<div class='" + type + " item custom selected' data-uri='" + value  + "'>";
 			html += "<div class='name'>" + value + "</div>";
 			html += "</div>";
 			$("." + type + "s .list").append(html);
 
 			input.val('');
+
+			// Get the localStorage list
+			var customList = JSON.parse(localStorage.getItem('botswana_' + type));
+
+			// Make sure the list is there
+			if (!customList || !customList.items) {
+				customList = {
+					'items': [],
+				};
+			}
+
+			// And now save it to localStorage
+			customList.items.push(value);
+			localStorage.setItem('botswana_' + type, JSON.stringify(customList));
 		}
 	}
 
