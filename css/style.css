@@ -9,17 +9,13 @@ body {
 	font-family: Helvetica, Arial, sans-serif;
 	margin: 0;
 	font-size: .8em;
-	background: #161616;
+	background: hsl(213, 20%, 9%);
 	color: #fff;
 }
 
 .container {
 	width: 1010px;
 	margin: 0px auto;
-}
-
-#main > .container {
-	box-shadow: 0 0 15px #000;
 }
 
 
@@ -237,9 +233,11 @@ header .group.start input[type=button]:focus {
 /* -------------------------------------------------- */
 
 section#status {
-	background: hsl(0, 0%, 14%);
+/*	background: hsl(0, 0%, 14%);*/
+	/*
 	border: solid 5px hsl(0, 0%, 14%);
 	border-radius: 3px 3px 0 0;
+	*/
 	color: #fff;
 	display: flex;
 	margin-top: 40px;
@@ -247,9 +245,15 @@ section#status {
 }
 
 section#status .team {
-	background: #323232;
+	/*
+	background: hsl(197, 9%, 13%);
+	border-radius: 2px;
+	box-shadow: 0 0 15px #000;
+	*/
 	flex: 1;
+	/*
 	padding: 6px 7px;
+	*/
 }
 
 section#status .team + .team {
@@ -287,12 +291,11 @@ section#status .team .health {
 /* -------------------------------------------------- */
 
 #wrapper {
-	border-radius: 0 0 3px 3px;
-	border-style: solid;
-	border-width: 0 5px 5px 5px;
-	border-color: hsl(0, 0%, 14%);
+	border-radius: 3px;
+	border: solid 5px hsl(197, 9%, 13%);
+	box-shadow: 0 0 15px #000;
+	margin-top: 30px;
 }
-
 
 canvas {
 	background: #000;
@@ -300,26 +303,3 @@ canvas {
 	width: 1000px;
 	height: 600px;
 }
-
-
-
-/* Footer */
-/* -------------------------------------------------- */
-
-footer {
-	font-size: .7em;
-	color: #000;
-	margin: 20px 0 20px;
-	text-align: right;
-}
-
-footer a {
-	font-weight: bold;
-	color: #000;
-	text-decoration: none;
-}
-
-footer a:hover {
-	text-decoration: underline;
-}
-
