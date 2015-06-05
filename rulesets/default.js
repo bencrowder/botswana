@@ -424,6 +424,7 @@ function Ruleset(server) {
 
 		// If only one team is at health > 0, game over
 		var teamsAlive = 0;
+		var num = 1;
 		for (var key in teamHealth) {
 			var stillAlive = false;
 			var bots = server.getBots();
@@ -437,7 +438,12 @@ function Ruleset(server) {
 			// This team is still alive
 			if (stillAlive) {
 				teamsAlive++;
+			} else {
+				// It's dead, so mark it as dead
+				$("#status .team[data-team=" + num + "] .name").addClass("dead");
 			}
+
+			num++;
 		}	
 
 		if (teamsAlive == 1 || this.isStalemate()) {
@@ -830,35 +836,42 @@ function Ruleset(server) {
 	// --------------------------------------------------
 
 	this.draw.endgame = function(winner) {
+		// Transparent black overlay
+		this.c.save();
+		this.c.beginPath();
+		this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
+		this.c.fillRect(0, 0, this.width, this.height);
+		this.c.closePath();
+
 		// Get the winning team
 		if (winner == 'stalemate') {
-			// Transparent black overlay
-			this.c.save();
-			this.c.beginPath();
-			this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
-			this.c.fillRect(0, 0, this.width, this.height);
-			this.c.closePath();
-
 			// Champion banner
+			var bannerTop = this.height * .3;
+			var bannerBottom = this.height * .7;
 			this.c.beginPath();
 			this.c.fillStyle = "rgba(0, 0, 0, 0.9)";
-			this.c.fillRect(0, 220, this.width, 100);
-			this.c.moveTo(0, 220);
-			this.c.lineTo(this.width, 220);
-			this.c.moveTo(0, 320);
-			this.c.lineTo(this.width, 320);
+			this.c.fillRect(0, bannerTop, this.width, bannerBottom - bannerTop);
+			this.c.moveTo(0, bannerTop);
+			this.c.lineTo(this.width, bannerTop);
+			this.c.moveTo(0, bannerBottom);
+			this.c.lineTo(this.width, bannerBottom);
 			this.c.strokeStyle = "#3f3f3f";
 			this.c.lineWidth = 5;
 			this.c.stroke();
 			this.c.closePath();
 			this.c.restore();
 
-			// Draw bot with team name
+			// Draw "Stalemate"
+			var centerX = (this.width / 2) - 5;
+			// TODO: figure out why we need - 5 to get it centered
+
 			this.c.save();
-			this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
+			this.c.textAlign = 'center';
+
 			this.c.fillStyle = "#fff";
-			this.c.fillText("Stalemate.", 70, 277);
-			// this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
+			this.c.font = "bold 56px Helvetica, Arial, sans-serif";
+			this.c.fillText("STALEMATE", centerX, this.height * .48);
+
 			this.c.closePath();
 			this.c.restore();
 		} else {
@@ -868,13 +881,6 @@ function Ruleset(server) {
 				if (bots[i].name == winner) team = bots[i];
 			}
 			if (team === undefined) return;
-
-			// Transparent black overlay
-			this.c.save();
-			this.c.beginPath();
-			this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
-			this.c.fillRect(0, 0, this.width, this.height);
-			this.c.closePath();
 
 			// Champion banner
 			var bannerTop = this.height * .3;

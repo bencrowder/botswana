@@ -264,6 +264,10 @@ section#status .team .name {
 	display: block;
 }
 
+section#status .team .name.dead {
+	color: #f00;
+}
+
 section#status .team .healthbar {
 	background: #111;
 	border-radius: 3px;
