@@ -42,16 +42,19 @@ function Ruleset(server) {
 			},
 			'collisionCallback': function(server, collision, properties) {
 				this.remove = true;
+				owner = server.getBotByID(this.owner);
 
 				switch (collision.type) {
 					case "bot":
 						// Decrease the health of the bot that was hit
 						bot = collision.object;
-						bot.health -= properties.strength;
-						bot.hitByBullet = true;	// bot is responsible to unset this
+						if (bot.name != owner.name) {
+							bot.health -= properties.strength;
+							bot.hitByBullet = true;	// bot is responsible to unset this
 
-						// Create a red explosion
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+							// Create a red explosion
+							server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+						}
 						break;
 						
 					default:
@@ -60,7 +63,6 @@ function Ruleset(server) {
 						break;
 				}
 
-				owner = server.getBotByID(this.owner);
 				if (owner != undefined) {
 					if (owner.weapons[this.type] < properties.numAllowed) {
 						owner.weapons[this.type]++;
@@ -84,16 +86,19 @@ function Ruleset(server) {
 			},
 			'collisionCallback': function(server, collision, properties) {
 				this.remove = true;
+				owner = server.getBotByID(this.owner);
 
 				switch (collision.type) {
 					case "bot":
 						// Decrease the health of the bot that was hit
 						bot = collision.object;
-						bot.health -= properties.strength;
-						bot.hitByBullet = true;	// bot is responsible to unset this
+						if (bot.name != owner.name) {
+							bot.health -= properties.strength;
+							bot.hitByBullet = true;	// bot is responsible to unset this
 
-						// Create a red explosion
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+							// Create a red explosion
+							server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+						}
 						break;
 						
 					default:
@@ -102,7 +107,6 @@ function Ruleset(server) {
 						break;
 				}
 
-				owner = server.getBotByID(this.owner);
 				if (owner != undefined) {
 					if (owner.weapons[this.type] < properties.numAllowed) {
 						owner.weapons[this.type]++;
@@ -377,6 +381,36 @@ function Ruleset(server) {
 
 	// Game over condition
 	// --------------------------------------------------
+	
+	this.isStalemate = function() {
+		// if there is no damage delivered by any team for 1000 ticks, stalemate
+		var stale = false;
+		var bots = server.getBots();
+		if (!this.previous_state) {
+			this.previous_state = {
+				'botshealth': 0
+			};
+			this.stale_ticks = 0
+		}
+		current_state = {
+			'botshealth': 0
+		};
+
+		for (i in bots) {
+			current_state['botshealth'] += bots[i].health;
+		}
+		if (this.previous_state['botshealth'] == current_state['botshealth']) {
+			this.stale_ticks++;
+		} else {
+			this.stale_ticks = 0;
+		}
+		this.previous_state = current_state;
+
+		if (this.stale_ticks >= 1000) {
+			return true;
+		}
+		return false;
+	}
 
 	this.gameOver = function() {
 		var teamHealth = this.getHealth();
@@ -393,15 +427,21 @@ function Ruleset(server) {
 			if (teamHealth[key] <= 0 && !stillalive) return true;
 		}	
 
+		if (this.isStalemate()) {
+			return true;
+		}
+
 		return false;
 	};
-
 
 	// Get winner
 	// --------------------------------------------------
 
 	this.getWinner = function() {
 		var teamHealth = this.getHealth();
+		if (this.isStalemate()) {
+			return 'stalemate';
+		}
 
 		// If anyone is at health = 0, the other team is the winner.
 		for (var key in teamHealth) {
@@ -778,41 +818,73 @@ function Ruleset(server) {
 
 	this.draw.endgame = function(winner) {
 		// Get the winning team
-		var bots = this.server.getBots();
-		var team = undefined;
-		for (i in bots) {
-			if (bots[i].name == winner) team = bots[i];
+		if (winner == 'stalemate') {
+			// Transparent black overlay
+			this.c.save();
+			this.c.beginPath();
+			this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
+			this.c.fillRect(0, 0, this.width, this.height);
+			this.c.closePath();
+
+			// Champion banner
+			this.c.beginPath();
+			this.c.fillStyle = "rgba(0, 0, 0, 0.9)";
+			this.c.fillRect(0, 220, this.width, 100);
+			this.c.moveTo(0, 220);
+			this.c.lineTo(this.width, 220);
+			this.c.moveTo(0, 320);
+			this.c.lineTo(this.width, 320);
+			this.c.strokeStyle = "#3f3f3f";
+			this.c.lineWidth = 5;
+			this.c.stroke();
+			this.c.closePath();
+			this.c.restore();
+
+			// Draw bot with team name
+			this.c.save();
+			this.c.font = "bold 28px 'Lucida Grande', Helvetica, Arial, sans-serif";
+			this.c.fillStyle = "#fff";
+			this.c.fillText("Stalemate.", 70, 277);
+			// this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
+			this.c.closePath();
+			this.c.restore();
+		} else {
+			var bots = this.server.getBots();
+			var team = undefined;
+			for (i in bots) {
+				if (bots[i].name == winner) team = bots[i];
+			}
+			if (team === undefined) return;
+
+			// Transparent black overlay
+			this.c.save();
+			this.c.beginPath();
+			this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
+			this.c.fillRect(0, 0, this.width, this.height);
+			this.c.closePath();
+
+			// Champion banner
+			this.c.beginPath();
+			this.c.fillStyle = "rgba(0, 0, 0, 0.9)";
+			this.c.fillRect(0, 220, this.width, 100);
+			this.c.moveTo(0, 220);
+			this.c.lineTo(this.width, 220);
+			this.c.moveTo(0, 320);
+			this.c.lineTo(this.width, 320);
+			this.c.strokeStyle = team.color;
+			this.c.lineWidth = 5;
+			this.c.stroke();
+			this.c.closePath();
+			this.c.restore();
+
+			// Draw bot with team name
+			this.c.save();
+			this.c.font = "bold 28px Helvetica, Arial, sans-serif";
+			this.c.fillStyle = "#fff";
+			this.c.fillText("Champion: " + team.name, 70, 277);
+			this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
+			this.c.closePath();
+			this.c.restore();
 		}
-		if (team === undefined) return;
-
-		// Transparent black overlay
-		this.c.save();
-		this.c.beginPath();
-		this.c.fillStyle = "rgba(0, 0, 0, 0.3)";
-		this.c.fillRect(0, 0, this.width, this.height);
-		this.c.closePath();
-
-		// Champion banner
-		this.c.beginPath();
-		this.c.fillStyle = "rgba(0, 0, 0, 0.9)";
-		this.c.fillRect(0, 220, this.width, 100);
-		this.c.moveTo(0, 220);
-		this.c.lineTo(this.width, 220);
-		this.c.moveTo(0, 320);
-		this.c.lineTo(this.width, 320);
-		this.c.strokeStyle = team.color;
-		this.c.lineWidth = 5;
-		this.c.stroke();
-		this.c.closePath();
-		this.c.restore();
-
-		// Draw bot with team name
-		this.c.save();
-		this.c.font = "bold 28px Helvetica, Arial, sans-serif";
-		this.c.fillStyle = "#fff";
-		this.c.fillText("Champion: " + team.name, 70, 277);
-		this.bot(900, 268, 3 * Math.PI / 2, team.color, team.radius, 100);
-		this.c.closePath();
-		this.c.restore();
 	};
 };
