@@ -18,6 +18,10 @@ body {
 	margin: 0px auto;
 }
 
+#main > .container {
+	box-shadow: 0 0 15px #000;
+}
+
 
 /* Tray toggle */
 /* -------------------------------------------------- */
@@ -233,50 +237,41 @@ header .group.start input[type=button]:focus {
 /* -------------------------------------------------- */
 
 section#status {
-	margin-top: 40px;
-	background: #1f1f1f;
-	clear: both;
-	overflow: hidden;
+	background: hsl(0, 0%, 14%);
+	border: solid 5px hsl(0, 0%, 14%);
+	border-radius: 3px 3px 0 0;
 	color: #fff;
-	font-weight: bold;
-	border-radius: 5px 5px 0 0;
-	border: solid 5px #111;
+	display: flex;
+	margin-top: 40px;
+	overflow: hidden;
 }
 
-/*
-.name {
-	position: relative;
-	top: -2;
-	margin-right: 5px;
-	display: inline-block;
-	 text-align: right;
-}
-*/
-
-.left {
-	float: left;
-	padding: 4px 8px;
+section#status .team {
+	background: #323232;
+	flex: 1;
+	padding: 6px 7px;
 }
 
-.right {
-	float: right;
-	padding: 4px 8px;
+section#status .team + .team {
+	margin-left: 25px;
 }
 
+section#status .team .name {
+	display: block;
+}
 
-.healthbar {
-	background: #000;
-	width: 200px;
-	height: 16px;
-	display: inline-block;
+section#status .team .healthbar {
+	background: #111;
 	border-radius: 3px;
-	position: relative;
-	top: 2px;
+	display: block;
+	height: 21px;
+	margin-top: 7px;
+	width: 100%;
 }
 
-.health {
-	width: 0px;
-	height: 16px;
+section#status .team .health {
+	width: 0%;
+	height: 21px;
 	display: inline-block;
 	border-radius: 3px;
 	-webkit-transition: all .5s ease-in-out;
@@ -292,10 +287,10 @@ section#status {
 /* -------------------------------------------------- */
 
 #wrapper {
-	border-radius: 0 0 5px 5px;
+	border-radius: 0 0 3px 3px;
 	border-style: solid;
 	border-width: 0 5px 5px 5px;
-	border-color: #111;
+	border-color: hsl(0, 0%, 14%);
 }
 
 
@@ -313,14 +308,14 @@ canvas {
 
 footer {
 	font-size: .7em;
-	color: #222;
-	margin: 3px 0 20px;
+	color: #000;
+	margin: 20px 0 20px;
 	text-align: right;
 }
 
 footer a {
 	font-weight: bold;
-	color: #222;
+	color: #000;
 	text-decoration: none;
 }
 

@@ -81,6 +81,8 @@ var Server = function() {
 					var scriptsUnloaded = teamList.length;
 				}
 
+				$("#status .team").remove();
+
 				// Load the scripts, one for each team
 				for (var i=0; i<teamList.length; i++) {
 					var url = $(teamList[i]).attr("data-uri");
@@ -147,11 +149,13 @@ var Server = function() {
 		// Add this script
 		teams.push(name);
 
-		// Update the status bar
-		// TODO: figure out what to do now that we have teams
-		$("#status #bot" + teamNum + "status .name").html(name);
-		$("#status #bot" + teamNum + "status .health").css("background-color", color);
-		$("#status #bot" + teamNum + "status .width").css("width", 200); // TODO: rewrite to max health from props
+		// Add to healthboard
+		var html = "<div class='team' data-team='" + teamNum + "'>";
+		html += "<span class='name'>" + name + "</span>";
+		html += "<span class='healthbar'><span class='health' style='width: 100%; background-color: " + color + ";'></span></span>";
+		html += "</div>";
+
+		$("#status").append(html);
 	}
 
 

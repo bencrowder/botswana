@@ -18,7 +18,7 @@ function Ruleset(server) {
 			'angleStep': 0.1,
 			'speed': 2,
 			'radius': 15,
-			'colors': [ "#c48244", "#3081b8", "#a755b0", "#55b083", "#8b55b0", "#666" ]
+			'colors': [ "#c48244", "#3081b8", "#a755b0", "#55b083", "#b05555", "#b2be62" ]
 		}
 	};
 
@@ -332,7 +332,9 @@ function Ruleset(server) {
 
 	this.parseCommand = function(command, bot) {
 		var callback = this.commands[command];
-		return callback.call(this, bot);
+		if (callback) {
+			return callback.call(this, bot);
+		}
 	};
 
 
@@ -450,11 +452,12 @@ function Ruleset(server) {
 
 	this.getWinner = function() {
 		var teamHealth = this.getHealth();
+
 		if (this.isStalemate()) {
 			return 'stalemate';
 		}
 
-		// If anyone is at health = 0, the other team is the winner.
+		// The team with health > 0 is the one who won
 		for (var key in teamHealth) {
 			if (teamHealth[key] > 0) return key;
 		}	
@@ -778,8 +781,7 @@ function Ruleset(server) {
 		for (var key in teamHealth) {
 			var teamNum = i + 1;
 
-			// 200 is the width of the percentage bar
-			$("#status #bot" + teamNum + "status .health").css("width", (teamHealth[key] / (numBots * 100) * 200) + "px");
+			$("#status .team[data-team=" + teamNum + "] .health").css("width", (teamHealth[key] / numBots) + "%");
 
 			i++;
 		}
