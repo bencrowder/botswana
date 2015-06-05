@@ -86,6 +86,16 @@ header .group .item + .item {
 	margin-top: 5px;
 }
 
+header .group .item .delete {
+	color: rgba(255, 255, 255, 0.3);
+	float: right;
+	padding: 0 5px;
+}
+
+header .group .item .delete:hover {
+	color: #fff;
+}
+
 header .group .item .name {
 	color: rgba(255, 255, 255, 0.5);
 	display: inline-block;
