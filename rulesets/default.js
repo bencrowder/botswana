@@ -68,7 +68,21 @@ function Ruleset(server) {
 					}
 					owner.canShoot = true;
 				}
-			}
+			},
+			'drawCallback': function(server, context, properties) {
+				var rs = server.getRuleset();
+
+				owner = server.getBotByID(this.owner);
+				team = server.getBotTeam(this.owner);
+
+				context.lineWidth = properties.display.width;
+				context.strokeStyle = rs.properties.bots.colors[team];
+				context.beginPath();
+				context.moveTo(1, 0);
+				context.lineTo(-properties.display.length, 0);
+				context.closePath();
+				context.stroke();
+			},
 		},
 		'mine': {
 			'speed': 0,
@@ -113,7 +127,17 @@ function Ruleset(server) {
 					}
 					owner.canShoot = true;
 				}
-			}
+			},
+			'drawCallback': function(server, context, properties) {
+				context.beginPath();
+				context.lineWidth = 10;
+				context.strokeStyle = "rgb(53, 62, 68)";
+				context.fillStyle = "rgb(0, 0, 0)";
+				context.arc(0, 0, properties.radius, 0, 2 * Math.PI);
+				context.stroke();
+				context.fill();
+				context.closePath();
+			},
 		},
 	};
 	
@@ -557,6 +581,14 @@ function Ruleset(server) {
 		// Draw obstacles
 		this.obstacles();
 
+		// Draw weapons
+		var weapons = server.getWeapons();
+		for (i in weapons) {
+			var weapon = weapons[i];
+
+			this.weapon(weapon.x, weapon.y, weapon.angle, weapon.type, weapon.owner, weapon);
+		}
+
 		// Draw bots
 		var bots = server.getBots();
 		for (i in bots) {
@@ -565,14 +597,6 @@ function Ruleset(server) {
 			if (bot.alive) {
 				this.bot(bot.x, bot.y, bot.angle, bot.color, bot.radius, bot.health);
 			}
-		}
-
-		// draw weapons
-		var weapons = server.getWeapons();
-		for (i in weapons) {
-			var weapon = weapons[i];
-
-			this.weapon(weapon.x, weapon.y, weapon.angle, weapon.type, weapon.owner);
 		}
 
 		// Draw fx particles
@@ -701,11 +725,21 @@ function Ruleset(server) {
 	// Draw a weapon
 	// --------------------------------------------------
 
-	this.draw.weapon = function(x, y, angle, type, owner) {
+	this.draw.weapon = function(x, y, angle, type, owner, obj) {
 		this.c.save();
 		this.c.translate(x, y);
 		this.c.rotate(angle);
 
+		// Callback
+		var props = this.ruleset.properties;
+		var objProps = props.weapons[type];
+		var drawFunction = props.weapons[type].drawCallback;
+
+		var server = this.server;
+		var context = this.c;
+		drawFunction.call(obj, server, context, objProps);
+
+		/*
 		switch (type) {
 			case 'bullet':
 				this.c.lineWidth = this.ruleset.properties.weapons.bullet.display.width;
@@ -729,6 +763,7 @@ function Ruleset(server) {
 
 				break;
 		}
+		*/
 
 		this.c.restore();
 	};

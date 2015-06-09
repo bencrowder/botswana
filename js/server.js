@@ -689,9 +689,14 @@ var Server = function() {
 	/* -------------------------------------------------- */
 
 	this.getBotTeam = function(botID) {
-		teamName = serverBots[botID].name;
+		if (serverBots[botID]) {
+			teamName = serverBots[botID].name;
 
-		return teams.indexOf(teamName);
+			return teams.indexOf(teamName);
+		} else {
+			console.log("failed", botID, serverBots);
+			return -1;
+		}
 	}
 
 	// these functions need to be modified to return copies of the arrays
