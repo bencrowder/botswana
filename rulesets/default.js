@@ -742,7 +742,7 @@ function Ruleset(server) {
 	};
 
 	// explode the shrapnel
-	this.explodeShrapnel = function(bot, destruct=false) {
+	this.explodeShrapnel = function(bot, destruct) {
 		shrapnel = this.properties.weapons.shrapnel;
 		var strength = destruct ? shrapnel.selfDestructStrength : shrapnel.strength;
 
