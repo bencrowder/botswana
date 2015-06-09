@@ -59,7 +59,7 @@ header.active {
 }
 
 header .container {
-	display: flex;
+	display: -webkit-flex;
 	padding: 5px 25px;
 }
 
@@ -143,7 +143,7 @@ header .group .item.selected .sub {
 }
 
 header .group .add-form {
-	display: flex;
+	display: -webkit-flex;
 	margin-top: 10px;
 }
 header .group .add-form input[type=text] {
@@ -197,7 +197,7 @@ header .group.rulesets .item.selected {
 
 /* Start button */
 header .group.start {
-	flex: 1;
+	-webkit-flex: 1;
 	margin-left: 100px;
 	text-align: right;
 }
@@ -242,7 +242,7 @@ section#status {
 	border-radius: 3px 3px 0 0;
 	*/
 	color: #fff;
-	display: flex;
+	display: -webkit-flex;
 	margin-top: 40px;
 	overflow: hidden;
 }
@@ -253,7 +253,7 @@ section#status .team {
 	border-radius: 2px;
 	box-shadow: 0 0 15px #000;
 	*/
-	flex: 1;
+	-webkit-flex: 1;
 	/*
 	padding: 6px 7px;
 	*/
