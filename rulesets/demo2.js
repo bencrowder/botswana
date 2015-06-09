@@ -17,6 +17,10 @@ ruleset.properties.weapons.bullet.waitTime = 15;
 ruleset.properties.weapons.bullet.numAllowed = 3;
 ruleset.properties.weapons.bullet.display.length = 8;
 
+// Disable health/ammo on this one
+delete ruleset.properties.items.health;
+delete ruleset.properties.items.ammo;
+
 ruleset.generateObstacles = function() {
 	// Simpler obstacle generation for now
 	var obstacles = [];
