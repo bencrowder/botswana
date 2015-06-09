@@ -11,7 +11,7 @@ function Ruleset(server) {
 			'width': 1500,
 			'height': 900,
 			'obstacles': {
-				'num': (Math.random() * 10) + 5
+				'num': (Math.random() * 10) + 7
 			}
 		},
 		'bots': {
@@ -148,7 +148,7 @@ function Ruleset(server) {
 	this.properties.items = {
 		'health': {
 			'strength': 25,
-			'num': 5,
+			'num': 2,
 			'radius': 16,
 			'movementCallback': function(server, properties) {
 				// Don't move health packs
@@ -189,7 +189,55 @@ function Ruleset(server) {
 				context.fill();
 				context.closePath();
 			},
-		}
+		},
+		'ammo': {
+			'bullets': 10,
+			'mines': 5,
+			'num': 2,
+			'radius': 16,
+			'movementCallback': function(server, properties) {
+				// Don't move ammo packs
+				return { 'x': this.x, 'y': this.y };
+			},
+			'collisionCallback': function(server, collision, properties) {
+				// Remove it from gameplay
+				this.remove = true;
+
+				switch (collision.type) {
+					case "bot":
+						// Add to the ammo of the bot that touched the pack
+						bot = collision.object;
+
+						bot.weapons.bullets += properties.bullets;
+						bot.weapons.mines += properties.mines;
+						bot.canShoot = true;
+
+						break;
+
+					default:
+						// Collision with weapon (make it blow up)
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#96e0ff");
+						break;
+				}
+			},
+			'drawCallback': function(server, context, properties) {
+				var start = properties.radius / 2;
+
+				context.beginPath();
+				context.fillStyle = "rgb(34, 44, 64)";
+				context.fillRect(-start, -start, properties.radius, properties.radius);
+				context.fill();
+				context.closePath();
+
+				var cross = properties.radius * .3;
+
+				context.beginPath();
+				context.fillStyle = "rgb(164, 174, 194)";
+				context.arc(0, 0, properties.radius * .2, 0, 2 * Math.PI);
+				context.fill();
+				context.closePath();
+			},
+		},
 	};
 
 
