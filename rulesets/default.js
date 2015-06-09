@@ -139,6 +139,56 @@ function Ruleset(server) {
 				context.closePath();
 			},
 		},
+		'shrapnel': {
+			'speed': 5,
+			'strength': 2,
+			'selfDestructStrength': 20,
+			'numAllowed': 20,
+			'display': {
+				'length': 4,
+				'width': 2,
+			},
+			'movementCallback': function(server, properties) {
+				return server.helpers.calcVector(this.x, this.y, this.angle, this.speed);
+			},
+			'collisionCallback': function(server, collision, properties) {
+				this.remove = true;
+				owner = server.getBotByID(this.owner);
+
+				switch (collision.type) {
+					case "bot":
+						// Decrease the health of the bot that was hit
+						bot = collision.object;
+						if (bot.name != owner.name) {
+							bot.health -= this.strength;
+
+							// Create a red explosion
+							server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+						}
+						break;
+						
+					default:
+						// Collision with obstacle, item, or world boundary
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#96e0ff");
+						break;
+				}
+			},
+			'drawCallback': function(server, context, properties) {
+				var rs = server.getRuleset();
+
+				owner = server.getBotByID(this.owner);
+				team = server.getBotTeam(this.owner);
+
+				context.lineWidth = properties.display.width;
+				// context.strokeStyle = rs.properties.bots.colors[team];
+				context.strokeStyle = "#fff";
+				context.beginPath();
+				context.moveTo(1, 0);
+				context.lineTo(-properties.display.length, 0);
+				context.closePath();
+				context.stroke();
+			},
+		},
 	};
 	
 
@@ -291,6 +341,12 @@ function Ruleset(server) {
 				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -(bot.radius * 2 + 5));
 				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "mine", "speed": 0, "remove": false });
 			}
+		}, 
+
+		"selfdestruct": function(bot) {
+			bot.health = 0;
+			bot.alive = false;
+			this.explodeShrapnel(bot, true);
 		}, 
 
 		"wait": function(bot) { }
@@ -647,8 +703,9 @@ function Ruleset(server) {
 		}
 
 		// Set alive flag
-		if (bot.health <= 0) {
+		if (bot.alive && bot.health <= 0) {
 			bot.alive = false;
+			this.explodeShrapnel(bot);
 		}
 	};
 
@@ -682,6 +739,28 @@ function Ruleset(server) {
 		}
 
 		return teamHealth;
+	};
+
+	// explode the shrapnel
+	this.explodeShrapnel = function(bot, destruct=false) {
+		shrapnel = this.properties.weapons.shrapnel;
+		var strength = destruct ? shrapnel.selfDestructStrength : shrapnel.strength;
+
+		angle = bot.angle;
+		incAngle = 360 / shrapnel.numAllowed;
+		for (i=0; i < shrapnel.numAllowed; i++) {
+			this.server.addWeapon({
+				"x": bot.x,
+				"y": bot.y,
+				"angle": angle,
+				"owner": bot.id,
+				"type": "shrapnel",
+				"speed": shrapnel.speed,
+				"remove": false,
+				"strength": strength,
+			});
+			angle += incAngle;
+		}
 	};
 
 
