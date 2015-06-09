@@ -148,14 +148,47 @@ function Ruleset(server) {
 	this.properties.items = {
 		'health': {
 			'strength': 25,
-			'movementCallback': function(server, weapon) {
-				return false;
+			'num': 5,
+			'radius': 16,
+			'movementCallback': function(server, properties) {
+				// Don't move health packs
+				return { 'x': this.x, 'y': this.y };
 			},
-			'collisionCallback': function(server, weapon, collisionState) {
-				// do something
-				// if collision was a bullet, destroy the item
-				// if collision was a bot, add health to the bot
-			}
+			'collisionCallback': function(server, collision, properties) {
+				// Remove it from gameplay
+				this.remove = true;
+
+				switch (collision.type) {
+					case "bot":
+						// Add to the health of the bot that touched the health pack
+						bot = collision.object;
+						bot.health += properties.strength;
+						break;
+
+					default:
+						// Collision with weapon (make it blow up)
+						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#96e0ff");
+						break;
+				}
+			},
+			'drawCallback': function(server, context, properties) {
+				var start = properties.radius / 2;
+
+				context.beginPath();
+				context.fillStyle = "rgb(123, 168, 98)";
+				context.fillRect(-start, -start, properties.radius, properties.radius);
+				context.fill();
+				context.closePath();
+
+				var cross = properties.radius * .3;
+
+				context.beginPath();
+				context.fillStyle = "rgb(255, 255, 255)";
+				context.fillRect(-2, -cross, 4, cross * 2);
+				context.fillRect(-cross, -2, cross * 2, 4);
+				context.fill();
+				context.closePath();
+			},
 		}
 	};
 
@@ -298,6 +331,52 @@ function Ruleset(server) {
 		}
 
 		return obstacles;
+	};
+
+
+	// Generate items
+	// --------------------------------------------------
+	// Returns array of items
+
+	this.generateItems = function() {
+		var items = [];
+
+		// Go through each type of item
+		for (var i in this.properties.items) {
+			var itemType = this.properties.items[i];
+
+			// Loop to make sure we're putting items in acceptable places
+			for (j=0; j<itemType.num; j++) {
+				clear = false;
+
+				while (!clear) {
+					var p = this.server.getRandomPoint();
+
+					// Check boundaries and adjust if necessary
+					if (p.x + itemType.radius > (this.properties.world.width - 50)) {
+						p.x -= itemType.radius;
+					}
+
+					if (p.y + itemType.radius > (this.properties.world.height - 50)) {
+						p.y -= itemType.radius;
+					}
+
+					// TODO: check to make sure these don't overlap with obstacles
+					clear = true;
+				}
+
+				items.push({
+					"x": p.x,
+					"y": p.y,
+					"radius": itemType.radius,
+					"strength": itemType.strength,
+					"type": i,
+					"remove": false,
+			   	});
+			}
+		}
+
+		return items;
 	};
 
 
@@ -581,6 +660,9 @@ function Ruleset(server) {
 		// Draw obstacles
 		this.obstacles();
 
+		// Draw items
+		this.items();
+
 		// Draw weapons
 		var weapons = server.getWeapons();
 		for (i in weapons) {
@@ -739,31 +821,33 @@ function Ruleset(server) {
 		var context = this.c;
 		drawFunction.call(obj, server, context, objProps);
 
-		/*
-		switch (type) {
-			case 'bullet':
-				this.c.lineWidth = this.ruleset.properties.weapons.bullet.display.width;
-				this.c.strokeStyle = this.ruleset.properties.bots.colors[this.server.getBotTeam(owner)];
-				this.c.beginPath();
-				this.c.moveTo(1, 0);
-				this.c.lineTo(-this.ruleset.properties.weapons.bullet.display.length, 0);
-				this.c.closePath();
-				this.c.stroke();
+		this.c.restore();
+	};
 
-				break;
-			case 'mine':
-				this.c.beginPath();
-				this.c.lineWidth = 10;
-				this.c.strokeStyle = "rgb(147, 31, 31)";
-				this.c.fillStyle = "rgb(232, 144, 144)";
-				this.c.arc(0, 0, this.ruleset.properties.weapons.mine.radius, 0, 2 * Math.PI);
-				this.c.stroke();
-				this.c.fill();
-				this.c.closePath();
 
-				break;
+	// Draw items
+	// --------------------------------------------------
+
+	this.draw.items = function() {
+		var items = this.server.getItems();
+
+		for (i in items) {
+			var item = items[i];
+
+			this.c.save();
+			this.c.translate(item.x, item.y);
+
+			// Callback
+			var props = this.ruleset.properties;
+			var objProps = props.items[item.type];
+			var drawFunction = props.items[item.type].drawCallback;
+
+			var server = this.server;
+			var context = this.c;
+			drawFunction.call(item, server, context, objProps);
+
+			this.c.restore();
 		}
-		*/
 
 		this.c.restore();
 	};
@@ -829,7 +913,13 @@ function Ruleset(server) {
 		for (var key in teamHealth) {
 			var teamNum = i + 1;
 
-			$("#status .team[data-team=" + teamNum + "] .health").css("width", (teamHealth[key] / numBots) + "%");
+			var health = teamHealth[key] / numBots;
+
+			if (health > 100) {
+				health = 100;
+			}
+
+			$("#status .team[data-team=" + teamNum + "] .health").css("width", health + "%");
 
 			i++;
 		}

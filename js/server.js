@@ -180,6 +180,9 @@ var Server = function() {
 		// Generate obstacles
 		obstacles = ruleset.generateObstacles();
 
+		// Generate items
+		items = ruleset.generateItems();
+
 		// Create the initial serverBots array for placement
 		serverBots = [];
 		for (var i=0; i<bots.length; i++) {
@@ -214,7 +217,23 @@ var Server = function() {
 		// Add obstacles to state
 		for (i in obstacles) {
 			var o = obstacles[i];
-			state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
+			state.obstacles.push({
+				"x": o.x,
+				"y": o.y,
+				"width": o.width,
+				"height": o.height,
+			});
+		}
+
+		// Add items to state
+		for (i in items) {
+			var item = items[i];
+			state.items.push({
+				"x": item.x,
+				"y": item.y,
+				"radius": item.radius,
+				"strength": item.strength,
+			});
 		}
 
 		// Loop through each bot again to give state to all bots
@@ -726,6 +745,10 @@ var Server = function() {
 		return obstacles.slice(0);
 	}
 
+	this.getItems = function() {
+		return items.slice(0);
+	}
+
 	this.getRuleset = function() {
 		return ruleset;
 	}
@@ -736,6 +759,10 @@ var Server = function() {
 
 	this.addWeapon = function(weapon) {
 		weapons.push(weapon);
+	}
+
+	this.addItem = function(item) {
+		weapons.push(item);
 	}
 
 	this.helpers = {};
