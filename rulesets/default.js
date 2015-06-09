@@ -183,7 +183,7 @@ function Ruleset(server) {
 				bot.canShoot = false;
 				bot.waitFire = this.properties.weapons.mine.waitTime;
 
-				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -bot.radius - 5);
+				var pos = this.server.helpers.calcVector(bot.x, bot.y, bot.angle, -(bot.radius * 2 + 5));
 				this.server.addWeapon({ "x": pos.x, "y": pos.y, "angle": bot.angle, "owner": bot.id, "type": "mine", "speed": 0, "remove": false });
 			}
 		}, 

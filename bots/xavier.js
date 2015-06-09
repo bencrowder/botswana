@@ -57,7 +57,7 @@ Xavier.prototype.checkCollisions = function(point) {
 	// Check bots
 	for (i in bots) {
 		bot = bots[i];
-		if (server.collisionBot(bot, point)) {
+		if (server.collisionBotWeapon(bot, point)) {
 			collision = true;
 			type = 'bot';
 			object = bot;

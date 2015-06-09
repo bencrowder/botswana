@@ -260,21 +260,26 @@ var Server = function() {
 
 			// Call the item's movement callback
 			var movementFunction = props[listName][obj.type].movementCallback;
-			newPosition = movementFunction.call(obj, this, objProps);
+			objectInfo = movementFunction.call(obj, this, objProps);
 
-			// Check for collisions
-			var collisionState = server.collisionWeaponObjects(newPosition);
+			// Add radius if object has it
+			if (objProps.radius) {
+				objectInfo.radius = objProps.radius;
+			}
 
-			// We collided with something
-			if (server.collisionBoundary(newPosition) || collisionState.collision) {
+			// Check for collisions with bots/obstacles
+			var collisionState = server.collisionObjects(objectInfo);
+
+			// We collided with either a world boundary or a weapon
+			if (server.collisionBoundary(objectInfo) || collisionState.collision) {
 				// Call the item's collision callback
 				var collisionFunction = props[listName][obj.type].collisionCallback;
 				collisionFunction.call(obj, this, collisionState, objProps);
 			} else {
 				// We didn't collide with anything, so just update the coordinates
 				// TODO: callback for this?
-				obj.x = newPosition.x;
-				obj.y = newPosition.y;
+				obj.x = objectInfo.x;
+				obj.y = objectInfo.y;
 			}
 		}
 
@@ -548,29 +553,39 @@ var Server = function() {
 	/* Return true if point collides with bot */
 	/* -------------------------------------------------- */
 
-	this.collisionBot = function(bot, point) {
-		dist = this.helpers.distanceToPoint(bot.x, bot.y, point.x, point.y);
+	this.collisionBotWeapon = function(bot, weapon) {
+		var response = false;
 
-		return (dist < bot.radius);
+		dist = this.helpers.distanceToPoint(bot.x, bot.y, weapon.x, weapon.y);
+
+		if (weapon.radius != undefined) {
+			// Weapon has a radius (mine, etc.)
+			response = (dist < bot.radius + weapon.radius);
+		} else {
+			// Weapon has no radius (bullet)
+			response = (dist < bot.radius);
+		}
+
+		return response;
 	}
 
 
-	/* Check weapons to see if they've collided with anything */
+	/* Check to see if the given object has collided with anything */
 	/* -------------------------------------------------- */
 
-	this.collisionWeaponObjects = function(weapon) {
+	this.collisionObjects = function(obj) {
 		// Default return state
 		var state = {
 			"collision": false,
 			"pos": {
-				"x": weapon.x,
-				"y": weapon.y
+				"x": obj.x,
+				"y": obj.y,
 			}
 	   	};
 
 		// Check for collisions with bots
 		for (i in serverBots) {
-			if (serverBots[i].alive && this.collisionBot(serverBots[i], weapon)) {
+			if (serverBots[i].alive && this.collisionBotWeapon(serverBots[i], obj)) {
 				state.collision = true;
 				state.type = "bot";
 				state.objectIndex = i;
@@ -581,7 +596,7 @@ var Server = function() {
 
 		// Check for collisions with obstacles
 		for (i in obstacles) {
-			if (this.collisionObstacle(obstacles[i], weapon)) {
+			if (this.collisionObstacle(obstacles[i], obj)) {
 				state.collision = true;
 				state.type = "obstacle";
 				state.objectIndex = i;
@@ -622,10 +637,12 @@ var Server = function() {
 	this.getCollisions = function(bot) {
 		var collisions = [];
 
+		// Check if the bot has collided with a world boundary
 		if (this.collisionBoundary(bot)) {
 			collisions.push({'type': 'boundary'});
 		}
 
+		// Check if the bot has collided with another bot
 		for (i in serverBots) {
 			if (serverBots[i].alive && serverBots[i].id != bot.id) {
 				if (this.collisionBots(bot, serverBots[i])) {
@@ -634,11 +651,14 @@ var Server = function() {
 				}
 			}
 		}
+
+		// Check if the bot has collided with an obstacle
 		for (i in obstacles) {
 			if (this.collisionObstacle(obstacles[i], bot)) {
 				collisions.push({'type': 'obstacle', 'obj': obstacles[i]});
 			}
 		}
+
 		return collisions;
 	}
 
