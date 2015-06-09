@@ -73,7 +73,7 @@ var Server = function() {
 				ruleset.resetGame();
 				props = ruleset.properties;
 				var teamList = $(".bots .bot.selected");
-				
+
 				// Counter to keep track of how many are left to load, since we do things asynchronously
 				if (props.numTeams) {
 					var scriptsUnloaded = props.numTeams;
@@ -137,7 +137,7 @@ var Server = function() {
 		var botList = ruleset.registerBotScript(teamNum, botClassName, name);
 
 		// Get the team color (TODO: rewrite)
-		var color;	
+		var color;
 
 		// Add all returned bots to the main array
 		for (var i=0; i<botList.length; i++) {
@@ -230,9 +230,9 @@ var Server = function() {
 
 		// If we've got a pre-existing tournament, clear the interval
 		if (tournamentIntervalId) {
-			clearInterval(tournamentIntervalId);
+			window.cancelAnimationFrame(tournamentIntervalId);
 		}
-		
+
 		// Start the game
 		gameStarted = true;
 
@@ -241,9 +241,9 @@ var Server = function() {
 
 		// We use the t variable because otherwise we lose scope
 		var t = this;
-		tournamentIntervalId = setInterval(function() {
+		tournamentIntervalId = window.requestAnimationFrame(function() {
 			t.runGame();
-		}, 25);
+		});
 	}
 
 
@@ -330,8 +330,8 @@ var Server = function() {
 			// Get current state of bots
 			for (var i=0; i<serverBots.length; i++) {
 				if (serverBots[i].alive) {
-					state.bots.push({ 
-						"id": i, 
+					state.bots.push({
+						"id": i,
 						"name": serverBots[i].name,
 						"x": serverBots[i].x,
 						"y": serverBots[i].y,
@@ -397,7 +397,7 @@ var Server = function() {
 
 					// Copy the server bot data to the bots
 					bots[i].copy(bot);
-				} 
+				}
 
 				// Post-process bot
 				ruleset.postProcess(bot);
@@ -421,6 +421,11 @@ var Server = function() {
 
 			// End-round hook
 			ruleset.endRound();
+
+			var t = this;
+			tournamentIntervalId = window.requestAnimationFrame(function() {
+				t.runGame();
+			});
 		}
 	}
 
@@ -449,7 +454,7 @@ var Server = function() {
 		if (gameOver) return;
 		if (!gameStarted) return;
 
-		if (paused) { 
+		if (paused) {
 			paused = false;
 		} else {
 			paused = true;
@@ -495,7 +500,7 @@ var Server = function() {
 
 			if (newX <= 0 || newY <= 0 || newX >= props.world.width || newY >= props.world.height) {
 				rtnBool = true;
-			}	
+			}
 		}
 
 		return rtnBool;
@@ -616,7 +621,7 @@ var Server = function() {
 
 	this.getCollisions = function(bot) {
 		var collisions = [];
-		
+
 		if (this.collisionBoundary(bot)) {
 			collisions.push({'type': 'boundary'});
 		}
