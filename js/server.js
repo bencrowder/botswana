@@ -426,12 +426,12 @@ var Server = function() {
 
 			// End-round hook
 			ruleset.endRound();
-
-			var t = this;
-			tournamentIntervalId = window.requestAnimationFrame(function() {
-				t.runGame();
-			});
 		}
+
+		var t = this;
+		tournamentIntervalId = window.requestAnimationFrame(function() {
+			t.runGame();
+		});
 	}
 
 	/* Create circular particle explosion at specified point */
