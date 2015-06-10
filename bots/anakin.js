@@ -1,21 +1,24 @@
-var Ani = function() {};
+var Anakin = function() {};
 
-Ani.prototype = new Bot();
+Anakin.prototype = new Bot();
 
-Ani.prototype.setup = function() {
+Anakin.prototype.setup = function() {
 	this.timer = 0;
+	this.attrStrength = 200;
+	this.safety = 1000;
+	this.repStrength = 150;
 	this.movements = ['strafe-right', 'strafe-left', 'forward', 'backward'];
 	this.formation = this.id % 2;
 };
 
-Ani.prototype.getBotById = function(id) {
+Anakin.prototype.getBotById = function(id) {
 	for (i in this.state.bots) {
 		if (this.state.bots[i].id == id) return this.state.bots[i];
 	}
 	return undefined;
 };
 
-Ani.prototype.getOpponentBots = function() {
+Anakin.prototype.getOpponentBots = function() {
 	op = [];
 	for (i in this.state.bots) {
 		if (this.name != this.state.bots[i].name) {
@@ -25,7 +28,7 @@ Ani.prototype.getOpponentBots = function() {
 	return op;
 };
 
-Ani.prototype.getTeamBots = function() {
+Anakin.prototype.getTeamBots = function() {
 	team = [];
 	for (i in this.state.bots) {
 		if (this.name == this.state.bots[i].name) {
@@ -35,7 +38,7 @@ Ani.prototype.getTeamBots = function() {
 	return team;
 };
 
-Ani.prototype.avoidCircle = function(radius, x, y, repelStrength) {
+Anakin.prototype.avoidCircle = function(radius, x, y, repelStrength) {
 	radius -= 5;
 	var dist = this.myDistanceToPoint(x, y);
 	var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, x, y));
@@ -54,7 +57,7 @@ Ani.prototype.avoidCircle = function(radius, x, y, repelStrength) {
 	return [dx, dy];
 };
 
-Ani.prototype.acquireTarget = function() {
+Anakin.prototype.acquireTarget = function() {
 	if (typeof this.state.payload.targets == 'undefined') {
 		this.state.payload.targets = {}
 	}
@@ -74,7 +77,7 @@ Ani.prototype.acquireTarget = function() {
 	return target;
 };
 
-Ani.prototype.avoidBullets = function() {
+Anakin.prototype.avoidBullets = function() {
 	var dx = 0;
 	var dy = 0;
 	for (i in this.state.weapons) {
@@ -88,7 +91,7 @@ Ani.prototype.avoidBullets = function() {
 	return [dx, dy];
 };
 
-Ani.prototype.avoidTeammates = function() {
+Anakin.prototype.avoidTeammates = function() {
 	var dx = 0;
 	var dy = 0;
 	var team = this.getTeamBots();
@@ -104,7 +107,7 @@ Ani.prototype.avoidTeammates = function() {
 	return [dx, dy];
 };
 
-Ani.prototype.run = function() {
+Anakin.prototype.run = function() {
 	this.timer++;
 	target = undefined;
 
