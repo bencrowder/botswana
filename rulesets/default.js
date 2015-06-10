@@ -243,7 +243,7 @@ function Ruleset(server) {
 		'ammo': {
 			'bullets': 10,
 			'mines': 5,
-			'num': 2,
+			'num': 0, // disabled by default
 			'radius': 16,
 			'movementCallback': function(server, properties) {
 				// Don't move ammo packs
