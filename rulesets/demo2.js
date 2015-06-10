@@ -4,12 +4,11 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "demo2";
 
-ruleset.properties.bots = {
-	'angleStep': 0.1,
-	'speed': 5,
-	'radius': 30,
-	'colors': [ "#ebff00", "#946fbb" ]
-};
+ruleset.properties.bots.angleStep = 0.1;
+ruleset.properties.bots.speed = 5;
+ruleset.properties.bots.radius = 30;
+ruleset.properties.bots.colors[0] = "#ebff00";
+ruleset.properties.bots.colors[1] = "#946fbb";
 
 ruleset.properties.weapons.bullet.speed = 8;
 ruleset.properties.weapons.bullet.strength = 3;
@@ -148,7 +147,8 @@ ruleset.draw.particle = function(particle, newPos) {
 	this.c.closePath();
 }
 
-ruleset.draw.weapon = function(x, y, angle, type, owner) {
+// TODO: refactor this to use new callbacks
+ruleset.draw.weapon = function(x, y, angle, type, owner, obj) {
 	this.c.save();
 	this.c.translate(x, y);
 	this.c.rotate(angle);
@@ -158,6 +158,24 @@ ruleset.draw.weapon = function(x, y, angle, type, owner) {
 			this.c.fillStyle = this.ruleset.properties.bots.colors[this.server.getBotTeam(owner)];
 			this.c.beginPath();
 			this.c.arc(0, 0, this.ruleset.properties.weapons.bullet.display.length, 0, Math.PI * 2, true);
+			this.c.closePath();
+			this.c.fill();
+
+			break;
+
+		case 'shrapnel':
+			this.c.fillStyle = "#fff";
+			this.c.beginPath();
+			this.c.arc(0, 0, this.ruleset.properties.weapons.bullet.display.length, 0, Math.PI * 2, true);
+			this.c.closePath();
+			this.c.fill();
+
+			break;
+
+		case 'mine':
+			this.c.fillStyle = "#fff";
+			this.c.beginPath();
+			this.c.arc(0, 0, this.ruleset.properties.weapons.mine.radius, 0, Math.PI * 2, true);
 			this.c.closePath();
 			this.c.fill();
 
@@ -180,11 +198,10 @@ $("header label").css("text-shadow", "none");
 $("header label").css("color", "#fff");
 $("header .ruleset label").css("color", "#fff");
 
-$("#status").css("border-color", "#cffdff");
-$("#status").css("background", "#aee8ff");
-$("section#status .team .name").css("color", "#5B8CA1");
-$("section#status .team .healthbar").css("background", "#fff");
-$(".healthbar").css("background", "#cffdff");
+$("#status").css("background", "none");
+
+// Hack because I couldn't get it to work the other way
+$("<style>.name { color: #5b8ca1; }\nsection#status .team .healthbar { background: #bdedff; }</style>").appendTo($("head"));
 
 $("#wrapper").css("border-color", "#cffdff");
 $("#wrapper").css("box-shadow", "none");

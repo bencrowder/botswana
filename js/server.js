@@ -713,7 +713,6 @@ var Server = function() {
 
 			return teams.indexOf(teamName);
 		} else {
-			console.log("failed", botID, serverBots);
 			return -1;
 		}
 	}
