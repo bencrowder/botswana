@@ -27,9 +27,9 @@ A web-based game with programmable bots (in Javascript).  [Live demo here.](http
 - demo1: smaller bots, set obstacles, set initial placement, various parameter tweaks
 - demo2: completely redone drawing code
 - demo3: faster bullets, different look, CSS 3D transform
-- orbit: bots orbit around the center point
 - conveyor: different strips of the world move bots up or down
 - expulsion: adds teleportation circle in center of world, varying bot radii
+- orbit: bots orbit around the center point
 - teleport: adds "teleport" command (see the Teleporter bot)
 - walls: moving walls, larger world
 

@@ -9,7 +9,7 @@ Dumbo.prototype = new Bot();
 
 Dumbo.prototype.setup = function() {
 	this.timer = 0;
-	this.hit = 0;
+	this.hitTimer = 0;
 };
 
 Dumbo.prototype.run = function() {
@@ -20,11 +20,11 @@ Dumbo.prototype.run = function() {
 
 	// Set hit counter
 	if (this.hitByBullet) {
-		this.hit = 10;
+		this.hitTimer = 10;
 	}
 
 	// If we've been hit
-	if (this.hit > 0) {
+	if (this.hitTimer > 0) {
 		// Every fifth turn, move left; every 19th turn, mine; otherwise move forward
 		if (this.timer % 5 == 0) {
 			command = "left";
@@ -33,10 +33,15 @@ Dumbo.prototype.run = function() {
 		} else {
 			command = "forward";
 		}
-		this.hit--;
+
+		this.hitTimer--;
 	} else {
-		// If we haven't been hit
-		command = "fire";
+		// If we haven't been hit, move forward every 13th turn; otherwise fire
+		if (this.timer % 13 == 0) {
+			command = "forward";
+		} else {
+			command = "fire";
+		}
 	}
 
 	return { command: command, team: {} };
