@@ -343,7 +343,7 @@ function Ruleset(server) {
 			}
 		}, 
 
-		"selfdestruct": function(bot) {
+		"self-destruct": function(bot) {
 			bot.health = 0;
 			bot.alive = false;
 			this.explodeShrapnel(bot, true);

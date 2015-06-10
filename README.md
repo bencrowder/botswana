@@ -99,6 +99,7 @@ The run() function returns an object with two properties:
 	- `strafe-left`
 	- `strafe-right`
 	- `wait`
+	- `self-destruct`
 - `team`: an object that will get sent to the other bots on the team. You can access it via `this.state.payload`.
 
 

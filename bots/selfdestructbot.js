@@ -13,9 +13,11 @@ SelfDestructBot.prototype.setup = function() {
 
 SelfDestructBot.prototype.run = function() {
 	this.tick++;
+
 	if (this.tick % 200 == 0) {
-		return { command: 'selfdestruct', team: {} };
+		return { command: 'self-destruct', team: {} };
 	}
+
 	return { command: 'wait', team: {} };
 };
 
