@@ -188,7 +188,7 @@ Ani.prototype.run = function() {
 	if (rtnCommand != 'fire' && this.timer % 30 == 0)
 		rtnCommand = 'backward';
 
-	return {'command': rtnCommand, 'team': this.state.payload}
+	return {'command': rtnCommand, 'team': this.state.payload};
 };
 
 server.registerBotScript("Anakin");
