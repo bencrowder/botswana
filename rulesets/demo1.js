@@ -4,12 +4,12 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "demo1";
 
-ruleset.properties.bots = {
-	'angleStep': 0.1,
-	'speed': 5,
-	'radius': 10,
-	'colors': [ "#01eb5f", "#b11e1e" ]
-};
+ruleset.properties.bots.angleStep = 0.1;
+ruleset.properties.bots.speed = 5;
+ruleset.properties.bots.radius = 10;
+
+ruleset.properties.bots.colors[0] = "#01eb5f";
+ruleset.properties.bots.colors[1] = "#b11e1e";
 
 ruleset.properties.weapons.bullet.speed = 8;
 ruleset.properties.weapons.bullet.strength = 3;
@@ -33,12 +33,28 @@ ruleset.setInitialPlacement = function(bot) {
 	var positions = [
 		{ 'x': 300, 'y': 240 },
 		{ 'x': 300, 'y': 280 },
-		{ 'x': 300, 'y': 320 },
-		{ 'x': 300, 'y': 360 },
-		{ 'x': 1200, 'y': 520 },
-		{ 'x': 1200, 'y': 560 },
+		{ 'x': 340, 'y': 240 },
+		{ 'x': 340, 'y': 280 },
 		{ 'x': 1200, 'y': 600 },
 		{ 'x': 1200, 'y': 640 },
+		{ 'x': 1160, 'y': 600 },
+		{ 'x': 1160, 'y': 640 },
+		{ 'x': 300, 'y': 600 },
+		{ 'x': 300, 'y': 640 },
+		{ 'x': 340, 'y': 600 },
+		{ 'x': 340, 'y': 640 },
+		{ 'x': 1200, 'y': 240 },
+		{ 'x': 1200, 'y': 280 },
+		{ 'x': 1160, 'y': 240 },
+		{ 'x': 1160, 'y': 280 },
+		{ 'x': 730, 'y': 600 },
+		{ 'x': 730, 'y': 640 },
+		{ 'x': 770, 'y': 600 },
+		{ 'x': 770, 'y': 640 },
+		{ 'x': 730, 'y': 240 },
+		{ 'x': 730, 'y': 280 },
+		{ 'x': 770, 'y': 240 },
+		{ 'x': 770, 'y': 280 },
 	];
 
 	bot.x = positions[bot.id].x;
