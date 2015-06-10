@@ -6,13 +6,12 @@ ruleset.name = "demo3";
 
 ruleset.properties.botsPerTeam = 5;
 
-ruleset.properties.bots = {
-	'angleStep': 0.1,
-	'speed': 2,
-	'radius': 15,
-	'radiusMargin': 0,
-	'colors': [ "#1eabb1", "#e27ef0" ]
-};
+ruleset.properties.bots.angleStep = 0.1;
+ruleset.properties.bots.speed = 2;
+ruleset.properties.bots.radius = 15;
+ruleset.properties.bots.radiusMargin = 0;
+ruleset.properties.bots.colors[0] = "#1eabb1";
+ruleset.properties.bots.colors[1] = "#e27ef0";
 
 ruleset.properties.weapons.bullet.speed = 15;
 ruleset.properties.weapons.bullet.strength = 3;
@@ -97,9 +96,9 @@ $("body").css("background", "#050505");
 $("#main").css("-webkit-perspective", "300px");
 
 $("#main .container").css({
-	"-webkit-transform": "rotateX(5deg) rotateY(2deg)",
+	"-webkit-transform": "rotateX(3deg) rotateY(2deg)",
 	"-webkit-transition": "all 1s ease-in-out",
 	"-webkit-animation": "pulse 5000ms infinite",
 });
 
-document.styleSheets[0].insertRule("@-webkit-keyframes pulse { 0% { -webkit-transform: rotateX(5deg) rotateY(2deg); } 50% { -webkit-transform: rotateX(-5deg) rotateY(-2deg); } 100% { -webkit-transform: rotateX(5deg) rotateY(2deg); } }");
+document.styleSheets[0].insertRule("@-webkit-keyframes pulse { 0% { -webkit-transform: rotateX(3deg) rotateY(2deg); } 50% { -webkit-transform: rotateX(-3deg) rotateY(-2deg); } 100% { -webkit-transform: rotateX(3deg) rotateY(2deg); } }", 0);

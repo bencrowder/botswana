@@ -8,7 +8,8 @@ ruleset.name = "orbit";
 
 ruleset.properties.bots.radius = 12;
 ruleset.properties.orbitSpeed = 0.008;
-ruleset.properties.bots.colors = [ "#78e63a", "#e71d1d" ];
+ruleset.properties.bots.colors[0] = "#78e63a";
+ruleset.properties.bots.colors[1] = "#e71d1d";
 
 ruleset.generateObstacles = function() {
 	// Central planet
@@ -40,8 +41,22 @@ ruleset.setInitialPlacement = function(bot) {
 		{ 'x': 750, 'y': 875 },
 	];
 
-	bot.x = positions[bot.id].x;
-	bot.y = positions[bot.id].y;
+	if (positions.length > bot.id) {
+		bot.x = positions[bot.id].x;
+		bot.y = positions[bot.id].y;
+	} else {
+		// Get a random position
+		botPos = this.server.getRandomPoint();
+		bot.x = botPos.x;
+		bot.y = botPos.y;
+
+		// Loop until we get a position that doesn't collide
+		while (this.server.collisionBotObjects(bot)) {
+			botPos = this.server.getRandomPoint();
+			bot.x = botPos.x;
+			bot.y = botPos.y;
+		}
+	}
 };
 
 ruleset.updateBot = function(bot, pos) {
