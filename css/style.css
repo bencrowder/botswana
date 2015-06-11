@@ -60,6 +60,7 @@ header.active {
 
 header .container {
 	display: -webkit-flex;
+	display: flex;
 	padding: 5px 25px;
 }
 
@@ -144,6 +145,7 @@ header .group .item.selected .sub {
 
 header .group .add-form {
 	display: -webkit-flex;
+	display: flex;
 	margin-top: 10px;
 }
 header .group .add-form input[type=text] {
@@ -198,6 +200,7 @@ header .group.rulesets .item.selected {
 /* Start button */
 header .group.start {
 	-webkit-flex: 1;
+	flex: 1;
 	margin-left: 100px;
 	text-align: right;
 }
@@ -236,27 +239,16 @@ header .group.start input[type=button]:focus {
 /* -------------------------------------------------- */
 
 section#status {
-/*	background: hsl(0, 0%, 14%);*/
-	/*
-	border: solid 5px hsl(0, 0%, 14%);
-	border-radius: 3px 3px 0 0;
-	*/
 	color: #fff;
 	display: -webkit-flex;
+	display: flex;
 	margin-top: 40px;
 	overflow: hidden;
 }
 
 section#status .team {
-	/*
-	background: hsl(197, 9%, 13%);
-	border-radius: 2px;
-	box-shadow: 0 0 15px #000;
-	*/
 	-webkit-flex: 1;
-	/*
-	padding: 6px 7px;
-	*/
+	flex: 1;
 }
 
 section#status .team + .team {
