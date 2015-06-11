@@ -42,7 +42,7 @@ body {
 /* -------------------------------------------------- */
 
 header {
-	background: rgba(26, 26, 27, 0.9);
+	background: hsla(213, 36%, 11%, 0.9);
 	box-shadow: 0 0 100px #000;
 	display: none;
 	left: 0;

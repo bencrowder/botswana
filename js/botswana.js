@@ -81,9 +81,12 @@ $(document).ready(function() {
 	function addItemToList(type, value) {
 		var listElement = $("." + type + "s .list");
 
+		// Strip URL gunk
+		var name = value.slice(value.lastIndexOf("/") + 1);
+
 		var html = "<div class='" + type + " item custom " + (type == 'bot' ? 'selected' : '') + "' data-uri='" + value  + "'>";
 		html += "<span class='delete'>&times;</span>";
-		html += "<div class='name'>" + value + "</div>";
+		html += "<div class='name'>" + name + "</div>";
 		html += "</div>";
 
 		listElement.append(html);
