@@ -25,7 +25,7 @@ body {
 #tray {
 	background: #000;
 	cursor: pointer;
-	height: 25px;
+	height: 20px;
 	left: 0;
 	position: absolute;
 	right: 0;
@@ -34,7 +34,7 @@ body {
 }
 
 #tray:hover {
-	background: #333;
+	background: #254364;
 }
 
 
@@ -101,7 +101,7 @@ header .group .item {
 }
 
 header .group .item:hover {
-	background: hsl(0, 0%, 13%) !important;
+	background: hsl(0, 0%, 1%) !important;
 }
 
 header .group .item + .item {
@@ -148,6 +148,7 @@ header .group .add-form {
 	display: flex;
 	margin-top: 10px;
 }
+
 header .group .add-form input[type=text] {
 	background: rgba(0, 0, 0, 0.2);
 	border: none;
@@ -163,11 +164,11 @@ header .group .add-form input[type=text]:focus {
 }
 
 header .group .add-form input[type=text]::-webkit-input-placeholder {
-	color: #444;
+	color: rgba(255, 255, 255, 0.2);
 }
 
 header .group .add-form input[type=text]::-moz-placeholder {
-	color: #444;
+	color: rgba(255, 255, 255, 0.2);
 }
 
 header .group .add-form input[type=submit].add {
@@ -219,11 +220,15 @@ header .group.start input[type=button] {
 }
 
 header .group.start input[type=button]:hover {
-	background: hsl(0, 0%, 20%);
+	background: hsl(144, 38%, 52%);
 }
 
 header .group.start input[type=button]:focus {
 	outline: none;
+}
+
+header .group.start input[type=button]::-moz-focus-inner {
+	border: 0;
 }
 
 .invalid_url {
@@ -242,7 +247,7 @@ section#status {
 	color: #fff;
 	display: -webkit-flex;
 	display: flex;
-	margin-top: 40px;
+	margin-top: 30px;
 	overflow: hidden;
 }
 
@@ -267,14 +272,14 @@ section#status .team .healthbar {
 	background: #111;
 	border-radius: 3px;
 	display: block;
-	height: 21px;
-	margin-top: 7px;
+	height: 15px;
+	margin-top: 5px;
 	width: 100%;
 }
 
 section#status .team .health {
 	width: 0%;
-	height: 21px;
+	height: 15px;
 	display: inline-block;
 	border-radius: 3px;
 	-webkit-transition: all .5s ease-in-out;
@@ -291,14 +296,14 @@ section#status .team .health {
 
 #wrapper {
 	border-radius: 3px;
-	border: solid 5px hsl(197, 9%, 13%);
+	border: solid 3px hsl(197, 9%, 13%);
 	box-shadow: 0 0 15px #000;
-	margin-top: 30px;
+	margin-top: 15px;
 }
 
 canvas {
 	background: #000;
-	border-radius: 0 0 5px 5px;
+	border-radius: 0 0 3px 3px;
 	width: 1000px;
 	height: 600px;
 }
