@@ -1,8 +1,8 @@
-var Anakin = function() {};
+var LittleAni = function() {};
 
-Anakin.prototype = new Bot();
+LittleAni.prototype = new Bot();
 
-Anakin.prototype.setup = function() {
+LittleAni.prototype.setup = function() {
 	this.timer = 0;
 	this.attrStrength = 200;
 	this.safety = 1000;
@@ -11,14 +11,14 @@ Anakin.prototype.setup = function() {
 	this.formation = this.id % 2;
 };
 
-Anakin.prototype.getBotById = function(id) {
+LittleAni.prototype.getBotById = function(id) {
 	for (i in this.state.bots) {
 		if (this.state.bots[i].id == id) return this.state.bots[i];
 	}
 	return undefined;
 };
 
-Anakin.prototype.getOpponentBots = function() {
+LittleAni.prototype.getOpponentBots = function() {
 	op = [];
 	for (i in this.state.bots) {
 		if (this.name != this.state.bots[i].name) {
@@ -28,7 +28,7 @@ Anakin.prototype.getOpponentBots = function() {
 	return op;
 };
 
-Anakin.prototype.getTeamBots = function() {
+LittleAni.prototype.getTeamBots = function() {
 	team = [];
 	for (i in this.state.bots) {
 		if (this.name == this.state.bots[i].name) {
@@ -38,7 +38,7 @@ Anakin.prototype.getTeamBots = function() {
 	return team;
 };
 
-Anakin.prototype.avoidCircle = function(radius, x, y, repelStrength) {
+LittleAni.prototype.avoidCircle = function(radius, x, y, repelStrength) {
 	radius -= 5;
 	var dist = this.myDistanceToPoint(x, y);
 	var angle = server.helpers.normalizeAngle(server.helpers.angleToPoint(this.x, this.y, x, y));
@@ -57,7 +57,7 @@ Anakin.prototype.avoidCircle = function(radius, x, y, repelStrength) {
 	return [dx, dy];
 };
 
-Anakin.prototype.acquireTarget = function() {
+LittleAni.prototype.acquireTarget = function() {
 	if (typeof this.state.payload.targets == 'undefined') {
 		this.state.payload.targets = {}
 	}
@@ -77,7 +77,7 @@ Anakin.prototype.acquireTarget = function() {
 	return target;
 };
 
-Anakin.prototype.avoidBullets = function() {
+LittleAni.prototype.avoidBullets = function() {
 	var dx = 0;
 	var dy = 0;
 	for (i in this.state.weapons) {
@@ -91,7 +91,7 @@ Anakin.prototype.avoidBullets = function() {
 	return [dx, dy];
 };
 
-Anakin.prototype.avoidTeammates = function() {
+LittleAni.prototype.avoidTeammates = function() {
 	var dx = 0;
 	var dy = 0;
 	var team = this.getTeamBots();
@@ -107,7 +107,7 @@ Anakin.prototype.avoidTeammates = function() {
 	return [dx, dy];
 };
 
-Anakin.prototype.run = function() {
+LittleAni.prototype.run = function() {
 	this.timer++;
 	target = undefined;
 
@@ -194,4 +194,4 @@ Anakin.prototype.run = function() {
 	return {'command': rtnCommand, 'team': this.state.payload};
 };
 
-server.registerBotScript("Anakin", "Ani");
+server.registerBotScript("LittleAni", "Anakin");
