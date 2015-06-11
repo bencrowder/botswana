@@ -118,12 +118,14 @@ var Server = function() {
 	/* Register a bot script */
 	/* -------------------------------------------------- */
 
-	this.registerBotScript = function(botClassName) {
+	this.registerBotScript = function(botClassName, name) {
 		// Team #
 		var teamNum = teams.length + 1;
 
 		// Check team name for duplicates
-		var name = botClassName;
+		if (typeof name == "undefined") {
+			var name = botClassName;
+		}
 		if ($.inArray(name, teams) != -1) {
 			counter = 2;
 

@@ -194,4 +194,4 @@ Anakin.prototype.run = function() {
 	return {'command': rtnCommand, 'team': this.state.payload};
 };
 
-server.registerBotScript("Anakin");
+server.registerBotScript("Anakin", "Ani");

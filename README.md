@@ -75,6 +75,10 @@ The minimum code required for a bot:
 
 	server.registerBotScript("NewBot");
 
+If you want your bot to be named something different from the class name you've used, pass a second parameter to the `server.registerBotScript` function:
+
+	server.registerBotScript("NewBot", "Noob");
+
 The game engine calls each bot's setup() function at the beginning of the game.
 
 	NewBot.prototype.setup = function() {
