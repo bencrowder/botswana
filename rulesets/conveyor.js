@@ -7,7 +7,7 @@ var ruleset = new Ruleset(server);
 ruleset.name = "conveyor";
 
 ruleset.properties.botsPerTeam = 6;
-ruleset.properties.bots.radius = 12;
+ruleset.properties.bots.radius = 25;
 ruleset.properties.world.slabs = 8;		// How many slabs
 ruleset.properties.slabSlide = 1.5;		// How much the belt slides the bots
 

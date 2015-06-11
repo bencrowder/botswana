@@ -7,7 +7,7 @@ var ruleset = new Ruleset(server);
 
 ruleset.name = "expulsion";
 
-ruleset.properties.bots.radiusMargin = 10;
+ruleset.properties.bots.radiusMargin = 20;
 ruleset.properties.world.teleportationCircleRadius = 100;
 
 // Set the bot radii randomly (within a range)
