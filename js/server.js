@@ -242,6 +242,7 @@ var Server = function() {
 				"y": item.y,
 				"radius": item.radius,
 				"strength": item.strength,
+				"type": item.type,
 			});
 		}
 
@@ -384,14 +385,38 @@ var Server = function() {
 			for (var i=0; i<obstacles.length; i++) {
 				var o = obstacles[i];
 
-				state.obstacles.push({ "x": o.x, "y": o.y, "width": o.width, "height": o.height });
+				state.obstacles.push({
+					"x": o.x,
+					"y": o.y,
+					"width": o.width,
+					"height": o.height,
+				});
+			}
+
+			// Get current state of items
+			for (var i=0; i<items.length; i++) {
+				var item = items[i];
+
+				state.items.push({
+					"x": item.x,
+					"y": item.y,
+					"radius": item.radius,
+					"strength": item.strength,
+					"type": item.type,
+				});
 			}
 
 			// Get current state of weapons
 			for (var i=0; i<weapons.length; i++) {
 				var w = weapons[i];
 
-				state.weapons.push({ "x": w.x, "y": w.y, "angle": w.angle, "owner": w.owner, "type": w.type });
+				state.weapons.push({
+					"x": w.x,
+					"y": w.y,
+					"angle": w.angle,
+					"owner": w.owner,
+					"type": w.type
+				});
 			}
 
 			payloads = {};
