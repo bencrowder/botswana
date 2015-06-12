@@ -88,27 +88,31 @@ var Server = function() {
 					var url = $(teamList[i]).attr("data-uri");
 
 					// Load the script and execute it
-					$.ajax({
-						url: url,
-						dataType: 'script',
+					try {
+						$.ajax({
+							url: url,
+							dataType: 'script',
 
-						success: function() {
-							scriptsUnloaded--;
+							success: function() {
+								scriptsUnloaded--;
 
-							// Start the tournament once all these are loaded
-							if (scriptsUnloaded == 0) {
-								server.startTournament();
+								// Start the tournament once all these are loaded
+								if (scriptsUnloaded == 0) {
+									server.startTournament();
 
-								$("header").removeClass("active");
-							}
-						},
+									$("header").removeClass("active");
+								}
+							},
 
-						error: function() {
-							// Find the bot with the bad URL and flag it
-							var bot = $(".bots .bot[data-uri=" + url + "]");
-							bot.addClass("invalid_url");
-						},
-					});
+							error: function() {
+								// Find the bot with the bad URL and flag it
+								var bot = $(".bots .bot[data-uri=" + url + "]");
+								bot.addClass("invalid_url");
+							},
+						});
+					} catch (e) {
+						console.log("Failed to load bot");
+					}
 				}
 			}
 		});
@@ -409,7 +413,11 @@ var Server = function() {
 					}
 
 					// Now run the bot
-					command = bots[i].run();
+					try {
+						command = bots[i].run();
+					} catch (e) {
+						console.log(bots[i].name + " errored out, probably syntax error. The error:", e);
+					}
 
 					// Parse the returned command
 					var pos = ruleset.parseCommand(command.command, bot);
