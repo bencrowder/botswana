@@ -173,7 +173,10 @@ var Server = function() {
 
 		// Reset state
 		state = {};
-		state.world = props.world;
+		state.world = {
+			'width': props.world.width,
+			'height': props.world.height,
+		};
 		state.bots = [];
 		state.obstacles = [];
 		state.weapons = [];
@@ -352,6 +355,10 @@ var Server = function() {
 			state.obstacles = [];
 			state.weapons = [];
 			state.items = [];
+			state.world = {
+				'width': ruleset.properties.world.width,
+				'height': ruleset.properties.world.height,
+			};
 
 			// Get current state of bots
 			for (var i=0; i<serverBots.length; i++) {
