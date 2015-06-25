@@ -651,7 +651,11 @@ function Ruleset(server) {
 				teamsAlive++;
 			} else {
 				// It's dead, so mark it as dead
-				$("#status .team[data-team=" + num + "] .name").addClass("dead");
+				var teamStatus = $("#status .team[data-team=" + num + "] .name");
+				if (!teamStatus.hasClass("dead")) {
+					teamStatus.addClass("dead");
+					console.log(key, "is dead, poor", key, "is dead.");
+				}
 			}
 
 			num++;
