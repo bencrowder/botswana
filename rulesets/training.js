@@ -8,7 +8,7 @@ ruleset.generateObstacles = function() {
 	// Simpler obstacle generation for now
 	var obstacles = [
 		// Short arms
-		{ x: -10, y: 170, width: 400, height: 60 },
+		{ x: -10, y: 140, width: 400, height: 60 },
 		{ x: 1110, y: 700, width: 400, height: 60 },
 
 		// Longer arms
