@@ -99,7 +99,6 @@ function Ruleset(server) {
 				return { 'x': this.x, 'y': this.y };
 			},
 			'collisionCallback': function(server, collision, properties) {
-				this.remove = true;
 				owner = server.getBotByID(this.owner);
 
 				switch (collision.type) {
@@ -107,25 +106,24 @@ function Ruleset(server) {
 						// Decrease the health of the bot that was hit
 						bot = collision.object;
 						if (bot.name != owner.name) {
+							this.remove = true;
 							bot.health -= properties.strength;
 							bot.hitByBullet = true;	// bot is responsible to unset this
 
 							// Create a red explosion
 							server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#db4e22");
+
+							if (owner.weapons[this.type] < properties.numAllowed) {
+								owner.weapons[this.type]++;
+							}
+							owner.canShoot = true;
 						}
 						break;
 						
 					default:
 						// Collision with obstacle, item, or world boundary
-						server.createParticleExplosion(collision.pos.x, collision.pos.y, 16, 8, 4, 20, "#96e0ff");
+						// Do nothing
 						break;
-				}
-
-				if (owner != undefined) {
-					if (owner.weapons[this.type] < properties.numAllowed) {
-						owner.weapons[this.type]++;
-					}
-					owner.canShoot = true;
 				}
 			},
 			'drawCallback': function(server, context, properties) {
